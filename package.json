@@ -8,9 +8,17 @@
     "start": "next start"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.1068.0",
+    "@aws-sdk/client-sns": "^3.1068.0",
+    "@supabase/supabase-js": "^2.108.1",
+    "@types/nodemailer": "^8.0.0",
     "next": "16.2.7",
+    "nodemailer": "^8.0.10",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "resend": "^6.12.4",
+    "square": "^44.1.0",
+    "twilio": "^6.0.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -19,5 +27,8 @@
     "@types/react-dom": "^19",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "postcss": "^8.5.15"
   }
 }

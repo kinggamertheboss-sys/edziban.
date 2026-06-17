@@ -1,0 +1,49 @@
+name: Daily Database Backup
+
+on:
+  schedule:
+    # Runs daily at 3:00 AM UTC (11 PM Eastern)
+    - cron: '0 3 * * *'
+  workflow_dispatch: # allow manual trigger
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Export orders from Supabase
+        id: export
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          echo "date=$DATE" >> $GITHUB_OUTPUT
+
+          # Fetch orders table as CSV via Supabase REST API
+          curl -s \
+            -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Accept: text/csv" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/orders?select=*&order=created_at.desc" \
+            > orders_$DATE.csv
+
+          curl -s \
+            -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Accept: text/csv" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/order_items?select=*" \
+            > order_items_$DATE.csv
+
+          curl -s \
+            -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Accept: text/csv" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/suppliers?select=*" \
+            > suppliers_$DATE.csv
+
+      - name: Upload backup as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: edziban-backup-${{ steps.export.outputs.date }}
+          path: |
+            orders_*.csv
+            order_items_*.csv
+            suppliers_*.csv
+          retention-days: 90

@@ -1,65 +1,527 @@
-import Image from "next/image";
+import Link from 'next/link'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
+import { MENU_ITEMS } from '@/lib/mockData'
+import { getItemGradient, formatCurrency } from '@/lib/utils'
 
-export default function Home() {
+const EVENTS = [
+  { n: '01', title: 'Funerals and Memorials', desc: 'We handle all catering so the family can be fully present. Place your order at least 5 days in advance and we take care of the rest.' },
+  { n: '02', title: 'Weddings', desc: 'Custom spreads tailored to your guest count and event timeline. Authentic Ghanaian cuisine for your most important day.' },
+  { n: '03', title: 'Naming Ceremonies', desc: 'From Jollof and Waakye to Bofrot and everything in between. Fresh, made-to-order food for every guest at your table.' },
+  { n: '04', title: 'Birthday Parties', desc: 'Trays, platters, and drinks for any party size. Select exactly what you need and we handle everything from there.' },
+]
+
+const STEPS = [
+  { n: '01', title: 'Choose your menu', desc: 'Browse our menu and select your trays, platters, and drinks. Each item includes a guest count so you know exactly how much to order.' },
+  { n: '02', title: 'Schedule your event', desc: 'Select a date at least 5 days in advance. All food is prepared fresh to order — nothing pre-made or reheated.' },
+  { n: '03', title: 'We handle the rest', desc: 'Receive an email confirmation within 24 hours. We offer both delivery and pickup across the Greater Boston area.' },
+]
+
+const MARQUEE_ITEMS = [
+  'Jollof Rice', 'Waakye', 'Puff Puff', 'Fried Chicken', 'Shito',
+  'Ice Kenkey', 'Meat Pies', 'Made Fresh Daily', 'Boston Area',
+  'Funerals', 'Weddings', 'Naming Ceremonies', 'Birthday Parties', 'Ghanaian Catering',
+]
+
+export default function HomePage() {
+  const featured = MENU_ITEMS.filter(i =>
+    ['jollof-rice', 'waakye', 'fried-chicken', 'tsofi'].includes(i.id)
+  )
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <Navbar />
+      <main>
+
+        {/* ────────────── HERO ────────────── */}
+        <section style={{
+          background: '#FFF8F0',
+          minHeight: '100dvh',
+          display: 'flex',
+          alignItems: 'center',
+          paddingTop: '80px',
+          paddingBottom: '80px',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+          {/* Soft radial glow */}
+          <div style={{
+            position: 'absolute',
+            top: '-80px',
+            right: '-80px',
+            width: '640px',
+            height: '640px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(196,98,45,0.07) 0%, transparent 68%)',
+            pointerEvents: 'none',
+          }} />
+          <div style={{
+            position: 'absolute',
+            bottom: '-60px',
+            left: '-60px',
+            width: '400px',
+            height: '400px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(196,98,45,0.04) 0%, transparent 70%)',
+            pointerEvents: 'none',
+          }} />
+
+          <div className="wrap">
+            <div className="hero-grid page-enter">
+
+              {/* Left: Text */}
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '40px' }}>
+                  <div style={{ width: '32px', height: '1px', background: '#C4622D' }} />
+                  <span className="label-upper" style={{ color: '#C4622D' }}>Ghanaian Catering · Boston Area</span>
+                </div>
+
+                <h1 style={{
+                  fontFamily: 'var(--font-playfair), Georgia, serif',
+                  fontSize: 'clamp(3.4rem, 8vw, 7rem)',
+                  fontWeight: 700,
+                  lineHeight: 1.0,
+                  letterSpacing: '-0.03em',
+                  color: '#1A0F0A',
+                  marginBottom: '36px',
+                }}>
+                  Ghana&rsquo;s finest,<br />
+                  <span style={{ color: '#C4622D' }}>delivered<br />to&nbsp;you.</span>
+                </h1>
+
+                <p style={{
+                  fontSize: 'clamp(15px, 1.8vw, 18px)',
+                  lineHeight: 1.8,
+                  color: '#4A2E20',
+                  maxWidth: '460px',
+                  marginBottom: '48px',
+                }}>
+                  Real Ghanaian food from real home cooks, brought to your
+                  event in the Boston area. Funerals, weddings, naming
+                  ceremonies, birthday parties.
+                </p>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '28px', flexWrap: 'wrap' }}>
+                  <Link href="/menu" style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '12px',
+                    background: '#C4622D', color: '#FFF8F0',
+                    fontWeight: 600, fontSize: '14px',
+                    letterSpacing: '0.03em',
+                    padding: '17px 38px', borderRadius: '100px',
+                    textDecoration: 'none',
+                    boxShadow: '0 8px 40px rgba(196,98,45,0.36)',
+                    transition: 'transform 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s ease',
+                  }}>
+                    View the Menu
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                  </Link>
+                  <Link href="/order" style={{
+                    fontSize: '13px',
+                    color: '#6B4C3B',
+                    textDecoration: 'none',
+                    fontWeight: 500,
+                    letterSpacing: '0.04em',
+                    borderBottom: '1px solid rgba(196,98,45,0.45)',
+                    paddingBottom: '2px',
+                    transition: 'border-color 0.2s, color 0.2s',
+                  }}>
+                    Place an order
+                  </Link>
+                </div>
+
+                <div style={{
+                  display: 'flex', flexWrap: 'wrap', gap: '8px 40px',
+                  marginTop: '60px', paddingTop: '32px',
+                  borderTop: '1px solid #E2CEB8',
+                  fontSize: '10.5px', fontWeight: 700,
+                  letterSpacing: '0.13em', textTransform: 'uppercase',
+                  color: '#9E7A52',
+                }}>
+                  <span>5-day advance ordering</span>
+                  <span>Delivery and pickup</span>
+                  <span>Orders confirmed within 24 hours</span>
+                </div>
+              </div>
+
+              {/* Right: Decorative panel */}
+              <div className="hero-deco" style={{ flexShrink: 0 }}>
+                <div style={{
+                  width: '240px',
+                  height: '420px',
+                  background: '#1A0F0A',
+                  borderRadius: '130px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}>
+                  <div style={{
+                    position: 'absolute',
+                    bottom: 0, left: 0, right: 0,
+                    height: '55%',
+                    background: 'linear-gradient(to top, rgba(196,98,45,0.28), transparent)',
+                    pointerEvents: 'none',
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    top: 0, left: 0, right: 0,
+                    height: '30%',
+                    background: 'linear-gradient(to bottom, rgba(196,98,45,0.08), transparent)',
+                    pointerEvents: 'none',
+                  }} />
+
+                  <div style={{
+                    fontFamily: 'var(--font-playfair), Georgia, serif',
+                    fontSize: '148px',
+                    fontWeight: 700,
+                    color: '#C4622D',
+                    lineHeight: 1,
+                    letterSpacing: '-0.05em',
+                    position: 'relative',
+                    zIndex: 1,
+                  }}>E</div>
+
+                  <div style={{
+                    width: '36px', height: '1px',
+                    background: 'rgba(196,98,45,0.5)',
+                    margin: '14px 0',
+                    position: 'relative', zIndex: 1,
+                  }} />
+
+                  <div style={{
+                    fontFamily: 'var(--font-cormorant), var(--font-playfair), Georgia, serif',
+                    fontSize: '15px',
+                    fontStyle: 'italic',
+                    color: 'rgba(255,248,240,0.6)',
+                    textAlign: 'center',
+                    letterSpacing: '0.02em',
+                    lineHeight: 1.5,
+                    position: 'relative', zIndex: 1,
+                    padding: '0 20px',
+                  }}>
+                    Ghana&rsquo;s finest, delivered to you.
+                  </div>
+
+                  {/* Ring decoration */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '50%', left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '200px', height: '200px',
+                    borderRadius: '50%',
+                    border: '1px solid rgba(196,98,45,0.12)',
+                    pointerEvents: 'none',
+                    zIndex: 0,
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    top: '50%', left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '160px', height: '160px',
+                    borderRadius: '50%',
+                    border: '1px solid rgba(196,98,45,0.07)',
+                    pointerEvents: 'none',
+                    zIndex: 0,
+                  }} />
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* ────────────── MARQUEE ────────────── */}
+        <div style={{
+          background: '#C4622D',
+          padding: '13px 0',
+          overflow: 'hidden',
+        }}>
+          <div className="marquee-track" style={{
+            display: 'flex',
+            alignItems: 'center',
+            whiteSpace: 'nowrap',
+          }}>
+            {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
+              <span key={i} style={{
+                fontSize: '10.5px',
+                fontWeight: 700,
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase',
+                color: '#FFF8F0',
+                padding: '0 28px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '28px',
+              }}>
+                {item}
+                <span style={{
+                  display: 'inline-block',
+                  width: '3px', height: '3px',
+                  borderRadius: '50%',
+                  background: 'rgba(255,248,240,0.45)',
+                  flexShrink: 0,
+                }} />
+              </span>
+            ))}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+
+        {/* ────────────── FEATURED MENU ────────────── */}
+        <section style={{ padding: '108px 0', background: '#1A0F0A' }}>
+          <div className="wrap">
+            <div className="sec-head">
+              <div className="overline">
+                <div className="bar" style={{ background: '#C4622D' }} />
+                <span className="label-upper" style={{ color: '#C4622D' }}>From the menu</span>
+                <div className="bar" style={{ background: '#C4622D' }} />
+              </div>
+              <h2 style={{ color: '#FFF8F0' }}>Fresh food from<br />Ghanaian cooks.</h2>
+              <p style={{ color: 'rgba(255,248,240,0.55)' }}>
+                Every item is cooked to order by Ghanaian home cooks in the Boston area. Nothing pre-made.
+              </p>
+            </div>
+
+            <div className="stagger feat-grid">
+              {featured.map(item => (
+                <Link key={item.id} href="/menu" className="feat-card">
+                  {/* Media strip — video > image > gradient fallback */}
+                  <div style={{
+                    width: (item.video || item.image) ? '140px' : '108px',
+                    flexShrink: 0,
+                    background: getItemGradient(item.id),
+                    position: 'relative',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    justifyContent: 'center',
+                    paddingBottom: (item.video || item.image) ? '0' : '20px',
+                  }}>
+                    {item.video ? (
+                      <video
+                        src={item.video}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    ) : item.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    ) : (
+                      <span style={{
+                        writingMode: 'vertical-rl',
+                        transform: 'rotate(180deg)',
+                        fontSize: '9px',
+                        fontWeight: 700,
+                        letterSpacing: '0.16em',
+                        textTransform: 'uppercase',
+                        color: 'rgba(255,248,240,0.6)',
+                      }}>
+                        {item.category}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div style={{
+                    padding: '28px 28px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    flex: 1,
+                  }}>
+                    <div>
+                      <h3 style={{
+                        fontFamily: 'var(--font-playfair), Georgia, serif',
+                        fontSize: '19px', fontWeight: 700,
+                        color: '#FFF8F0', marginBottom: '10px',
+                        lineHeight: 1.15,
+                      }}>{item.name}</h3>
+                      <p style={{
+                        fontSize: '13px', lineHeight: 1.72,
+                        color: 'rgba(255,248,240,0.5)',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical' as const,
+                        overflow: 'hidden',
+                      }}>{item.description}</p>
+                    </div>
+                    <div style={{ marginTop: '22px', display: 'flex', alignItems: 'baseline', gap: '10px' }}>
+                      <span style={{ fontWeight: 700, fontSize: '21px', color: '#C4622D' }}>
+                        {formatCurrency(item.price)}
+                      </span>
+                      <span style={{ fontSize: '11px', color: 'rgba(255,248,240,0.35)', letterSpacing: '0.04em' }}>
+                        {item.unit}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div style={{ textAlign: 'center', marginTop: '52px' }}>
+              <Link href="/menu" style={{
+                display: 'inline-flex', alignItems: 'center', gap: '10px',
+                border: '1px solid rgba(196,98,45,0.5)', color: '#C4622D',
+                fontWeight: 600, fontSize: '13px',
+                letterSpacing: '0.07em',
+                padding: '15px 38px', borderRadius: '100px',
+                textDecoration: 'none',
+                transition: 'background 0.25s, border-color 0.25s',
+              }}>
+                View full menu
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ────────────── HOW IT WORKS ────────────── */}
+        <section style={{ padding: '108px 0', background: '#FFF8F0' }}>
+          <div className="wrap">
+            <div className="sec-head">
+              <div className="overline">
+                <div className="bar" />
+                <span className="label-upper" style={{ color: '#C4622D' }}>How it works</span>
+                <div className="bar" />
+              </div>
+              <h2>Three steps to get<br />your food sorted.</h2>
+            </div>
+
+            <div className="stagger steps-grid">
+              {STEPS.map((step, i) => (
+                <div key={step.n} className="step-cell" style={{
+                  padding: '56px 48px',
+                  borderRight: i < STEPS.length - 1 ? '1px solid #E2CEB8' : 'none',
+                }}>
+                  <div style={{
+                    fontFamily: 'var(--font-playfair), Georgia, serif',
+                    fontSize: '84px', fontWeight: 700,
+                    color: 'rgba(196,98,45,0.11)',
+                    lineHeight: 1, marginBottom: '28px',
+                  }}>{step.n}</div>
+                  <div style={{ width: '32px', height: '1px', background: '#C4622D', marginBottom: '22px' }} />
+                  <h3 style={{
+                    fontFamily: 'var(--font-playfair), Georgia, serif',
+                    fontSize: '20px', fontWeight: 700,
+                    color: '#1A0F0A', marginBottom: '14px',
+                    lineHeight: 1.2,
+                  }}>{step.title}</h3>
+                  <p style={{ fontSize: '14px', lineHeight: 1.8, color: '#6B4C3B' }}>{step.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ────────────── BRAND STATEMENT ────────────── */}
+        <section style={{
+          padding: '128px 0',
+          background: '#C4622D',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+          {/* Background oversized letterform */}
+          <div style={{
+            position: 'absolute',
+            right: '-60px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            fontFamily: 'var(--font-playfair), Georgia, serif',
+            fontSize: '520px',
+            fontWeight: 700,
+            color: 'rgba(0,0,0,0.07)',
+            lineHeight: 1,
+            userSelect: 'none',
+            pointerEvents: 'none',
+            letterSpacing: '-0.05em',
+          }}>E</div>
+
+          {/* Top-left ring decoration */}
+          <div style={{
+            position: 'absolute',
+            top: '-80px', left: '-80px',
+            width: '320px', height: '320px',
+            borderRadius: '50%',
+            border: '1px solid rgba(255,248,240,0.1)',
+            pointerEvents: 'none',
+          }} />
+          <div style={{
+            position: 'absolute',
+            top: '-120px', left: '-120px',
+            width: '480px', height: '480px',
+            borderRadius: '50%',
+            border: '1px solid rgba(255,248,240,0.05)',
+            pointerEvents: 'none',
+          }} />
+
+          <div className="wrap" style={{ position: 'relative', zIndex: 1 }}>
+            <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '44px' }}>
+                <div style={{ width: '32px', height: '1px', background: 'rgba(255,248,240,0.45)' }} />
+                <span className="label-upper" style={{ color: 'rgba(255,248,240,0.75)' }}>Our promise</span>
+                <div style={{ width: '32px', height: '1px', background: 'rgba(255,248,240,0.45)' }} />
+              </div>
+
+              <blockquote style={{
+                fontFamily: 'var(--font-cormorant), var(--font-playfair), Georgia, serif',
+                fontSize: 'clamp(1.7rem, 3.8vw, 3rem)',
+                fontWeight: 600,
+                lineHeight: 1.28,
+                color: '#FFF8F0',
+                fontStyle: 'italic',
+                marginBottom: '56px',
+                letterSpacing: '-0.01em',
+              }}>
+                &ldquo;Edziban means <em>pot of food</em> in Fante.
+                Every tray we put out carries that. Made by Ghanaian hands,
+                cooked fresh for every table.&rdquo;
+              </blockquote>
+
+              <Link href="/menu" style={{
+                display: 'inline-flex', alignItems: 'center', gap: '12px',
+                background: '#FFF8F0', color: '#1A0F0A',
+                fontWeight: 700, fontSize: '13px',
+                letterSpacing: '0.07em',
+                padding: '18px 48px', borderRadius: '100px',
+                textDecoration: 'none',
+                boxShadow: '0 12px 48px rgba(0,0,0,0.18)',
+                transition: 'transform 0.25s cubic-bezier(0.22,1,0.36,1)',
+              }}>
+                Start your order
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </Link>
+            </div>
+          </div>
+        </section>
+
       </main>
-    </div>
-  );
+      <Footer />
+    </>
+  )
 }
