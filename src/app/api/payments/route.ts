@@ -228,7 +228,7 @@ export async function POST(req: NextRequest) {
 
     // Owner commission = everything left after paying suppliers and Square.
     // Delivery fee and $4 flat markup are 100% owner income (single-person business).
-    const squareFee = Math.round(((serverSubtotal + serverDeliveryFee) * 0.026 + 0.10) * 100) / 100
+    const squareFee = Math.round(((serverSubtotal + serverDeliveryFee) * 0.029 + 0.30) * 100) / 100
     const supplierPayoutsTotal = supplierPayouts.reduce((s, p) => s + p.amount, 0)
     const commission = Math.round((serverTotal - supplierPayoutsTotal - squareFee) * 100) / 100
 
