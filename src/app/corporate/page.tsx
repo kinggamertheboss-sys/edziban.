@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { MENU_ITEMS } from '@/lib/mockData'
 import { formatCurrency } from '@/lib/utils'
@@ -44,7 +43,6 @@ export default function CorporatePage() {
 
   return (
     <>
-      <Navbar />
       <main>
 
         {/* ── Hero ── */}

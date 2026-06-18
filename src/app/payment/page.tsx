@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Script from 'next/script'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useCart } from '@/context/CartContext'
 import { formatCurrency, getDeliveryFee, getServiceFee, getTimeLabel } from '@/lib/utils'
@@ -142,7 +141,6 @@ export default function PaymentPage() {
   return (
     <>
       <Script src={squareSrc} strategy="afterInteractive" onReady={() => setSdkReady(true)} />
-      <Navbar />
 
       {/* Dark page header */}
       <div style={{ background: '#1A0F0A', paddingTop: '56px', paddingBottom: '48px', position: 'relative', overflow: 'hidden' }}>

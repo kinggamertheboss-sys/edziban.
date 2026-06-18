@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useCart } from '@/context/CartContext'
 import { formatCurrency, getMinOrderDate, getDeliveryFee } from '@/lib/utils'
@@ -148,7 +147,6 @@ export default function CorporateOrderPage() {
 
   return (
     <>
-      <Navbar />
 
       <div style={{ background: '#1A0F0A', paddingTop: '56px', paddingBottom: '48px', position: 'relative', overflow: 'hidden' }}>
         <div style={{

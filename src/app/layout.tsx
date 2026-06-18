@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Playfair_Display, Inter, Cormorant_Garamond } from 'next/font/google'
 import './globals.css'
 import { CartProvider } from '@/context/CartContext'
+import Navbar from '@/components/Navbar'
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -38,7 +39,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" data-scroll-behavior="smooth" className={`${playfair.variable} ${inter.variable} ${cormorant.variable} h-full`}>
       <body className="min-h-full flex flex-col bg-cream antialiased">
         <CartProvider>
-          {children}
+          <Navbar />
+          <div style={{ paddingTop: '76px' }}>
+            {children}
+          </div>
         </CartProvider>
       </body>
     </html>

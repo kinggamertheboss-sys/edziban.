@@ -24,7 +24,7 @@ export default function Navbar() {
 
   return (
     <header
-      className="sticky top-0 z-50"
+      className="fixed top-0 left-0 right-0 z-50 w-full"
       style={{
         backgroundColor: scrolled ? 'rgba(255,248,240,0.96)' : '#FFF8F0',
         borderBottom: `1px solid ${scrolled ? 'rgba(226,206,184,0.9)' : '#E2CEB8'}`,

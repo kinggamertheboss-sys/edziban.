@@ -2,7 +2,6 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect, Suspense } from 'react'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { MENU_ITEMS, MENU_CATEGORIES } from '@/lib/mockData'
 import { useCart } from '@/context/CartContext'
@@ -44,7 +43,6 @@ function MenuPageInner() {
 
   return (
     <>
-      <Navbar />
 
       <main className="page-enter" style={{ paddingBottom: '160px' }}>
 

@@ -3,7 +3,6 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 
 const steps = [
@@ -246,7 +245,6 @@ function ConfirmationContent() {
 export default function ConfirmationPage() {
   return (
     <>
-      <Navbar />
       <Suspense fallback={
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FFF8F0' }}>
           <p style={{ color: '#9E7A52', fontSize: '14px' }}>Loading&hellip;</p>
