@@ -223,7 +223,7 @@ export default function PaymentPage() {
               <div style={{ background: 'white', border: '1px solid #E2CEB8', borderRadius: '20px', overflow: 'hidden' }}>
 
                 {/* Order breakdown */}
-                <div style={{ padding: '32px 32px 28px' }}>
+                <div className="card-section" style={{ padding: '32px 32px 28px' }}>
                   <h2 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '18px', fontWeight: 700, color: '#1A0F0A', marginBottom: '20px' }}>
                     Order breakdown
                   </h2>
@@ -264,7 +264,7 @@ export default function PaymentPage() {
                 <div style={{ height: '1px', background: '#F0E4D0' }} />
 
                 {/* Event details */}
-                <div style={{ padding: '28px 32px' }}>
+                <div className="card-section" style={{ padding: '28px 32px' }}>
                   <h2 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '18px', fontWeight: 700, color: '#1A0F0A', marginBottom: '16px' }}>
                     Event details
                   </h2>
@@ -290,7 +290,7 @@ export default function PaymentPage() {
                 <div style={{ height: '1px', background: '#F0E4D0' }} />
 
                 {/* Square card form */}
-                <div style={{ padding: '28px 32px' }}>
+                <div className="card-section" style={{ padding: '28px 32px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
                     <h2 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '18px', fontWeight: 700, color: '#1A0F0A' }}>
                       Card details

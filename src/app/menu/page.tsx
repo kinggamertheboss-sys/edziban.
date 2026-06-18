@@ -145,7 +145,7 @@ function MenuPageInner() {
                         <div key={item.id} className="menu-item-card">
 
                           {/* Media strip — video > image > gradient fallback */}
-                          <div style={{
+                          <div className="menu-card-media" style={{
                             width: (item.video || item.image) ? '140px' : '96px',
                             flexShrink: 0,
                             position: 'relative',
@@ -202,7 +202,7 @@ function MenuPageInner() {
                           </div>
 
                           {/* Card content */}
-                          <div style={{ padding: '28px 28px 24px', flex: 1 }}>
+                          <div className="menu-card-body" style={{ padding: '28px 28px 24px', flex: 1 }}>
 
                             {/* Top row */}
                             <div style={{

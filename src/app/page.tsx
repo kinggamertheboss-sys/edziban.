@@ -344,7 +344,7 @@ export default function HomePage() {
                   </div>
 
                   {/* Content */}
-                  <div style={{
+                  <div className="feat-card-body" style={{
                     padding: '28px 28px',
                     display: 'flex',
                     flexDirection: 'column',

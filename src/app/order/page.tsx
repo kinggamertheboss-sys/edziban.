@@ -188,7 +188,7 @@ export default function OrderPage() {
               <div style={{ background: 'white', border: '1px solid #E2CEB8', borderRadius: '20px', overflow: 'hidden' }}>
 
                 {/* ── Guest count + Contact ── */}
-                <div style={{ padding: '32px 32px 28px' }}>
+                <div className="card-section" style={{ padding: '32px 32px 28px' }}>
                   <div style={{ marginBottom: '20px' }}>
                     <h2 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '18px', fontWeight: 700, color: '#1A0F0A' }}>
                       Your details
@@ -213,7 +213,7 @@ export default function OrderPage() {
                 <div style={{ height: '1px', background: '#F0E4D0' }} />
 
                 {/* ── Contact ── */}
-                <div style={{ padding: '28px 32px' }}>
+                <div className="card-section" style={{ padding: '28px 32px' }}>
                   <div style={{ marginBottom: '20px' }}>
                     <h2 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '18px', fontWeight: 700, color: '#1A0F0A' }}>
                       Contact information
@@ -243,7 +243,7 @@ export default function OrderPage() {
                 <div style={{ height: '1px', background: '#F0E4D0' }} />
 
                 {/* ── Delivery ── */}
-                <div style={{ padding: '28px 32px' }}>
+                <div className="card-section" style={{ padding: '28px 32px' }}>
                   <div style={{ marginBottom: '20px' }}>
                     <h2 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '18px', fontWeight: 700, color: '#1A0F0A' }}>
                       Delivery or pickup?
@@ -315,7 +315,7 @@ export default function OrderPage() {
                 <div style={{ height: '1px', background: '#F0E4D0' }} />
 
                 {/* ── Date & time ── */}
-                <div style={{ padding: '28px 32px' }}>
+                <div className="card-section" style={{ padding: '28px 32px' }}>
                   <div style={{ marginBottom: '20px' }}>
                     <h2 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '18px', fontWeight: 700, color: '#1A0F0A' }}>
                       When is your event?
