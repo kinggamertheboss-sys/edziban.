@@ -212,6 +212,21 @@ export const MENU_ITEMS: MenuItem[] = [
     supplierName: 'Auntie Naana Randolph',
     supplierPayoutRate: 0.7,
   },
+  // ── Test ──
+  {
+    id: 'test-item',
+    name: 'Test Item (DO NOT ORDER)',
+    price: 1,
+    unit: 'test only',
+    serves: 'for testing purposes only',
+    description: 'This is a test item used to verify the payment system. Do not order.',
+    emoji: '🧪',
+    category: 'condiments',
+    supplierId: 'supplier-1',
+    supplierName: 'Auntie Naana Randolph',
+    supplierPayoutRate: 0,
+    supplierCost: 0,
+  },
   // ── Condiments ──
   {
     id: 'shito',

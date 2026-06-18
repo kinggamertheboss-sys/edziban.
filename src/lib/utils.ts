@@ -24,6 +24,7 @@ export function getDeliveryFee(distanceRange: string): number {
 }
 
 export function getServiceFee(subtotal: number, deliveryFee: number = 0): number {
+  if (subtotal <= 1) return 0 // test mode — skip fees on $1 orders
   return Math.round(((subtotal + deliveryFee) * 0.026 + 0.10 + 4) * 100) / 100
 }
 
