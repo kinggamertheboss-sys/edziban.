@@ -306,8 +306,11 @@ a:focus-visible, button:focus-visible { border-radius: 6px; }
 @media (max-width: 600px) {
   /* Menu item cards — stack image on top, content below */
   .menu-item-card { flex-direction: column; }
-  .menu-card-media { width: 100% !important; height: 190px !important; }
+  .menu-card-media { width: 100% !important; height: 220px !important; }
   .menu-card-body { padding: 18px 18px 16px !important; }
+  /* Show full food item on mobile instead of cropping */
+  .menu-card-media video,
+  .menu-card-media img { object-fit: contain !important; }
 
   /* Featured card body — tighter padding */
   .feat-card-body { padding: 20px !important; }
