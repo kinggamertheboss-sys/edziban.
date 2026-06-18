@@ -201,6 +201,7 @@ export async function POST(req: NextRequest) {
       },
       locationId: process.env.SQUARE_LOCATION_ID!,
       note: `Edziban order — ${clean.customerName}`,
+      statementDescriptionIdentifier: 'KD Capital Holdings',
     })
 
     const p = response.payment

@@ -215,6 +215,20 @@ export const MENU_ITEMS: MenuItem[] = [
     supplierName: 'Auntie Naana Randolph',
     supplierPayoutRate: 0.7,
   },
+  // ── TEST ITEM — remove after statement descriptor test ──
+  {
+    id: 'test-charge',
+    name: 'Test Charge',
+    price: 1,
+    unit: 'per charge',
+    serves: 'test only',
+    description: 'Temporary $1 test charge. Remove after testing.',
+    emoji: '🧪',
+    category: 'condiments',
+    supplierId: 'supplier-1',
+    supplierName: 'Auntie Naana Randolph',
+    supplierPayoutRate: 0,
+  },
   // ── Condiments ──
   {
     id: 'shito',
