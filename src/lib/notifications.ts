@@ -44,8 +44,8 @@ export interface NotifResult {
 export async function sendSMS(to: string, message: string, recipientLabel = 'customer'): Promise<NotifResult> {
   const result: NotifResult = { type: 'sms', recipient: recipientLabel, to, preview: message.slice(0, 80), mock: false, success: false }
 
-  console.log(`\n[SMS] ── To: ${to} (${recipientLabel}) ──`)
-  console.log(`[SMS] ${message}`)
+  const masked = to.slice(0, 4) + '****' + to.slice(-2)
+  console.log(`\n[SMS] ── To: ${masked} (${recipientLabel}) ──`)
 
   // ADD_KEY_HERE: Set AWS_ACCESS_KEY_ID in .env.local
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID
@@ -82,7 +82,9 @@ export async function sendSMS(to: string, message: string, recipientLabel = 'cus
 export async function sendEmail(to: string, subject: string, html: string, recipientLabel = 'customer'): Promise<NotifResult> {
   const result: NotifResult = { type: 'email', recipient: recipientLabel, to, preview: subject, mock: false, success: false }
 
-  console.log(`\n[EMAIL] ── To: ${to} (${recipientLabel}) ──`)
+  const [u, d] = to.split('@')
+  const maskedEmail = (u[0] ?? '') + '***@' + (d ?? '')
+  console.log(`\n[EMAIL] ── To: ${maskedEmail} (${recipientLabel}) ──`)
   console.log(`[EMAIL] Subject: ${subject}`)
 
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID

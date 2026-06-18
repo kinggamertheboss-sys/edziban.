@@ -12,18 +12,34 @@ export function sanitizeText(value: unknown, maxLength = 500): string {
     .slice(0, maxLength)
 }
 
-/** Trim, lowercase, max RFC 5321 length. */
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+/** Trim, lowercase, validate format, max RFC 5321 length. */
 export function sanitizeEmail(value: unknown): string {
   if (typeof value !== 'string') return ''
-  return value.trim().toLowerCase().slice(0, 254)
+  const v = value.trim().toLowerCase().slice(0, 254)
+  return EMAIL_REGEX.test(v) ? v : ''
 }
 
-/** Keep only digits, +, spaces, dashes, parens. */
+/** Keep only digits, validate E.164 length (10–15 digits). */
 export function sanitizePhone(value: unknown): string {
   if (typeof value !== 'string') return ''
   const digits = value.trim().replace(/[^\d]/g, '')
-  if (!digits) return ''
+  if (digits.length < 10 || digits.length > 15) return ''
   return '+' + digits
+}
+
+/** Validate ISO date (YYYY-MM-DD), must be at least 4 days in the future. */
+export function sanitizeDate(value: unknown): string {
+  if (typeof value !== 'string') return ''
+  const trimmed = value.trim()
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return ''
+  const d = new Date(trimmed + 'T00:00:00')
+  if (isNaN(d.getTime())) return ''
+  const minDate = new Date()
+  minDate.setDate(minDate.getDate() + 4)
+  minDate.setHours(0, 0, 0, 0)
+  if (d < minDate) return ''
+  return trimmed
 }
 
 /** Parse to integer, clamp to [min, max]. */

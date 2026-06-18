@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createHash, timingSafeEqual } from 'crypto'
 import { checkLimit, deny, getClientIp } from '@/lib/rateLimit'
 import { sanitizeEmail, sanitizeText } from '@/lib/sanitize'
 import { signSession } from '@/lib/session'
+
+function safeCompare(a: string, b: string): boolean {
+  const ha = createHash('sha256').update(a).digest()
+  const hb = createHash('sha256').update(b).digest()
+  return timingSafeEqual(ha, hb)
+}
 
 export const COOKIE_NAME = 'edziban-admin-session'
 export const COOKIE_MAX_AGE = 8 * 60 * 60 // 8 hours
@@ -39,7 +46,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
   }
 
-  if (email !== adminEmail || password !== adminPassword) {
+  if (!safeCompare(email, adminEmail) || !safeCompare(password, adminPassword)) {
     // OWASP A09: Log failed login attempts with IP for intrusion detection
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? 'unknown'
     console.warn(`[SECURITY] Failed admin login attempt — IP: ${ip}, email: ${email}`)

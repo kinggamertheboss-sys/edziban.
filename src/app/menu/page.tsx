@@ -1,14 +1,14 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { MENU_ITEMS, MENU_CATEGORIES } from '@/lib/mockData'
 import { useCart } from '@/context/CartContext'
 import { formatCurrency, getItemGradient } from '@/lib/utils'
 
-export default function MenuPage() {
+function MenuPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { items, updateQuantity, subtotal, totalItems } = useCart()
@@ -370,5 +370,13 @@ export default function MenuPage() {
 
       <Footer />
     </>
+  )
+}
+
+export default function MenuPage() {
+  return (
+    <Suspense>
+      <MenuPageInner />
+    </Suspense>
   )
 }

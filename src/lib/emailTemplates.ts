@@ -17,6 +17,11 @@ export interface OrderEmailData {
   eventType?: string
 }
 
+function esc(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#x27;')
+}
+
 function timeLabel(t: string) {
   const m: Record<string, string> = {
     morning: 'Morning (10am–12pm)',
@@ -70,7 +75,7 @@ function baseWrapper(content: string) {
 function itemsTable(items: OrderEmailData['items']) {
   const rows = items.map(item => `
     <tr>
-      <td style="padding:10px 0;border-bottom:1px solid #E2CEB8;font-size:14px;color:#1A0F0A;">${item.name}</td>
+      <td style="padding:10px 0;border-bottom:1px solid #E2CEB8;font-size:14px;color:#1A0F0A;">${esc(item.name)}</td>
       <td style="padding:10px 0;border-bottom:1px solid #E2CEB8;font-size:14px;color:#6B4C3B;text-align:center;">× ${item.quantity}</td>
       <td style="padding:10px 0;border-bottom:1px solid #E2CEB8;font-size:14px;color:#1A0F0A;text-align:right;font-weight:700;">${money(item.unitPrice * item.quantity)}</td>
     </tr>`).join('')
@@ -89,7 +94,7 @@ export function orderReceivedEmail(data: OrderEmailData): string {
       <td style="padding:36px 40px 0;">
         ${orderTypeLabel ? `<p style="margin:0 0 8px;display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#C4622D;background:rgba(196,98,45,0.08);border:1px solid rgba(196,98,45,0.2);border-radius:100px;padding:4px 12px;">${orderTypeLabel}</p><br/>` : ''}
         <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#C4622D;">Order Received</p>
-        <h1 style="margin:0 0 8px;font-size:28px;font-weight:700;color:#1A0F0A;letter-spacing:-0.02em;">Thank you, ${data.customerName}.</h1>
+        <h1 style="margin:0 0 8px;font-size:28px;font-weight:700;color:#1A0F0A;letter-spacing:-0.02em;">Thank you, ${esc(data.customerName)}.</h1>
         <p style="margin:0;font-size:15px;color:#6B4C3B;line-height:1.7;">Your order has been received and is currently under review. You will receive a confirmation email within ${hours} hours once it has been approved.</p>
       </td>
     </tr>
@@ -97,7 +102,7 @@ export function orderReceivedEmail(data: OrderEmailData): string {
       <td style="padding:24px 40px 0;">
         <div style="background:#1A0F0A;border-radius:12px;padding:18px 24px;display:inline-block;">
           <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,248,240,0.4);">Order Number</p>
-          <p style="margin:4px 0 0;font-size:22px;font-weight:700;color:#C4622D;letter-spacing:-0.01em;font-family:Georgia,serif;">${data.orderNumber}</p>
+          <p style="margin:4px 0 0;font-size:22px;font-weight:700;color:#C4622D;letter-spacing:-0.01em;font-family:Georgia,serif;">${esc(data.orderNumber)}</p>
         </div>
       </td>
     </tr>
@@ -117,9 +122,9 @@ export function orderReceivedEmail(data: OrderEmailData): string {
       <td style="padding:28px 40px 0;">
         <p style="margin:0 0 16px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#6B4C3B;">Delivery Details</p>
         <table width="100%" cellpadding="0" cellspacing="0" border="0">
-          <tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;width:100px;">Type</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;text-transform:capitalize;">${data.fulfillmentType}</td></tr>
-          ${data.address ? `<tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Address</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${data.address}</td></tr>` : '<tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Location</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">Randolph, MA 02368</td></tr>'}
-          <tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Date</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${data.requestedDate}</td></tr>
+          <tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;width:100px;">Type</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;text-transform:capitalize;">${esc(data.fulfillmentType)}</td></tr>
+          ${data.address ? `<tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Address</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${esc(data.address)}</td></tr>` : '<tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Location</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">Randolph, MA 02368</td></tr>'}
+          <tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Date</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${esc(data.requestedDate)}</td></tr>
           <tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Time</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${timeLabel(data.requestedTime)}</td></tr>
         </table>
       </td>
@@ -141,7 +146,7 @@ export function orderConfirmedEmail(data: OrderEmailData): string {
     <tr>
       <td style="padding:36px 40px 0;">
         <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#22C55E;">Order Confirmed</p>
-        <h1 style="margin:0 0 8px;font-size:28px;font-weight:700;color:#1A0F0A;letter-spacing:-0.02em;">Your order is confirmed, ${data.customerName}.</h1>
+        <h1 style="margin:0 0 8px;font-size:28px;font-weight:700;color:#1A0F0A;letter-spacing:-0.02em;">Your order is confirmed, ${esc(data.customerName)}.</h1>
         <p style="margin:0;font-size:15px;color:#6B4C3B;line-height:1.7;">Your order has been reviewed and approved. Our team is now preparing everything for your event.</p>
       </td>
     </tr>
@@ -191,7 +196,7 @@ export function orderReadyEmail(data: OrderEmailData): string {
     <tr>
       <td style="padding:36px 40px 0;">
         <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#C4622D;">${isPickup ? 'Ready for Pickup' : 'Out for Delivery'}</p>
-        <h1 style="margin:0 0 8px;font-size:28px;font-weight:700;color:#1A0F0A;letter-spacing:-0.02em;">Your order is ready, ${data.customerName}.</h1>
+        <h1 style="margin:0 0 8px;font-size:28px;font-weight:700;color:#1A0F0A;letter-spacing:-0.02em;">Your order is ready, ${esc(data.customerName)}.</h1>
         <p style="margin:0;font-size:15px;color:#6B4C3B;line-height:1.7;">${isPickup ? 'Your Edziban order is prepared and ready for pickup at the location below.' : 'Your Edziban order has been dispatched and is on its way to you.'}</p>
       </td>
     </tr>

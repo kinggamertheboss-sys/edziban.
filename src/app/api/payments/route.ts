@@ -6,7 +6,7 @@ import { MENU_ITEMS } from '@/lib/mockData'
 import { generateOrderNumber, getDeliveryFee, getServiceFee, getTimeLabel } from '@/lib/utils'
 import {
   sanitizeText, sanitizeEmail, sanitizePhone, sanitizeInt,
-  sanitizeAmount, sanitizeEnum,
+  sanitizeAmount, sanitizeEnum, sanitizeDate,
   VALID_FULFILLMENT_TYPES, VALID_TIMES, VALID_DISTANCE_RANGES,
 } from '@/lib/sanitize'
 import { checkLimit, deny, getClientIp } from '@/lib/rateLimit'
@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
       fulfillmentType:     sanitizeEnum(order.fulfillmentType, VALID_FULFILLMENT_TYPES) ?? 'pickup',
       address:             sanitizeText(order.address, 300),
       distanceRange:       sanitizeEnum(order.distanceRange, VALID_DISTANCE_RANGES) ?? '',
-      requestedDate:       sanitizeText(order.requestedDate, 20),
+      requestedDate:       sanitizeDate(order.requestedDate),
       requestedTime:       sanitizeEnum(order.requestedTime, VALID_TIMES) ?? 'morning',
       specialInstructions: sanitizeText(order.specialInstructions, 500),
       subtotal:            sanitizeAmount(order.subtotal),

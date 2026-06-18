@@ -110,10 +110,10 @@ export function deny(result: LimitResult): NextResponse {
   )
 }
 
-/** Extract the real client IP from Next.js / Vercel request headers. */
+/** Extract the real client IP — uses Vercel's trusted header which cannot be spoofed by clients. */
 export function getClientIp(req: Request): string {
   return (
-    req.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
+    req.headers.get('x-vercel-forwarded-for') ??
     req.headers.get('x-real-ip') ??
     'unknown'
   )
