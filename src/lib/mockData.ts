@@ -94,7 +94,7 @@ export const MENU_ITEMS: MenuItem[] = [
     supplierId: 'supplier-1',
     supplierName: 'Auntie Naana Randolph',
     supplierPayoutRate: 0.7,
-    supplierCost: 100,
+    supplierCost: 120,
   },
   {
     id: 'waakye-stew',
@@ -110,7 +110,6 @@ export const MENU_ITEMS: MenuItem[] = [
     supplierId: 'supplier-1',
     supplierName: 'Auntie Naana Randolph',
     supplierPayoutRate: 0.7,
-    supplierCost: 100,
   },
   {
     id: 'fried-chicken',
@@ -125,7 +124,7 @@ export const MENU_ITEMS: MenuItem[] = [
     supplierId: 'supplier-1',
     supplierName: 'Auntie Naana Randolph',
     supplierPayoutRate: 0.7,
-    supplierCost: 100,
+    supplierCost: 125,
   },
   {
     id: 'fried-rice',
@@ -140,7 +139,7 @@ export const MENU_ITEMS: MenuItem[] = [
     supplierId: 'supplier-1',
     supplierName: 'Auntie Naana Randolph',
     supplierPayoutRate: 0.7,
-    supplierCost: 100,
+    supplierCost: 110,
   },
   // ── Sides ──
   {
@@ -156,7 +155,6 @@ export const MENU_ITEMS: MenuItem[] = [
     supplierId: 'supplier-1',
     supplierName: 'Auntie Naana Randolph',
     supplierPayoutRate: 0.7,
-    supplierCost: 100,
   },
   // ── Snacks ──
   {
@@ -172,7 +170,6 @@ export const MENU_ITEMS: MenuItem[] = [
     supplierId: 'supplier-1',
     supplierName: 'Auntie Naana Randolph',
     supplierPayoutRate: 0.7,
-    supplierCost: 100,
   },
   {
     id: 'meat-pies',
