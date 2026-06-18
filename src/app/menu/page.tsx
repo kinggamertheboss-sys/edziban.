@@ -210,7 +210,7 @@ function MenuPageInner() {
                               gap: '20px',
                               marginBottom: '14px',
                             }}>
-                              <div style={{ flex: 1 }}>
+                              <div style={{ flex: 1, minWidth: 0 }}>
                                 <h2 style={{
                                   fontFamily: 'var(--font-playfair), Georgia, serif',
                                   fontSize: '19px', fontWeight: 700,
@@ -276,7 +276,7 @@ function MenuPageInner() {
                             )}
 
                             {/* Description */}
-                            <p style={{ fontSize: '13.5px', lineHeight: 1.78, color: '#6B4C3B' }}>
+                            <p style={{ fontSize: '13.5px', lineHeight: 1.78, color: '#6B4C3B', overflowWrap: 'break-word' }}>
                               {item.description}
                             </p>
 
