@@ -15,7 +15,7 @@ export const EDZIBAN_CONFIG = {
   // ADD_KEY_HERE: Your personal phone number for admin SMS alerts (E.164 format: +16175550000)
   myPhone: '+16177928522',
 
-  myEmail: 'kinggamertheboss@gmail.com',
+  myEmail: 'admin@edzibancatering.com',
 
   website: 'https://edzibancatering.com',
   pickupLocation: 'Randolph, MA 02368',
