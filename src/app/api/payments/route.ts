@@ -209,9 +209,9 @@ export async function POST(req: NextRequest) {
     // ── Compute supplier payouts ──────────────────────────────────────────
     const payoutMap = new Map<string, { supplierId: string; supplierName: string; amount: number }>()
     for (const item of clean.items) {
-      const menuItem = MENU_ITEMS.find(m => m.id === item.itemId)
+      const menuItem = MENU_ITEMS.find(m => m.id === baseId(item.itemId))
       if (!menuItem) continue
-      const costPerUnit = menuItem.supplierCost ?? (item.unitPrice * menuItem.supplierPayoutRate)
+      const costPerUnit = menuItem.supplierCost ?? (menuItem.price * menuItem.supplierPayoutRate)
       const payout = Math.round(item.quantity * costPerUnit * 100) / 100
       const existing = payoutMap.get(menuItem.supplierId)
       if (existing) {
@@ -282,13 +282,16 @@ export async function POST(req: NextRequest) {
     } else {
       // Save line items
       await db.from('order_items').insert(
-        clean.items.map(i => ({
-          order_id: orderNumber,
-          item_id: i.itemId,
-          name: i.name,
-          quantity: i.quantity,
-          unit_price: i.unitPrice,
-        }))
+        clean.items.map(i => {
+          const mi = MENU_ITEMS.find(m => m.id === baseId(i.itemId))
+          return {
+            order_id: orderNumber,
+            item_id: i.itemId,
+            name: i.name,
+            quantity: i.quantity,
+            unit_price: mi?.price ?? i.unitPrice,
+          }
+        })
       )
 
       // Save supplier payouts
@@ -311,7 +314,7 @@ export async function POST(req: NextRequest) {
     const emailData = {
       orderNumber,
       customerName:  clean.customerName,
-      items:         clean.items.map(i => ({ name: i.name, quantity: i.quantity, unitPrice: i.unitPrice })),
+      items:         clean.items.map(i => ({ name: i.name, quantity: i.quantity, unitPrice: MENU_ITEMS.find(m => m.id === baseId(i.itemId))?.price ?? i.unitPrice })),
       subtotal:      serverSubtotal,
       serviceFee:    serverServiceFee,
       deliveryFee:   serverDeliveryFee,

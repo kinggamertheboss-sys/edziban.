@@ -48,8 +48,7 @@ export async function POST(req: NextRequest) {
 
   if (!safeCompare(email, adminEmail) || !safeCompare(password, adminPassword)) {
     // OWASP A09: Log failed login attempts with IP for intrusion detection
-    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? 'unknown'
-    console.warn(`[SECURITY] Failed admin login attempt — IP: ${ip}, email: ${email}`)
+    console.warn(`[SECURITY] Failed admin login attempt — IP: ${getClientIp(req)}, email: ${email}`)
     // Fixed delay regardless of which field is wrong — prevents user enumeration (OWASP A07)
     await new Promise(r => setTimeout(r, 400 + Math.random() * 200))
     return NextResponse.json({ error: 'Wrong email or password.' }, { status: 401 })

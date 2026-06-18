@@ -43,7 +43,7 @@ function matchKeyword(text: string, keywords: string[]): boolean {
 }
 
 function getAutoReply(text: string): string | null {
-  console.log(`[MANYCHAT] Incoming DM: "${text}"`)
+  console.log(`[MANYCHAT] Incoming DM — length: ${text.length}`)
 
   if (matchKeyword(text, ['how do i order', 'how to order', 'how can i order', 'place an order', 'ordering'])) {
     const reply = `Hey! 👋🏾 To place an order visit our website:\n${WEBSITE}\n\nOrders close every Saturday at midnight.\nPickup and delivery available in the Greater Boston area 🇬🇭`
@@ -75,7 +75,7 @@ function getAutoReply(text: string): string | null {
     return reply
   }
 
-  console.log(`[MANYCHAT] No keyword match for: "${text}" — no auto-reply sent`)
+  console.log(`[MANYCHAT] No keyword match — length: ${text.length}`)
   return null
 }
 
