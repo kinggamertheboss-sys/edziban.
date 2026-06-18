@@ -652,7 +652,7 @@ export default function Financials({ orders, paidPayouts }: FinancialsProps) {
         const maTax        = Math.round(Math.max(0, ytdNetIncome - seTaxDeduct) * 0.05 * 100) / 100
 
         const totalTax     = Math.round((seTax + federalTax + maTax) * 100) / 100
-        const setAside     = Math.round(ytdNetIncome > 0 ? (totalTax / ytdNetIncome) * 100 * 10) / 10
+        const setAside     = ytdNetIncome > 0 ? Math.round((totalTax / ytdNetIncome) * 100 * 10) / 10 : 0
         const quarterly    = Math.round((totalTax / 4) * 100) / 100
         const perOrder     = ytdOrders.length > 0 ? Math.round((totalTax / ytdOrders.length) * 100) / 100 : 0
 
