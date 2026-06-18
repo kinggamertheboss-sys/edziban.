@@ -899,8 +899,8 @@ export default function AdminDashboard() {
 
                                 {/* Where it went */}
                                 <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: D.faint, marginTop: '8px' }}>Where it went</p>
-                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: D.muted }}>Square (2.9% × {formatCurrency(order.total)})</span><span style={{ color: D.text }}>({formatCurrency(squarePct)})</span></div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: D.muted }}>Square flat fee</span><span style={{ color: D.text }}>($0.30)</span></div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: D.muted }}>Square 2.9%</span><span style={{ color: D.text }}>({formatCurrency(squarePct)})</span></div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: D.muted }}>Square + $0.30</span><span style={{ color: D.text }}>($0.30)</span></div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600 }}><span style={{ color: D.muted }}>Total Square fee</span><span style={{ color: D.text }}>({formatCurrency(squareTotal)})</span></div>
                                 {order.supplierPayouts.map(p => (
                                   <div key={p.supplierId} style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: D.muted }}>{p.supplierName}</span><span style={{ color: D.text }}>({formatCurrency(p.amount)})</span></div>
