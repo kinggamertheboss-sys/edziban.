@@ -266,43 +266,6 @@ export const MOCK_SUPPLIERS = [
   { id: 'supplier-1', name: 'Auntie Naana Randolph', email: '', phone: '+16174174081', balance: 0 },
 ]
 
-export const MOCK_ORDERS: MockOrder[] = [
-  {
-    id: 'EDZ-2026-0001',
-    customerName: 'Kofi Mensah',
-    customerPhone: '+16175550192',
-    customerEmail: 'kofi.mensah@bostonuniversity.edu',
-    eventType: 'Student Organization',
-    guestCount: 80,
-    items: [
-      { itemId: 'jollof-rice',  name: 'Jollof Rice',   quantity: 2, unitPrice: 135 },
-      { itemId: 'fried-chicken', name: 'Fried Chicken', quantity: 2, unitPrice: 149 },
-      { itemId: 'puff-puff',    name: 'Bofrot',         quantity: 1, unitPrice: 119 },
-      { itemId: 'shito',        name: 'Shito',          quantity: 4, unitPrice: 14.99 },
-    ],
-    fulfillmentType: 'delivery',
-    address: '775 Commonwealth Ave, Boston, MA 02215',
-    distanceRange: '5-10',
-    requestedDate: '2026-06-28',
-    requestedTime: 'afternoon',
-    specialInstructions: 'Loading dock entrance on the side. Call 10 minutes before arrival.',
-    subtotal: 897.96,
-    serviceFee: 27.74,
-    deliveryFee: 35,
-    total: 960.70,
-    commission: 192.14,
-    supplierPayouts: [{ supplierId: 'supplier-1', supplierName: 'Auntie Naana Randolph', amount: 628.57 }],
-    status: 'pending',
-    supplierId: 'supplier-1',
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    adminNotes: '',
-    clientType: 'corporate',
-    orgName: 'Boston University — GASA',
-    contactPerson: 'Kofi Mensah',
-    billingEmail: 'treasurer@bugasa.org',
-    poNumber: 'PO-2026-0042',
-    requestInvoice: true,
-  },
-]
+export const MOCK_ORDERS: MockOrder[] = []
 
 export const COMMISSION_RATE = 0.2
