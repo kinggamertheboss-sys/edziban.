@@ -25,7 +25,7 @@ declare global {
 
 export default function PaymentPage() {
   const router = useRouter()
-  const { items, orderDetails, subtotal, totalItems, clearCart } = useCart()
+  const { items, orderDetails, hydrated, subtotal, totalItems, clearCart } = useCart()
   const [loading, setLoading] = useState(false)
   const [sdkReady, setSdkReady] = useState(() => typeof window !== 'undefined' && !!window.Square)
   const [cardError, setCardError] = useState('')
@@ -33,9 +33,10 @@ export default function PaymentPage() {
   const cardInitialized = useRef(false)
 
   useEffect(() => {
+    if (!hydrated) return
     if (totalItems === 0) router.push('/menu')
     if (!orderDetails) router.push('/order')
-  }, [totalItems, orderDetails, router])
+  }, [hydrated, totalItems, orderDetails, router])
 
   useEffect(() => {
     if (!sdkReady || cardInitialized.current || !window.Square) return
@@ -56,7 +57,7 @@ export default function PaymentPage() {
     })()
   }, [sdkReady])
 
-  if (!orderDetails || totalItems === 0) return null
+  if (!hydrated || !orderDetails || totalItems === 0) return null
   const od = orderDetails
 
   const deliveryFee = od.fulfillmentType === 'delivery' ? getDeliveryFee(od.distanceRange) : 0

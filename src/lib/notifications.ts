@@ -17,7 +17,7 @@ export const EDZIBAN_CONFIG = {
 
   myEmail: 'kinggamertheboss@gmail.com',
 
-  website: 'https://edziban.vercel.app',
+  website: 'https://edzibancatering.com',
   pickupLocation: 'Randolph, MA 02368',
   googleReviewLink: 'https://g.page/r/edziban/review',
 

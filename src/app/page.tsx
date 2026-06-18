@@ -496,7 +496,7 @@ export default function HomePage() {
                 marginBottom: '56px',
                 letterSpacing: '-0.01em',
               }}>
-                &ldquo;Edziban means <em>pot of food</em> in Fante.
+                &ldquo;Edziban means <em>food in pot</em>{' '}in Fante.
                 Every tray we put out carries that. Made by Ghanaian hands,
                 cooked fresh for every table.&rdquo;
               </blockquote>

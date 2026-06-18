@@ -35,6 +35,7 @@ export interface OrderDetails {
 interface CartContextType {
   items: CartItem[]
   orderDetails: OrderDetails | null
+  hydrated: boolean
   updateQuantity: (id: string, delta: number, option?: string) => void
   setQuantity: (id: string, qty: number, option?: string) => void
   saveOrderDetails: (details: OrderDetails) => void
@@ -111,7 +112,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0)
 
   return (
-    <CartContext.Provider value={{ items, orderDetails, updateQuantity, setQuantity, saveOrderDetails, clearCart, subtotal, totalItems }}>
+    <CartContext.Provider value={{ items, orderDetails, hydrated, updateQuantity, setQuantity, saveOrderDetails, clearCart, subtotal, totalItems }}>
       {children}
     </CartContext.Provider>
   )
