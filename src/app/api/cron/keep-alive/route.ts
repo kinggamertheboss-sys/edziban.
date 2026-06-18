@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createHash, timingSafeEqual } from 'crypto'
 import { getAdminClient } from '@/lib/supabase'
+
+function safeCompare(a: string, b: string): boolean {
+  const ha = createHash('sha256').update(a).digest()
+  const hb = createHash('sha256').update(b).digest()
+  return timingSafeEqual(ha, hb)
+}
 
 export async function GET(req: NextRequest) {
   const cronSecret = process.env.CRON_SECRET
@@ -10,8 +17,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Cron not configured' }, { status: 503 })
   }
 
-  const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${cronSecret}`) {
+  const authHeader = req.headers.get('authorization') ?? ''
+  if (!safeCompare(authHeader, `Bearer ${cronSecret}`)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
       })).filter(i => i.itemId && i.name),
     }
 
-    if (!clean.customerName || !clean.customerEmail || clean.items.length === 0) {
+    if (!clean.customerName || !clean.customerEmail || clean.items.length === 0 || !clean.requestedDate) {
       return NextResponse.json({ error: 'Invalid order data' }, { status: 400 })
     }
 

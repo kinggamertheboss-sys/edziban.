@@ -13,8 +13,15 @@
 // ADD_KEY_HERE: Set MANYCHAT_PAGE_ID in .env.local
 
 import { NextRequest, NextResponse } from 'next/server'
+import { createHash, timingSafeEqual } from 'crypto'
 import { checkLimit, deny, getClientIp } from '@/lib/rateLimit'
 import { sanitizeText } from '@/lib/sanitize'
+
+function safeCompare(a: string, b: string): boolean {
+  const ha = createHash('sha256').update(a).digest()
+  const hb = createHash('sha256').update(b).digest()
+  return timingSafeEqual(ha, hb)
+}
 
 const WEBSITE = 'https://edziban.vercel.app'
 
@@ -82,7 +89,7 @@ export async function POST(req: NextRequest) {
   const webhookSecret = process.env.MANYCHAT_WEBHOOK_SECRET
   if (webhookSecret) {
     const provided = req.headers.get('x-webhook-secret') ?? ''
-    if (provided !== webhookSecret) {
+    if (!safeCompare(provided, webhookSecret)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
   }

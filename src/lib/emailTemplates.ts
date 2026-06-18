@@ -154,7 +154,7 @@ export function orderConfirmedEmail(data: OrderEmailData): string {
       <td style="padding:24px 40px 0;">
         <div style="background:#1A0F0A;border-radius:12px;padding:18px 24px;">
           <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,248,240,0.4);">Order Number</p>
-          <p style="margin:4px 0 0;font-size:22px;font-weight:700;color:#C4622D;letter-spacing:-0.01em;font-family:Georgia,serif;">${data.orderNumber}</p>
+          <p style="margin:4px 0 0;font-size:22px;font-weight:700;color:#C4622D;letter-spacing:-0.01em;font-family:Georgia,serif;">${esc(data.orderNumber)}</p>
         </div>
       </td>
     </tr>
@@ -171,8 +171,8 @@ export function orderConfirmedEmail(data: OrderEmailData): string {
       <td style="padding:28px 40px 0;">
         <p style="margin:0 0 16px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#6B4C3B;">${data.fulfillmentType === 'pickup' ? 'Pickup Details' : 'Delivery Details'}</p>
         <table width="100%" cellpadding="0" cellspacing="0" border="0">
-          ${data.address ? `<tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;width:100px;">Address</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${data.address}</td></tr>` : '<tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;width:100px;">Location</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">Randolph, MA 02368</td></tr>'}
-          <tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Date</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${data.requestedDate}</td></tr>
+          ${data.address ? `<tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;width:100px;">Address</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${esc(data.address)}</td></tr>` : '<tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;width:100px;">Location</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">Randolph, MA 02368</td></tr>'}
+          <tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Date</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${esc(data.requestedDate)}</td></tr>
           <tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Time</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${timeLabel(data.requestedTime)}</td></tr>
         </table>
       </td>
@@ -204,7 +204,7 @@ export function orderReadyEmail(data: OrderEmailData): string {
       <td style="padding:24px 40px 0;">
         <div style="background:#1A0F0A;border-radius:12px;padding:18px 24px;">
           <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,248,240,0.4);">Order Number</p>
-          <p style="margin:4px 0 0;font-size:22px;font-weight:700;color:#C4622D;letter-spacing:-0.01em;font-family:Georgia,serif;">${data.orderNumber}</p>
+          <p style="margin:4px 0 0;font-size:22px;font-weight:700;color:#C4622D;letter-spacing:-0.01em;font-family:Georgia,serif;">${esc(data.orderNumber)}</p>
         </div>
       </td>
     </tr>
@@ -212,8 +212,8 @@ export function orderReadyEmail(data: OrderEmailData): string {
       <td style="padding:28px 40px 36px;">
         <div style="background:#FFF0E8;border-left:4px solid #C4622D;border-radius:0 8px 8px 0;padding:16px 20px;">
           ${isPickup
-            ? `<p style="margin:0;font-size:14px;color:#1A0F0A;font-weight:700;">Pickup Location: Randolph, MA 02368</p><p style="margin:8px 0 0;font-size:13px;color:#6B4C3B;line-height:1.7;">Please arrive between <strong>${timeLabel(data.requestedTime)}</strong> on <strong>${data.requestedDate}</strong>.<br>Please have your order number ready: <strong style="color:#C4622D;">${data.orderNumber}</strong></p>`
-            : `<p style="margin:0;font-size:14px;color:#1A0F0A;font-weight:700;">Your order is on its way.</p><p style="margin:8px 0 0;font-size:13px;color:#6B4C3B;line-height:1.7;">Estimated arrival: <strong>${timeLabel(data.requestedTime)}</strong> on <strong>${data.requestedDate}</strong>. Please ensure someone is available to receive the order.</p>`
+            ? `<p style="margin:0;font-size:14px;color:#1A0F0A;font-weight:700;">Pickup Location: Randolph, MA 02368</p><p style="margin:8px 0 0;font-size:13px;color:#6B4C3B;line-height:1.7;">Please arrive between <strong>${timeLabel(data.requestedTime)}</strong> on <strong>${esc(data.requestedDate)}</strong>.<br>Please have your order number ready: <strong style="color:#C4622D;">${esc(data.orderNumber)}</strong></p>`
+            : `<p style="margin:0;font-size:14px;color:#1A0F0A;font-weight:700;">Your order is on its way.</p><p style="margin:8px 0 0;font-size:13px;color:#6B4C3B;line-height:1.7;">Estimated arrival: <strong>${timeLabel(data.requestedTime)}</strong> on <strong>${esc(data.requestedDate)}</strong>. Please ensure someone is available to receive the order.</p>`
           }
         </div>
       </td>
