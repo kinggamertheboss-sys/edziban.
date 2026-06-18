@@ -630,6 +630,93 @@ export default function Financials({ orders, paidPayouts }: FinancialsProps) {
           ))}
         </div>
       </div>
+
+      {/* ── TAX ESTIMATOR ─────────────────────────────────────────────── */}
+      {(() => {
+        // Base: YTD net income (commission after supplier costs and Square fees)
+        const ytdNetIncome = ytdIncome - expenses.reduce((s, e) => s + e.amount, 0)
+
+        // Self-employment tax: 15.3% on 92.35% of net income
+        // (IRS allows deducting half of SE tax before calculating it)
+        const seTaxBase    = Math.max(0, ytdNetIncome * 0.9235)
+        const seTax        = Math.round(seTaxBase * 0.153 * 100) / 100
+        const seTaxDeduct  = Math.round(seTax * 0.5 * 100) / 100  // deductible half
+
+        // Federal income tax on taxable income after SE deduction
+        // Using 22% bracket — common for sole proprietors earning $47k–$100k
+        // Adjust if income is higher or lower
+        const federalBase  = Math.max(0, ytdNetIncome - seTaxDeduct)
+        const federalTax   = Math.round(federalBase * 0.22 * 100) / 100
+
+        // Massachusetts flat income tax: 5%
+        const maTax        = Math.round(Math.max(0, ytdNetIncome - seTaxDeduct) * 0.05 * 100) / 100
+
+        const totalTax     = Math.round((seTax + federalTax + maTax) * 100) / 100
+        const setAside     = Math.round(ytdNetIncome > 0 ? (totalTax / ytdNetIncome) * 100 * 10) / 10
+        const quarterly    = Math.round((totalTax / 4) * 100) / 100
+        const perOrder     = ytdOrders.length > 0 ? Math.round((totalTax / ytdOrders.length) * 100) / 100 : 0
+
+        return (
+          <div style={{ background: D.card, border: '1px solid rgba(245,158,11,0.25)', borderRadius: '16px', padding: '28px', marginTop: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '20px', gap: '12px', flexWrap: 'wrap' }}>
+              <div>
+                <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#F59E0B', marginBottom: '4px' }}>Tax Estimator</p>
+                <p style={{ fontSize: '18px', fontWeight: 700, color: D.text, fontFamily: 'var(--font-playfair), Georgia, serif' }}>How Much to Save</p>
+                <p style={{ fontSize: '12px', color: D.muted, marginTop: '2px' }}>YTD {year} · Massachusetts sole proprietor estimate</p>
+              </div>
+              <div style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '12px', padding: '14px 20px', textAlign: 'right' }}>
+                <p style={{ fontSize: '11px', color: '#F59E0B', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '4px' }}>Set aside per order</p>
+                <p style={{ fontSize: '22px', fontWeight: 700, color: '#F59E0B', fontFamily: 'var(--font-playfair), Georgia, serif' }}>{formatCurrency(perOrder)}</p>
+              </div>
+            </div>
+
+            <div style={{ borderTop: `1px solid ${D.border}`, paddingTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+
+              {/* Tax breakdown rows */}
+              {[
+                { label: 'Self-Employment Tax', rate: '15.3% on 92.35% of income', value: seTax, note: 'Social Security + Medicare' },
+                { label: 'Federal Income Tax', rate: '22% bracket', value: federalTax, note: 'After SE tax deduction' },
+                { label: 'Massachusetts State Tax', rate: '5% flat rate', value: maTax, note: 'MA flat income tax' },
+              ].map(row => (
+                <div key={row.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '12px 16px', background: 'rgba(255,255,255,0.03)', borderRadius: '10px' }}>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontSize: '13px', fontWeight: 600, color: D.text, marginBottom: '2px' }}>{row.label}</p>
+                    <p style={{ fontSize: '11px', color: D.faint }}>{row.rate} · {row.note}</p>
+                  </div>
+                  <p style={{ fontSize: '15px', fontWeight: 700, color: '#F59E0B', fontFamily: 'var(--font-playfair), Georgia, serif', flexShrink: 0 }}>{formatCurrency(row.value)}</p>
+                </div>
+              ))}
+
+              {/* Divider + total */}
+              <div style={{ borderTop: `2px solid rgba(245,158,11,0.3)`, paddingTop: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+                <div>
+                  <p style={{ fontSize: '14px', fontWeight: 700, color: D.text }}>Total Estimated Tax</p>
+                  <p style={{ fontSize: '11px', color: D.faint, marginTop: '2px' }}>Approx. {setAside}% of your net income</p>
+                </div>
+                <p style={{ fontSize: '22px', fontWeight: 700, color: '#F59E0B', fontFamily: 'var(--font-playfair), Georgia, serif' }}>{formatCurrency(totalTax)}</p>
+              </div>
+
+              {/* Quarterly + net take-home */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginTop: '8px' }}>
+                {[
+                  { label: 'Quarterly payment due', value: formatCurrency(quarterly), sub: 'Apr 15 · Jun 15 · Sep 15 · Jan 15' },
+                  { label: 'Your net take-home (YTD)', value: formatCurrency(Math.max(0, ytdNetIncome - totalTax)), sub: 'After all taxes' },
+                ].map(s => (
+                  <div key={s.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '12px', padding: '16px' }}>
+                    <p style={{ fontSize: '11px', color: D.faint, marginBottom: '6px' }}>{s.label}</p>
+                    <p style={{ fontSize: '18px', fontWeight: 700, color: D.text, fontFamily: 'var(--font-playfair), Georgia, serif' }}>{s.value}</p>
+                    <p style={{ fontSize: '10px', color: D.faint, marginTop: '4px' }}>{s.sub}</p>
+                  </div>
+                ))}
+              </div>
+
+              <p style={{ fontSize: '11px', color: D.faint, lineHeight: 1.7, marginTop: '8px', padding: '12px 14px', background: 'rgba(255,255,255,0.02)', borderRadius: '10px' }}>
+                These are estimates based on Massachusetts sole proprietor tax rates. Actual taxes depend on your total household income, deductions, and filing status. Consult a tax professional for your specific situation. IRS quarterly deadlines: April 15, June 15, September 15, January 15.
+              </p>
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }
