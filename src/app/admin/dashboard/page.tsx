@@ -865,20 +865,55 @@ export default function AdminDashboard() {
                         </div>
 
                         {/* Financials */}
-                        <div style={{ background: 'rgba(196,98,45,0.06)', border: '1px solid rgba(196,98,45,0.12)', borderRadius: '12px', padding: '20px' }}>
-                          <p className="label-upper" style={{ color: D.faint, marginBottom: '14px' }}>Financials</p>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: D.muted }}>Subtotal</span><span style={{ color: D.text }}>{formatCurrency(order.subtotal)}</span></div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: D.muted }}>Service fee</span><span style={{ color: D.text }}>{formatCurrency(order.serviceFee)}</span></div>
-                            {order.deliveryFee > 0 && <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: D.muted }}>Delivery fee</span><span style={{ color: D.text }}>{formatCurrency(order.deliveryFee)}</span></div>}
-                            <div style={{ height: '1px', background: D.border, margin: '4px 0' }} />
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}><span style={{ color: D.text }}>Order total</span><span style={{ color: D.text }}>{formatCurrency(order.total)}</span></div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600 }}><span style={{ color: '#C4622D' }}>My commission</span><span style={{ color: '#C4622D' }}>{formatCurrency(order.commission)}</span></div>
-                            {order.supplierPayouts.map(p => (
-                              <div key={p.supplierId} style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: D.muted }}>{p.supplierName}</span><span style={{ color: D.muted }}>{formatCurrency(p.amount)}</span></div>
-                            ))}
-                          </div>
-                        </div>
+                        {(() => {
+                          const squarePct     = Math.round(order.total * 0.029 * 100) / 100
+                          const squareFlat    = 0.30
+                          const squareTotal   = Math.round((squarePct + squareFlat) * 100) / 100
+                          const supplierTotal = order.supplierPayouts.reduce((s, p) => s + p.amount, 0)
+                          // Service fee breakdown: coverage of Square on food+delivery, plus $3.50 surcharge
+                          const sqCoverage    = Math.round(((order.subtotal + order.deliveryFee) * 0.029 + 0.30) * 100) / 100
+                          const surcharge     = Math.round((order.serviceFee - sqCoverage) * 100) / 100
+
+                          return (
+                            <div style={{ background: 'rgba(196,98,45,0.06)', border: '1px solid rgba(196,98,45,0.12)', borderRadius: '12px', padding: '20px' }}>
+                              <p className="label-upper" style={{ color: D.faint, marginBottom: '14px' }}>Financials</p>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
+
+                                {/* What customer paid */}
+                                <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: D.faint }}>What customer paid</p>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: D.muted }}>Food subtotal</span><span style={{ color: D.text }}>{formatCurrency(order.subtotal)}</span></div>
+                                {order.deliveryFee > 0 && (
+                                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: D.muted }}>Delivery fee</span><span style={{ color: D.text }}>{formatCurrency(order.deliveryFee)}</span></div>
+                                )}
+                                {order.serviceFee > 0 ? (
+                                  <>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: D.muted }}>Service fee</span><span style={{ color: D.text }}>{formatCurrency(order.serviceFee)}</span></div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: '14px' }}><span style={{ color: D.faint }}>└ Square coverage (2.9% + $0.30)</span><span style={{ color: D.faint }}>{formatCurrency(sqCoverage)}</span></div>
+                                    {surcharge > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: '14px' }}><span style={{ color: D.faint }}>└ Your surcharge</span><span style={{ color: D.faint }}>{formatCurrency(surcharge)}</span></div>}
+                                  </>
+                                ) : (
+                                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: D.muted }}>Service fee</span><span style={{ color: D.faint }}>$0.00 (test order)</span></div>
+                                )}
+                                <div style={{ height: '1px', background: D.border, margin: '2px 0' }} />
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}><span style={{ color: D.text }}>Customer total</span><span style={{ color: D.text }}>{formatCurrency(order.total)}</span></div>
+
+                                {/* Where it went */}
+                                <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: D.faint, marginTop: '8px' }}>Where it went</p>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: D.muted }}>Square (2.9% × {formatCurrency(order.total)})</span><span style={{ color: D.text }}>({formatCurrency(squarePct)})</span></div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: D.muted }}>Square flat fee</span><span style={{ color: D.text }}>($0.30)</span></div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600 }}><span style={{ color: D.muted }}>Total Square fee</span><span style={{ color: D.text }}>({formatCurrency(squareTotal)})</span></div>
+                                {order.supplierPayouts.map(p => (
+                                  <div key={p.supplierId} style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: D.muted }}>{p.supplierName}</span><span style={{ color: D.text }}>({formatCurrency(p.amount)})</span></div>
+                                ))}
+                                <div style={{ height: '1px', background: D.border, margin: '2px 0' }} />
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '14px' }}>
+                                  <span style={{ color: '#C4622D' }}>Your commission</span>
+                                  <span style={{ color: '#C4622D' }}>{formatCurrency(order.commission)}</span>
+                                </div>
+                              </div>
+                            </div>
+                          )
+                        })()}
 
                         {/* Notes */}
                         {order.specialInstructions && (
