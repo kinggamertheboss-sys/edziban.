@@ -219,17 +219,14 @@ function MenuPageInner() {
                                   color: '#1A0F0A', marginBottom: '8px',
                                   lineHeight: 1.15,
                                 }}>{item.name}</h2>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px' }}>
-                                  <span style={{ fontWeight: 700, fontSize: '17px', color: '#C4622D' }}>
-                                    {formatCurrency(item.price)}
-                                  </span>
-                                  <span style={{ fontSize: '12px', color: '#9E7A52' }}>{item.unit}</span>
-                                  <span style={{
-                                    fontSize: '10.5px', fontWeight: 700,
-                                    background: '#F0E4D0', color: '#6B4C3B',
-                                    padding: '3px 10px', borderRadius: '100px',
-                                    letterSpacing: '0.05em',
-                                  }}>{item.serves}</span>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                                    <span style={{ fontWeight: 700, fontSize: '17px', color: '#C4622D' }}>
+                                      {formatCurrency(item.price)}
+                                    </span>
+                                    <span style={{ fontSize: '12px', color: '#9E7A52' }}>{item.unit}</span>
+                                  </div>
+                                  <span style={{ fontSize: '11px', color: '#6B4C3B', letterSpacing: '0.01em' }}>{item.serves}</span>
                                 </div>
                               </div>
 
