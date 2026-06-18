@@ -359,8 +359,10 @@ export async function POST(req: NextRequest) {
       status: p?.status,
     })
   } catch (error: unknown) {
-    // Log the full error server-side only — never send internal details to the client
-    console.error('[SQUARE] Payment error:', error)
+    const err = error as { statusCode?: number; message?: string; errors?: unknown; body?: unknown }
+    console.error('[SQUARE] Payment error — statusCode:', err?.statusCode)
+    console.error('[SQUARE] Payment error — message:', err?.message)
+    console.error('[SQUARE] Payment error — errors:', JSON.stringify(err?.errors ?? err?.body ?? error))
     return NextResponse.json({ error: 'Payment could not be processed. Please try again.' }, { status: 500 })
   }
 }
