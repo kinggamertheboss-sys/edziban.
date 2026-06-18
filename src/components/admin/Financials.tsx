@@ -134,13 +134,16 @@ export default function Financials({ orders, paidPayouts }: FinancialsProps) {
     orders.filter(o => inPeriod(o.createdAt) && o.status !== 'cancelled'),
   [orders, month, year])
 
-  const subtotalRevenue    = periodOrders.reduce((s, o) => s + o.subtotal, 0)
+  const foodRevenue        = periodOrders.reduce((s, o) => s + o.subtotal, 0)
   const deliveryRevenue    = periodOrders.reduce((s, o) => s + o.deliveryFee, 0)
-  const serviceFees        = periodOrders.reduce((s, o) => s + o.serviceFee, 0)
-  const totalGrossRevenue  = subtotalRevenue + deliveryRevenue + serviceFees
+  const serviceCharges     = periodOrders.reduce((s, o) => s + o.serviceFee, 0)
+  const totalGrossRevenue  = periodOrders.reduce((s, o) => s + o.total, 0) // = food + delivery + service
   const supplierCosts      = periodOrders.reduce((s, o) => s + o.supplierPayouts.reduce((ss, p) => ss + p.amount, 0), 0)
-  const totalCOGS          = supplierCosts + serviceFees
-  const grossProfit        = totalGrossRevenue - totalCOGS
+  // grossProfit = sum of commissions — already calculated server-side as (total - squareFee - suppliers)
+  const grossProfit        = periodOrders.reduce((s, o) => s + o.commission, 0)
+  // actual Square fee = what's left after suppliers and commission
+  const squareProcessingFees = Math.max(0, Math.round((totalGrossRevenue - grossProfit - supplierCosts) * 100) / 100)
+  const totalCOGS          = supplierCosts + squareProcessingFees
 
   // Period expenses from manual log
   const periodExpenses     = expenses.filter(e => {
@@ -199,9 +202,12 @@ export default function Financials({ orders, paidPayouts }: FinancialsProps) {
 
   // ── Cash Flow Statement ────────────────────────────────────────────────
 
-  const cfCashIn = periodOrders
-    .filter(o => ['delivered', 'reviewed'].includes(o.status))
-    .reduce((s, o) => s + o.total, 0)
+  const cfDeliveredOrders = periodOrders.filter(o => ['delivered', 'reviewed'].includes(o.status))
+  const cfCashIn          = cfDeliveredOrders.reduce((s, o) => s + o.total, 0)
+  const cfSquareFees      = cfDeliveredOrders.reduce((s, o) => {
+    const sup = o.supplierPayouts.reduce((ss, p) => ss + p.amount, 0)
+    return s + Math.max(0, Math.round((o.total - o.commission - sup) * 100) / 100)
+  }, 0)
 
   const cfPaidSuppliers = paidPayouts
     .filter(p => {
@@ -209,11 +215,7 @@ export default function Financials({ orders, paidPayouts }: FinancialsProps) {
     })
     .reduce((s, p) => s + p.amount, 0)
 
-  const cfServiceFees = periodOrders
-    .filter(o => ['delivered', 'reviewed'].includes(o.status))
-    .reduce((s, o) => s + o.serviceFee, 0)
-
-  const cfNetOperating = cfCashIn - cfPaidSuppliers - cfServiceFees
+  const cfNetOperating = cfCashIn - cfSquareFees - cfPaidSuppliers
 
   // ── Print ───────────────────────────────────────────────────────────────
 
@@ -266,15 +268,15 @@ export default function Financials({ orders, paidPayouts }: FinancialsProps) {
   <p style="font-size:11px;color:#666;margin-bottom:12px;">For the month ended ${MONTHS[month]} ${year} &nbsp;·&nbsp; ${orderCount} order${orderCount !== 1 ? 's' : ''}</p>
 
   <div class="section-head">Revenue</div>
-  <div class="row indent"><span>Food Sales</span><span>${formatCurrency(subtotalRevenue)}</span></div>
-  <div class="row indent"><span>Delivery Fees</span><span>${formatCurrency(deliveryRevenue)}</span></div>
-  <div class="row indent"><span>Service Fees Collected</span><span>${formatCurrency(serviceFees)}</span></div>
+  <div class="row indent"><span>Food Sales</span><span>${formatCurrency(foodRevenue)}</span></div>
+  <div class="row indent"><span>Delivery Revenue</span><span>${formatCurrency(deliveryRevenue)}</span></div>
+  <div class="row indent"><span>Service Charges Collected</span><span>${formatCurrency(serviceCharges)}</span></div>
   <div class="row bold"><span>Total Revenue</span><span>${formatCurrency(totalGrossRevenue)}</span></div>
 
-  <div class="section-head">Cost of Goods Sold</div>
+  <div class="section-head">Cost of Revenue</div>
   <div class="row indent"><span>Supplier Costs</span><span>(${formatCurrency(supplierCosts)})</span></div>
-  <div class="row indent"><span>Square Service Fees</span><span>(${formatCurrency(serviceFees)})</span></div>
-  <div class="row bold"><span>Total COGS</span><span>(${formatCurrency(totalCOGS)})</span></div>
+  <div class="row indent"><span>Square Processing Fees</span><span>(${formatCurrency(squareProcessingFees)})</span></div>
+  <div class="row bold"><span>Total Cost of Revenue</span><span>(${formatCurrency(totalCOGS)})</span></div>
 
   <div class="row divider"><span>Gross Profit</span><span>${formatCurrency(grossProfit)}</span></div>
   <p class="note">Gross Margin: ${grossMarginPct}%</p>
@@ -318,9 +320,9 @@ export default function Financials({ orders, paidPayouts }: FinancialsProps) {
   <p style="font-size:11px;color:#666;margin-bottom:12px;">For the month ended ${MONTHS[month]} ${year}</p>
 
   <div class="section-head">Operating Activities</div>
-  <div class="row indent"><span>Cash collected from customers</span><span>${formatCurrency(cfCashIn)}</span></div>
+  <div class="row indent"><span>Cash received from customers</span><span>${formatCurrency(cfCashIn)}</span></div>
+  <div class="row indent"><span>Square processing fees</span><span>(${formatCurrency(cfSquareFees)})</span></div>
   <div class="row indent"><span>Paid to suppliers</span><span>(${formatCurrency(cfPaidSuppliers)})</span></div>
-  <div class="row indent"><span>Square service fees paid</span><span>(${formatCurrency(cfServiceFees)})</span></div>
   <div class="row divider" style="margin-top:8px;"><span>Net Cash from Operations</span><span style="color:${cfNetOperating >= 0 ? '#16a34a' : '#dc2626'}">${formatCurrency(cfNetOperating)}</span></div>
 
   <div class="section-head" style="margin-top:16px;">Investing Activities</div>
@@ -415,15 +417,15 @@ export default function Financials({ orders, paidPayouts }: FinancialsProps) {
 
           <div style={{ borderTop: `1px solid ${D.border}`, paddingTop: '16px' }}>
             <SectionHead label="Revenue" />
-            <Row label="Food Sales" value={formatCurrency(subtotalRevenue)} indent />
-            <Row label="Delivery Fees" value={formatCurrency(deliveryRevenue)} indent />
-            <Row label="Service Fees Collected" value={formatCurrency(serviceFees)} indent />
+            <Row label="Food Sales" value={formatCurrency(foodRevenue)} indent />
+            <Row label="Delivery Revenue" value={formatCurrency(deliveryRevenue)} indent />
+            <Row label="Service Charges Collected" value={formatCurrency(serviceCharges)} indent />
             <Row label="Total Revenue" value={formatCurrency(totalGrossRevenue)} bold divider />
 
-            <SectionHead label="Cost of Goods Sold" />
+            <SectionHead label="Cost of Revenue" />
             <Row label="Supplier Costs" value={`(${formatCurrency(supplierCosts)})`} indent />
-            <Row label="Square Service Fees" value={`(${formatCurrency(serviceFees)})`} indent />
-            <Row label="Total COGS" value={`(${formatCurrency(totalCOGS)})`} bold divider />
+            <Row label="Square Processing Fees" value={`(${formatCurrency(squareProcessingFees)})`} indent />
+            <Row label="Total Cost of Revenue" value={`(${formatCurrency(totalCOGS)})`} bold divider />
 
             <div style={{ marginTop: '16px', padding: '16px', background: 'rgba(196,98,45,0.07)', borderRadius: '12px' }}>
               <Row label="Gross Profit" value={formatCurrency(grossProfit)} bold accent />
