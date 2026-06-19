@@ -220,13 +220,18 @@ export default function Inbox() {
                   <span style={{ width: '7px', height: '7px', borderRadius: '50%', flexShrink: 0, background: isRead ? 'transparent' : '#C4622D', border: isRead ? `1.5px solid ${D.border}` : 'none', transition: 'background 0.2s' }} />
 
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '4px' }}>
-                      <span style={{ fontSize: '13.5px', fontWeight: isRead ? 500 : 700, color: D.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {senderName(msg.fromAddress)}
-                      </span>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '3px' }}>
+                      <div style={{ minWidth: 0 }}>
+                        <span style={{ fontSize: '13.5px', fontWeight: isRead ? 500 : 700, color: D.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+                          {senderName(msg.fromAddress)}
+                        </span>
+                        <span style={{ fontSize: '11px', color: D.faint, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+                          {msg.fromAddress}
+                        </span>
+                      </div>
                       <span style={{ fontSize: '11px', color: D.faint, flexShrink: 0 }}>{formatDate(msg.receivedTime)}</span>
                     </div>
-                    <p style={{ fontSize: '13px', fontWeight: isRead ? 400 : 600, color: isRead ? D.muted : D.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '3px' }}>
+                    <p style={{ fontSize: '13px', fontWeight: isRead ? 400 : 600, color: isRead ? D.muted : D.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '4px', marginBottom: '2px' }}>
                       {msg.subject || '(no subject)'}
                     </p>
                     {msg.summary && (
@@ -249,32 +254,34 @@ export default function Inbox() {
                 {/* Email content */}
                 {isOpen && (
                   <div style={{ borderTop: `1px solid ${D.border}`, padding: '24px 24px 20px' }}>
+
+                    {/* From / To / Date — always shown from list data */}
+                    <div style={{ marginBottom: '20px', padding: '16px 20px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: `1px solid ${D.border}` }}>
+                      <p style={{ fontSize: '15px', fontWeight: 700, color: D.text, marginBottom: '14px', letterSpacing: '-0.01em' }}>{msg.subject || '(no subject)'}</p>
+                      {[
+                        { l: 'From', v: msg.fromAddress },
+                        { l: 'To',   v: msg.toAddress },
+                        { l: 'Date', v: formatDate(msg.receivedTime) },
+                      ].map(row => (
+                        <div key={row.l} style={{ display: 'flex', gap: '14px', fontSize: '13px', marginBottom: '6px', alignItems: 'flex-start' }}>
+                          <span style={{ width: '36px', flexShrink: 0, color: D.faint, fontWeight: 600 }}>{row.l}</span>
+                          <span style={{ color: D.muted, wordBreak: 'break-all', lineHeight: 1.5 }}>{row.v || '—'}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Body */}
                     {isLoadingContent ? (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: D.faint, fontSize: '13px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: D.faint, fontSize: '13px', padding: '16px 0' }}>
                         <svg style={{ animation: 'spin 1s linear infinite' }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                           <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round"/>
                           <circle cx="12" cy="12" r="10" strokeOpacity="0.2"/>
                         </svg>
-                        Loading email...
+                        Loading message...
                       </div>
                     ) : content ? (
                       <>
-                        {/* Meta */}
-                        <div style={{ marginBottom: '20px', padding: '14px 18px', background: 'rgba(255,255,255,0.03)', borderRadius: '10px', border: `1px solid ${D.border}` }}>
-                          {[
-                            { l: 'From', v: content.fromAddress },
-                            { l: 'To', v: content.toAddress },
-                            { l: 'Date', v: formatDate(content.receivedTime) },
-                          ].map(row => (
-                            <div key={row.l} style={{ display: 'flex', gap: '12px', fontSize: '12.5px', marginBottom: '6px' }}>
-                              <span style={{ width: '38px', flexShrink: 0, color: D.faint }}>{row.l}</span>
-                              <span style={{ color: D.muted, wordBreak: 'break-all' }}>{row.v}</span>
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* Body */}
-                        {content.htmlBody ? (
+                        {(content.htmlBody) ? (
                           <iframe
                             srcDoc={content.htmlBody}
                             sandbox="allow-same-origin"
@@ -288,15 +295,15 @@ export default function Inbox() {
                             }}
                           />
                         ) : (
-                          <div style={{ fontSize: '14px', color: D.muted, lineHeight: 1.8, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                            {content.content || '(empty)'}
+                          <div style={{ fontSize: '14px', color: D.muted, lineHeight: 1.8, whiteSpace: 'pre-wrap', wordBreak: 'break-word', padding: '4px 0' }}>
+                            {content.content || msg.summary || '(no content)'}
                           </div>
                         )}
 
                         {/* Reply link */}
                         <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: `1px solid ${D.border}`, display: 'flex', justifyContent: 'flex-end' }}>
                           <a
-                            href={`https://mail.zoho.com/zm/#mail/folder/inbox`}
+                            href="https://mail.zoho.com/zm/#mail/folder/inbox"
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.04em', padding: '9px 20px', borderRadius: '100px', textDecoration: 'none', background: '#C4622D', color: '#FFF8F0', boxShadow: '0 4px 14px rgba(196,98,45,0.3)' }}
@@ -306,7 +313,7 @@ export default function Inbox() {
                         </div>
                       </>
                     ) : (
-                      <p style={{ fontSize: '13px', color: '#EF4444' }}>Failed to load email content.</p>
+                      <p style={{ fontSize: '13px', color: '#EF4444' }}>Failed to load message body.</p>
                     )}
                   </div>
                 )}
