@@ -36,6 +36,11 @@ export default function Inbox() {
   const [loadingMore, setLoadingMore] = useState(false)
   const [notConfigured, setNotConfigured] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
+  const [replyOpen, setReplyOpen] = useState<string | null>(null)
+  const [replyBody, setReplyBody] = useState('')
+  const [replySending, setReplySending] = useState(false)
+  const [replySent, setReplySent] = useState<Set<string>>(new Set())
+  const [replyError, setReplyError] = useState<string | null>(null)
 
   const fetchEmails = useCallback(async (start: number, replace: boolean) => {
     try {
@@ -80,6 +85,31 @@ export default function Inbox() {
       console.error('[INBOX] content fetch failed:', e)
     } finally {
       setContentLoading(null)
+    }
+  }
+
+  async function handleSendReply(msg: ZohoMessage) {
+    if (!replyBody.trim()) return
+    setReplySending(true)
+    setReplyError(null)
+    try {
+      const subject = msg.subject?.startsWith('Re:') ? msg.subject : `Re: ${msg.subject}`
+      const r = await fetch('/api/admin/inbox/reply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to: msg.fromAddress, subject, content: replyBody }),
+      })
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}))
+        throw new Error(d.error ?? `Failed (${r.status})`)
+      }
+      setReplySent(prev => new Set(prev).add(msg.messageId))
+      setReplyOpen(null)
+      setReplyBody('')
+    } catch (e) {
+      setReplyError(String(e))
+    } finally {
+      setReplySending(false)
     }
   }
 
@@ -300,16 +330,64 @@ export default function Inbox() {
                           </div>
                         )}
 
-                        {/* Reply link */}
-                        <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: `1px solid ${D.border}`, display: 'flex', justifyContent: 'flex-end' }}>
-                          <a
-                            href="https://mail.zoho.com/zm/#mail/folder/inbox"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.04em', padding: '9px 20px', borderRadius: '100px', textDecoration: 'none', background: '#C4622D', color: '#FFF8F0', boxShadow: '0 4px 14px rgba(196,98,45,0.3)' }}
-                          >
-                            Reply in Zoho Mail
-                          </a>
+                        {/* Reply */}
+                        <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: `1px solid ${D.border}` }}>
+                          {replySent.has(msg.messageId) ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#22C55E' }}>
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                              Reply sent
+                            </div>
+                          ) : replyOpen === msg.messageId ? (
+                            <div>
+                              <div style={{ marginBottom: '10px', fontSize: '12px', color: D.faint }}>
+                                <span style={{ fontWeight: 600, color: D.muted }}>To: </span>{msg.fromAddress}
+                              </div>
+                              <textarea
+                                value={replyBody}
+                                onChange={e => setReplyBody(e.target.value)}
+                                placeholder="Write your reply..."
+                                rows={5}
+                                style={{
+                                  width: '100%', boxSizing: 'border-box',
+                                  background: 'rgba(255,255,255,0.04)', border: `1px solid rgba(196,98,45,0.3)`,
+                                  borderRadius: '10px', padding: '14px 16px',
+                                  fontSize: '14px', color: D.text, lineHeight: 1.7,
+                                  resize: 'vertical', outline: 'none', fontFamily: 'inherit',
+                                }}
+                              />
+                              {replyError && (
+                                <p style={{ fontSize: '12px', color: '#EF4444', marginTop: '6px' }}>{replyError}</p>
+                              )}
+                              <div style={{ display: 'flex', gap: '10px', marginTop: '12px', justifyContent: 'flex-end' }}>
+                                <button
+                                  onClick={() => { setReplyOpen(null); setReplyBody(''); setReplyError(null) }}
+                                  style={{ fontSize: '12px', fontWeight: 700, padding: '9px 20px', borderRadius: '100px', border: `1px solid ${D.border}`, background: 'transparent', color: D.muted, cursor: 'pointer' }}
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={() => handleSendReply(msg)}
+                                  disabled={replySending || !replyBody.trim()}
+                                  style={{ fontSize: '12px', fontWeight: 700, padding: '9px 22px', borderRadius: '100px', border: 'none', background: '#C4622D', color: '#FFF8F0', cursor: replySending || !replyBody.trim() ? 'not-allowed' : 'pointer', opacity: replySending || !replyBody.trim() ? 0.6 : 1, boxShadow: '0 4px 14px rgba(196,98,45,0.3)', display: 'flex', alignItems: 'center', gap: '7px' }}
+                                >
+                                  {replySending ? (
+                                    <>
+                                      <svg style={{ animation: 'spin 1s linear infinite' }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round"/><circle cx="12" cy="12" r="10" strokeOpacity="0.2"/></svg>
+                                      Sending...
+                                    </>
+                                  ) : 'Send Reply'}
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => { setReplyOpen(msg.messageId); setReplyBody(''); setReplyError(null) }}
+                              style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.04em', padding: '9px 22px', borderRadius: '100px', border: 'none', background: '#C4622D', color: '#FFF8F0', cursor: 'pointer', boxShadow: '0 4px 14px rgba(196,98,45,0.3)', display: 'flex', alignItems: 'center', gap: '8px' }}
+                            >
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>
+                              Reply
+                            </button>
+                          )}
                         </div>
                       </>
                     ) : (

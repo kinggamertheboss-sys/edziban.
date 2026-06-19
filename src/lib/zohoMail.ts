@@ -105,3 +105,22 @@ export async function markAsRead(messageId: string): Promise<void> {
     body: JSON.stringify({ mode: 'markAsRead', messageId: [messageId] }),
   })
 }
+
+export async function sendReply(to: string, subject: string, content: string): Promise<void> {
+  const [token, accountId] = await Promise.all([getToken(), getAccountId()])
+  const r = await fetch(`${MAIL_API}/accounts/${accountId}/messages`, {
+    method: 'POST',
+    headers: { Authorization: `Zoho-oauthtoken ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      fromAddress: process.env.ADMIN_EMAIL ?? 'admin@edzibancatering.com',
+      toAddress: to,
+      subject,
+      content,
+      mailFormat: 'plaintext',
+    }),
+  })
+  if (!r.ok) {
+    const d = await r.json().catch(() => ({}))
+    throw new Error(d?.data?.errorMessage ?? `Zoho send failed: ${r.status}`)
+  }
+}
