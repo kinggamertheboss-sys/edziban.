@@ -101,7 +101,7 @@ export default function CorporatePage() {
               </p>
 
               <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                <Link href="/menu?type=corporate" style={{
+                <Link href="/order?type=corporate" style={{
                   display: 'inline-flex', alignItems: 'center', gap: '12px',
                   background: '#C4622D', color: '#FFF8F0',
                   fontWeight: 600, fontSize: '13px',
@@ -111,22 +111,25 @@ export default function CorporatePage() {
                   boxShadow: '0 8px 40px rgba(196,98,45,0.32)',
                   transition: 'transform 0.2s',
                 }}>
-                  Place a corporate order
+                  Order Now
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
                   </svg>
                 </Link>
-                <Link href="/menu" style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '12px',
+                <a href="tel:+16175550000" style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '10px',
                   border: '1px solid rgba(196,98,45,0.4)', color: '#C4622D',
                   fontWeight: 600, fontSize: '13px',
                   letterSpacing: '0.04em',
-                  padding: '16px 36px', borderRadius: '100px',
+                  padding: '16px 28px', borderRadius: '100px',
                   textDecoration: 'none',
                   transition: 'border-color 0.2s',
                 }}>
-                  Browse the menu
-                </Link>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z"/>
+                  </svg>
+                  Call or Text
+                </a>
               </div>
             </div>
           </div>
@@ -296,11 +299,11 @@ export default function CorporatePage() {
                 </h2>
                 <p style={{ fontSize: '15px', lineHeight: 1.8, color: '#6B4C3B', maxWidth: '400px' }}>
                   Go through the menu, pick your quantities, and place the order.
-                  We confirm over WhatsApp or SMS within 24 hours with delivery or pickup details.
+                  We confirm over phone or SMS within 24 hours with delivery or pickup details.
                   No back-and-forth, no custom quote forms.
                 </p>
                 <div style={{ marginTop: '36px' }}>
-                  <Link href="/menu?type=corporate" style={{
+                  <Link href="/order?type=corporate" style={{
                     display: 'inline-flex', alignItems: 'center', gap: '10px',
                     background: '#C4622D', color: '#FFF8F0',
                     fontWeight: 600, fontSize: '13px', letterSpacing: '0.04em',
@@ -308,7 +311,7 @@ export default function CorporatePage() {
                     textDecoration: 'none',
                     boxShadow: '0 6px 28px rgba(196,98,45,0.3)',
                   }}>
-                    Start your order
+                    Order Now
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
                     </svg>

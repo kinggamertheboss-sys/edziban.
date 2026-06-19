@@ -21,6 +21,7 @@ const ALLOWED_ORDER = new Set([
   'customerName', 'customerPhone', 'customerEmail', 'eventType', 'guestCount',
   'items', 'fulfillmentType', 'address', 'distanceRange', 'requestedDate',
   'requestedTime', 'specialInstructions', 'subtotal', 'serviceFee', 'deliveryFee', 'total',
+  'discountCode', 'discountAmount',
   'clientType', 'orgName', 'contactPerson', 'billingEmail', 'poNumber', 'requestInvoice',
 ])
 const ALLOWED_ITEM  = new Set(['itemId', 'name', 'quantity', 'unitPrice'])
@@ -115,7 +116,8 @@ export async function POST(req: NextRequest) {
     // ── Sanitize all order fields ─────────────────────────────────────────
     const rawOrder = order as typeof order & {
       clientType?: string; orgName?: string; contactPerson?: string;
-      billingEmail?: string; poNumber?: string; requestInvoice?: unknown
+      billingEmail?: string; poNumber?: string; requestInvoice?: unknown;
+      discountCode?: string; discountAmount?: number;
     }
     const clean = {
       customerName:        sanitizeText(order.customerName, 100),
@@ -139,6 +141,8 @@ export async function POST(req: NextRequest) {
       billingEmail:        sanitizeEmail(rawOrder.billingEmail),
       poNumber:            sanitizeText(rawOrder.poNumber, 100),
       requestInvoice:      rawOrder.requestInvoice === true,
+      discountCode:        sanitizeText(rawOrder.discountCode ?? '', 30).toUpperCase().trim(),
+      discountAmount:      sanitizeAmount(rawOrder.discountAmount ?? 0),
       items: (Array.isArray(order.items) ? order.items : []).slice(0, 50).map(i => ({
         itemId:    sanitizeText(i.itemId, 60),
         name:      sanitizeText(i.name, 100),
@@ -174,15 +178,37 @@ export async function POST(req: NextRequest) {
     const serverServiceFee  = getServiceFee(serverSubtotal, serverDeliveryFee)
     const serverTotal       = Math.round((serverSubtotal + serverServiceFee + serverDeliveryFee) * 100) / 100
 
+    // Validate discount code server-side if one was submitted
+    let serverDiscountAmount = 0
+    if (clean.discountCode) {
+      const db = getAdminClient()
+      const { data: codeData } = await db
+        .from('discount_codes')
+        .select('amount, is_active, single_use')
+        .eq('code', clean.discountCode)
+        .single()
+
+      if (codeData && codeData.is_active) {
+        if (codeData.single_use) {
+          const { data: used } = await db
+            .from('discount_code_uses')
+            .select('id')
+            .eq('code', clean.discountCode)
+            .eq('customer_email', clean.customerEmail)
+            .maybeSingle()
+          if (!used) {
+            serverDiscountAmount = Math.min(Number(codeData.amount), Math.max(0, serverTotal - 1.00))
+          }
+        } else {
+          serverDiscountAmount = Math.min(Number(codeData.amount), Math.max(0, serverTotal - 1.00))
+        }
+      }
+    }
+    const serverNetTotal = Math.round((serverTotal - serverDiscountAmount) * 100) / 100
+
     // Allow $0.02 tolerance for floating-point rounding between client and server
-    if (Math.abs(amount - serverTotal) > 0.02) {
-      console.warn(`[SECURITY] Price mismatch — client: $${amount}, server: $${serverTotal}, IP: ${ip}`)
-      // OWASP A09: Alert admin of a potential price-manipulation attempt
-      sendWhatsApp(
-        EDZIBAN_CONFIG.myWhatsapp,
-        `SECURITY ALERT: Price manipulation attempt detected.\nClient sent: $${amount}\nServer calculated: $${serverTotal}\nIP: ${ip}\nItems: ${(clean.items ?? []).map((i: { name: string; quantity: number }) => `${i.name} x${i.quantity}`).join(', ')}`,
-        'admin'
-      ).catch(() => {})
+    if (Math.abs(amount - serverNetTotal) > 0.02) {
+      console.warn(`[SECURITY] Price mismatch — client: $${amount}, server: $${serverNetTotal}, IP: ${ip}`)
       return NextResponse.json({ error: 'Payment amount does not match order total' }, { status: 400 })
     }
 
@@ -195,8 +221,8 @@ export async function POST(req: NextRequest) {
       sourceId,
       idempotencyKey: randomUUID(),
       amountMoney: {
-        // Use server-calculated total — never the client-sent amount
-        amount: BigInt(Math.round(serverTotal * 100)),
+        // Use server-calculated net total (after discount) — never the client-sent amount
+        amount: BigInt(Math.round(serverNetTotal * 100)),
         currency: (currency ?? 'USD') as 'USD',
       },
       locationId: process.env.SQUARE_LOCATION_ID!,
@@ -229,8 +255,8 @@ export async function POST(req: NextRequest) {
 
     // Owner commission = everything left after paying suppliers and Square.
     // Delivery fee and $4 flat markup are 100% owner income (single-person business).
-    // Square charges on the full total (including service fee), so use serverTotal
-    const squareFee = Math.round((serverTotal * 0.029 + 0.30) * 100) / 100
+    // Square charges on the net total (after discount), so use serverNetTotal
+    const squareFee = Math.round((serverNetTotal * 0.029 + 0.30) * 100) / 100
     const supplierPayoutsTotal = supplierPayouts.reduce((s, p) => s + p.amount, 0)
     const commission = Math.round((serverTotal - supplierPayoutsTotal - squareFee) * 100) / 100
 
@@ -254,7 +280,9 @@ export async function POST(req: NextRequest) {
       subtotal: serverSubtotal,
       processing_fee: serverServiceFee,
       delivery_fee: serverDeliveryFee,
-      total: serverTotal,
+      discount_code: clean.discountCode || null,
+      discount_amount: serverDiscountAmount,
+      total: serverNetTotal,
       commission,
       status: 'pending',
       payment_id: paymentId,
@@ -307,6 +335,15 @@ export async function POST(req: NextRequest) {
           }))
         )
       }
+
+      // Record discount code use so it can't be reused by the same email
+      if (clean.discountCode && serverDiscountAmount > 0) {
+        await db.from('discount_code_uses').insert({
+          code: clean.discountCode,
+          customer_email: clean.customerEmail,
+          order_id: orderNumber,
+        })
+      }
     }
 
     // ── Fire order-received notifications server-side ─────────────────────
@@ -320,7 +357,7 @@ export async function POST(req: NextRequest) {
       subtotal:      serverSubtotal,
       serviceFee:    serverServiceFee,
       deliveryFee:   serverDeliveryFee,
-      total:         serverTotal,
+      total:         serverNetTotal,
       fulfillmentType: clean.fulfillmentType as 'pickup' | 'delivery',
       address:       clean.address,
       requestedDate: clean.requestedDate,
@@ -332,7 +369,7 @@ export async function POST(req: NextRequest) {
     Promise.all([
       sendSMS(
         clean.customerPhone,
-        `Edziban: Hi ${clean.customerName}, order received. ${itemsText}. Total: $${serverTotal.toFixed(2)}. ${clean.fulfillmentType === 'delivery' ? 'Delivery' : 'Pickup'} on ${clean.requestedDate}. We confirm within 24hrs.`,
+        `Edziban: Hi ${clean.customerName}, order received. ${itemsText}. Total: $${serverNetTotal.toFixed(2)}. ${clean.fulfillmentType === 'delivery' ? 'Delivery' : 'Pickup'} on ${clean.requestedDate}. We confirm within 24hrs.`,
         'customer'
       ),
       sendEmail(
@@ -343,7 +380,7 @@ export async function POST(req: NextRequest) {
       ),
       sendWhatsApp(
         EDZIBAN_CONFIG.myWhatsapp,
-        `NEW ORDER ${orderNumber}\nCustomer: ${clean.customerName}\nPhone: ${clean.customerPhone}\nItems: ${itemsText}\nTotal: $${serverTotal.toFixed(2)}\nType: ${clean.fulfillmentType}\n${clean.address ? `Address: ${clean.address}\n` : ''}Date: ${clean.requestedDate}, ${getTimeLabel(clean.requestedTime)}${clean.specialInstructions ? `\nNotes: ${clean.specialInstructions}` : ''}`,
+        `NEW ORDER ${orderNumber}\nCustomer: ${clean.customerName}\nPhone: ${clean.customerPhone}\nItems: ${itemsText}\nTotal: $${serverNetTotal.toFixed(2)}${serverDiscountAmount > 0 ? ` (discount: -$${serverDiscountAmount.toFixed(2)})` : ''}\nType: ${clean.fulfillmentType}\n${clean.address ? `Address: ${clean.address}\n` : ''}Date: ${clean.requestedDate}, ${getTimeLabel(clean.requestedTime)}${clean.specialInstructions ? `\nNotes: ${clean.specialInstructions}` : ''}`,
         'admin'
       ),
       sendEmail(

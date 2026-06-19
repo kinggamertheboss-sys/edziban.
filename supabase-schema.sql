@@ -104,6 +104,44 @@ create policy "deny all anon on vendor_payments"
   on vendor_payments for all to anon using (false);
 
 -- ---------------------------------------------------------------------------
+-- Discount code system
+-- ---------------------------------------------------------------------------
+
+create table if not exists discount_codes (
+  code        text primary key,
+  amount      numeric(10,2) not null,
+  is_active   boolean not null default true,
+  single_use  boolean not null default true,
+  created_at  timestamptz not null default now()
+);
+
+create table if not exists discount_code_uses (
+  id             uuid primary key default gen_random_uuid(),
+  code           text not null,
+  customer_email text not null,
+  order_id       text not null,
+  created_at     timestamptz not null default now(),
+  unique (code, customer_email)
+);
+
+alter table orders add column if not exists discount_code   text default null;
+alter table orders add column if not exists discount_amount numeric(10,2) not null default 0;
+
+alter table discount_codes      enable row level security;
+alter table discount_code_uses  enable row level security;
+
+create policy "deny all anon on discount_codes"
+  on discount_codes for all to anon using (false);
+
+create policy "deny all anon on discount_code_uses"
+  on discount_code_uses for all to anon using (false);
+
+-- Seed the launch code — $10 off, single use per customer, active
+insert into discount_codes (code, amount, is_active, single_use)
+values ('FIRST10', 10.00, true, true)
+on conflict (code) do nothing;
+
+-- ---------------------------------------------------------------------------
 -- Supplier Hub additions (run these after the initial schema above)
 -- ---------------------------------------------------------------------------
 

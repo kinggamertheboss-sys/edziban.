@@ -30,6 +30,11 @@ export default function PaymentPage() {
   const [cardError, setCardError] = useState('')
   const cardRef = useRef<{ tokenize: () => Promise<{ status: string; token?: string; errors?: { message: string }[] }> } | null>(null)
   const cardInitialized = useRef(false)
+  const [discountInput, setDiscountInput] = useState('')
+  const [appliedCode, setAppliedCode] = useState('')
+  const [discountAmount, setDiscountAmount] = useState(0)
+  const [discountError, setDiscountError] = useState('')
+  const [discountLoading, setDiscountLoading] = useState(false)
 
   useEffect(() => {
     if (!hydrated) return
@@ -62,6 +67,42 @@ export default function PaymentPage() {
   const deliveryFee = od.fulfillmentType === 'delivery' ? getDeliveryFee(od.distanceRange) : 0
   const serviceFee = getServiceFee(subtotal, deliveryFee)
   const total = subtotal + serviceFee + deliveryFee
+  const discountedTotal = Math.max(0, total - discountAmount)
+
+  async function handleApplyDiscount() {
+    const code = discountInput.trim().toUpperCase()
+    if (!code) return
+    if (!od.email) { setDiscountError('Please fill in your order details first.'); return }
+    setDiscountLoading(true)
+    setDiscountError('')
+    try {
+      const res = await fetch('/api/validate-discount', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, email: od.email }),
+      })
+      const data = await res.json()
+      if (data.valid) {
+        setAppliedCode(code)
+        setDiscountAmount(data.discountAmount)
+      } else {
+        setDiscountError(data.error ?? 'Invalid code')
+        setAppliedCode('')
+        setDiscountAmount(0)
+      }
+    } catch {
+      setDiscountError('Could not validate code. Try again.')
+    } finally {
+      setDiscountLoading(false)
+    }
+  }
+
+  function handleRemoveDiscount() {
+    setAppliedCode('')
+    setDiscountAmount(0)
+    setDiscountInput('')
+    setDiscountError('')
+  }
 
   async function handlePlaceOrder(e: React.FormEvent) {
     e.preventDefault()
@@ -82,7 +123,7 @@ export default function PaymentPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sourceId: result.token,
-          amount: total,
+          amount: discountedTotal,
           order: {
             customerName: od.fullName,
             customerPhone: od.phone,
@@ -100,6 +141,8 @@ export default function PaymentPage() {
             serviceFee,
             deliveryFee,
             total,
+            discountCode: appliedCode,
+            discountAmount,
             clientType: od.clientType ?? 'regular',
             orgName: od.orgName ?? '',
             contactPerson: od.contactPerson ?? '',
@@ -251,12 +294,94 @@ export default function PaymentPage() {
                         <span style={{ color: '#1A0F0A', fontWeight: 500 }}>{formatCurrency(deliveryFee)}</span>
                       </div>
                     )}
+                    {discountAmount > 0 && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                        <span style={{ color: '#22803a', fontWeight: 600 }}>Discount ({appliedCode})</span>
+                        <span style={{ color: '#22803a', fontWeight: 600 }}>−{formatCurrency(discountAmount)}</span>
+                      </div>
+                    )}
                     <div style={{ height: '1px', background: '#E2CEB8', margin: '2px 0' }} />
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ fontSize: '15px', fontWeight: 700, color: '#1A0F0A' }}>Total</span>
-                      <span style={{ fontSize: '18px', fontWeight: 700, color: '#C4622D' }}>{formatCurrency(total)}</span>
+                      <span style={{ fontSize: '18px', fontWeight: 700, color: '#C4622D' }}>{formatCurrency(discountedTotal)}</span>
                     </div>
                   </div>
+                </div>
+
+                <div style={{ height: '1px', background: '#F0E4D0' }} />
+
+                {/* Discount code */}
+                <div className="card-section" style={{ padding: '20px 32px' }}>
+                  {appliedCode ? (
+                    <div style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      background: 'rgba(34,128,58,0.07)', border: '1px solid rgba(34,128,58,0.22)',
+                      borderRadius: '10px', padding: '12px 16px',
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22803a" strokeWidth="2.5" strokeLinecap="round">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span style={{ fontSize: '13px', fontWeight: 600, color: '#22803a' }}>
+                          Code <span style={{ fontFamily: 'monospace', letterSpacing: '0.06em' }}>{appliedCode}</span> — {formatCurrency(discountAmount)} off
+                        </span>
+                      </div>
+                      <button onClick={handleRemoveDiscount} style={{
+                        background: 'none', border: 'none', cursor: 'pointer',
+                        fontSize: '12px', color: '#9E7A52', textDecoration: 'underline',
+                      }}>Remove</button>
+                    </div>
+                  ) : (
+                    <div>
+                      <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9E7A52', marginBottom: '10px' }}>
+                        Discount code
+                      </p>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <input
+                          type="text"
+                          value={discountInput}
+                          onChange={e => setDiscountInput(e.target.value.toUpperCase())}
+                          onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleApplyDiscount())}
+                          placeholder="Enter code"
+                          style={{
+                            flex: 1,
+                            border: '1px solid #E2CEB8',
+                            borderRadius: '10px',
+                            padding: '11px 14px',
+                            fontSize: '13px',
+                            fontFamily: 'monospace',
+                            letterSpacing: '0.06em',
+                            color: '#1A0F0A',
+                            background: 'white',
+                            outline: 'none',
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={handleApplyDiscount}
+                          disabled={discountLoading || !discountInput.trim()}
+                          style={{
+                            background: '#1A0F0A',
+                            color: '#FFF8F0',
+                            border: 'none',
+                            borderRadius: '10px',
+                            padding: '11px 20px',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                            letterSpacing: '0.05em',
+                            cursor: discountLoading || !discountInput.trim() ? 'not-allowed' : 'pointer',
+                            opacity: discountLoading || !discountInput.trim() ? 0.5 : 1,
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {discountLoading ? '...' : 'Apply'}
+                        </button>
+                      </div>
+                      {discountError && (
+                        <p style={{ fontSize: '12px', color: '#dc2626', marginTop: '6px' }}>{discountError}</p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ height: '1px', background: '#F0E4D0' }} />
@@ -354,7 +479,7 @@ export default function PaymentPage() {
                       Processing...
                     </>
                   ) : (
-                    `Place Order · ${formatCurrency(total)}`
+                    `Place Order · ${formatCurrency(discountedTotal)}`
                   )}
                 </button>
                 <p style={{ fontSize: '11.5px', textAlign: 'center', color: '#9E7A52', lineHeight: 1.6 }}>

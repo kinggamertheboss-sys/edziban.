@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Footer from '@/components/Footer'
+import FAQ from '@/components/FAQ'
 import { MENU_ITEMS } from '@/lib/mockData'
 import { getItemGradient, formatCurrency } from '@/lib/utils'
 
@@ -30,6 +31,36 @@ export default function HomePage() {
   return (
     <>
       <main>
+
+        {/* ────────────── PROMO BANNER ────────────── */}
+        <div style={{
+          background: '#1A0F0A',
+          padding: '10px 0',
+          textAlign: 'center',
+        }}>
+          <div className="wrap">
+            <p style={{
+              fontSize: '12.5px',
+              fontWeight: 600,
+              color: '#FFF8F0',
+              letterSpacing: '0.04em',
+            }}>
+              New to Edziban? Get{' '}
+              <span style={{ color: '#C4622D', fontWeight: 700 }}>$10 off</span>
+              {' '}your first order — use code{' '}
+              <span style={{
+                background: 'rgba(196,98,45,0.18)',
+                color: '#C4622D',
+                fontWeight: 700,
+                padding: '1px 7px',
+                borderRadius: '4px',
+                letterSpacing: '0.08em',
+                fontFamily: 'monospace',
+              }}>FIRST10</span>
+              {' '}at checkout
+            </p>
+          </div>
+        </div>
 
         {/* ────────────── HERO ────────────── */}
         <section style={{
@@ -99,8 +130,8 @@ export default function HomePage() {
                   ceremonies, birthday parties.
                 </p>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '28px', flexWrap: 'wrap' }}>
-                  <Link href="/menu" style={{
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                  <Link href="/order" style={{
                     display: 'inline-flex', alignItems: 'center', gap: '12px',
                     background: '#C4622D', color: '#FFF8F0',
                     fontWeight: 600, fontSize: '14px',
@@ -110,23 +141,26 @@ export default function HomePage() {
                     boxShadow: '0 8px 40px rgba(196,98,45,0.36)',
                     transition: 'transform 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s ease',
                   }}>
-                    View the Menu
+                    Order Now
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
                     </svg>
                   </Link>
-                  <Link href="/order" style={{
-                    fontSize: '13px',
-                    color: '#6B4C3B',
-                    textDecoration: 'none',
-                    fontWeight: 500,
+                  <a href="tel:+16175550000" style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '8px',
+                    border: '1px solid rgba(196,98,45,0.45)',
+                    color: '#C4622D',
+                    fontWeight: 600, fontSize: '13px',
                     letterSpacing: '0.04em',
-                    borderBottom: '1px solid rgba(196,98,45,0.45)',
-                    paddingBottom: '2px',
-                    transition: 'border-color 0.2s, color 0.2s',
+                    padding: '16px 28px', borderRadius: '100px',
+                    textDecoration: 'none',
+                    transition: 'border-color 0.2s, background 0.2s',
                   }}>
-                    Place an order
-                  </Link>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z"/>
+                    </svg>
+                    Call or Text
+                  </a>
                 </div>
 
                 <div style={{
@@ -228,6 +262,54 @@ export default function HomePage() {
                 </div>
               </div>
 
+            </div>
+          </div>
+        </section>
+
+        {/* ────────────── TRUST SECTION ────────────── */}
+        <section style={{
+          background: '#FFF8F0',
+          borderTop: '1px solid #E2CEB8',
+          borderBottom: '1px solid #E2CEB8',
+          padding: '40px 0',
+        }}>
+          <div className="wrap">
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '28px',
+              maxWidth: '720px',
+              margin: '0 auto',
+            }}>
+              <div style={{
+                fontFamily: 'var(--font-playfair), Georgia, serif',
+                fontSize: '52px',
+                fontWeight: 700,
+                color: '#C4622D',
+                lineHeight: 1,
+                flexShrink: 0,
+                opacity: 0.85,
+              }}>E</div>
+              <div>
+                <p style={{
+                  fontFamily: 'var(--font-playfair), Georgia, serif',
+                  fontSize: 'clamp(15px, 1.6vw, 17px)',
+                  fontWeight: 700,
+                  color: '#1A0F0A',
+                  marginBottom: '6px',
+                  lineHeight: 1.3,
+                }}>
+                  Proudly Fante-owned and operated in the Boston area
+                </p>
+                <p style={{
+                  fontSize: '13.5px',
+                  lineHeight: 1.75,
+                  color: '#6B4C3B',
+                }}>
+                  Every dish is cooked fresh to order by real Ghanaian home cooks.
+                  No shortcuts, no pre-made trays.
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -388,7 +470,7 @@ export default function HomePage() {
                 textDecoration: 'none',
                 transition: 'background 0.25s, border-color 0.25s',
               }}>
-                View full menu
+                See full menu
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
                 </svg>
@@ -499,7 +581,7 @@ export default function HomePage() {
                 cooked fresh for every table.&rdquo;
               </blockquote>
 
-              <Link href="/menu" style={{
+              <Link href="/order" style={{
                 display: 'inline-flex', alignItems: 'center', gap: '12px',
                 background: '#FFF8F0', color: '#1A0F0A',
                 fontWeight: 700, fontSize: '13px',
@@ -509,7 +591,7 @@ export default function HomePage() {
                 boxShadow: '0 12px 48px rgba(0,0,0,0.18)',
                 transition: 'transform 0.25s cubic-bezier(0.22,1,0.36,1)',
               }}>
-                Start your order
+                Order Now
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
                 </svg>
@@ -519,6 +601,7 @@ export default function HomePage() {
         </section>
 
       </main>
+      <FAQ />
       <Footer />
     </>
   )
