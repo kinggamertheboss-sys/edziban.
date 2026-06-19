@@ -60,7 +60,7 @@ function baseWrapper(content: string) {
           <td style="background:#1A0F0A;padding:24px 40px;text-align:center;">
             <p style="margin:0;font-size:12px;color:rgba(255,248,240,0.4);line-height:1.7;">
               Edziban &mdash; Ghana&apos;s finest, delivered to you.<br>
-              Greater Boston Area &bull; <a href="https://edziban.vercel.app" style="color:#C4622D;text-decoration:none;">edziban.vercel.app</a>
+              Greater Boston Area &bull; <a href="https://edzibancatering.com" style="color:#C4622D;text-decoration:none;">edzibancatering.com</a>
             </p>
           </td>
         </tr>

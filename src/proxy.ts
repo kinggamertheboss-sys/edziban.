@@ -28,6 +28,7 @@ const PROTECTED_APIS: string[] = [
   '/api/notifications/order-confirmed',
   '/api/notifications/order-ready',
   '/api/notifications/review-request',
+  '/api/admin/inbox',
 ]
 
 export async function proxy(req: NextRequest) {

@@ -9,6 +9,7 @@ import { formatCurrency, getStatusLabel, getTimeLabel } from '@/lib/utils'
 import SupplierHub from '@/components/admin/SupplierHub'
 import Financials from '@/components/admin/Financials'
 import CorporateOrders from '@/components/admin/CorporateOrders'
+import Inbox from '@/components/admin/Inbox'
 
 const D = { bg: '#0E0806', card: '#1A0F0A', border: 'rgba(255,255,255,0.07)', text: '#FFF8F0', muted: 'rgba(255,248,240,0.5)', faint: 'rgba(255,248,240,0.2)' }
 
@@ -90,7 +91,7 @@ export default function AdminDashboard() {
   const [expanded, setExpanded] = useState<string | null>(null)
   const [loadingBtn, setLoadingBtn] = useState<string | null>(null)
   const [notifLogs, setNotifLogs] = useState<Record<string, NotifLog[]>>({})
-  const [activeTab, setActiveTab] = useState<'orders' | 'payouts' | 'supplier' | 'financials' | 'corporate'>('orders')
+  const [activeTab, setActiveTab] = useState<'orders' | 'payouts' | 'supplier' | 'financials' | 'corporate' | 'inbox'>('orders')
   const [paidPayouts, setPaidPayouts] = useState<PayoutRecord[]>([])
   const [payingKey, setPayingKey] = useState<string | null>(null)
   const [payMethod, setPayMethod] = useState<'check' | 'zelle'>('zelle')
@@ -441,11 +442,11 @@ export default function AdminDashboard() {
           if (actionNeededCount > 0) tabBadge['orders'] = actionNeededCount
           if (vendorPayouts.filter(v => v.balanceDue > 0).length > 0) tabBadge['payouts'] = vendorPayouts.filter(v => v.balanceDue > 0).length
 
-          const TAB_LABELS: Record<string, string> = { orders: 'Orders', payouts: 'Payouts', supplier: 'Suppliers', financials: 'Financials', corporate: 'Corporate' }
+          const TAB_LABELS: Record<string, string> = { orders: 'Orders', payouts: 'Payouts', supplier: 'Suppliers', financials: 'Financials', corporate: 'Corporate', inbox: 'Inbox' }
 
           return (
             <div style={{ display: 'flex', gap: '4px', marginBottom: '24px', background: D.card, border: `1px solid ${D.border}`, borderRadius: '12px', padding: '4px', width: 'fit-content', flexWrap: 'wrap' }}>
-              {(['orders', 'payouts', 'supplier', 'financials', 'corporate'] as const).map(tab => {
+              {(['orders', 'payouts', 'supplier', 'financials', 'corporate', 'inbox'] as const).map(tab => {
                 const badge = tabBadge[tab]
                 const isActive = activeTab === tab
                 return (
@@ -644,6 +645,9 @@ export default function AdminDashboard() {
             orderStatuses={orderStatuses}
           />
         )}
+
+        {/* ── INBOX tab ──────────────────────────────────────────────────── */}
+        {activeTab === 'inbox' && <Inbox />}
 
         {/* ── ORDERS tab ─────────────────────────────────────────────────── */}
         {activeTab === 'orders' && (
@@ -871,7 +875,7 @@ export default function AdminDashboard() {
                           const squareTotal   = Math.round((squarePct + squareFlat) * 100) / 100
                           const supplierTotal = order.supplierPayouts.reduce((s, p) => s + p.amount, 0)
                           // Service fee breakdown: coverage of Square on food+delivery, plus $3.50 surcharge
-                          const sqCoverage    = Math.round(((order.subtotal + order.deliveryFee) * 0.029 + 0.30) * 100) / 100
+                          const sqCoverage    = Math.round((order.total * 0.029 + 0.30) * 100) / 100
                           const surcharge     = Math.round((order.serviceFee - sqCoverage) * 100) / 100
 
                           return (
