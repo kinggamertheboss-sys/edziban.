@@ -43,7 +43,7 @@ export default function Inbox() {
       if (r.status === 503) { setNotConfigured(true); setLoading(false); return }
       if (!r.ok) throw new Error(`HTTP ${r.status}`)
       const data = await r.json()
-      const list: ZohoMessage[] = data.emails ?? []
+      const list: ZohoMessage[] = Array.isArray(data.emails) ? data.emails : []
       if (replace) {
         setEmails(list)
       } else {

@@ -79,12 +79,13 @@ async function getAccountId(): Promise<string> {
 
 export async function listInboxEmails(limit = 20, start = 0): Promise<ZohoMessage[]> {
   const [token, accountId] = await Promise.all([getToken(), getAccountId()])
-  const qs = new URLSearchParams({ limit: String(limit), start: String(start), sortorder: 'desc' })
+  const qs = new URLSearchParams({ limit: String(limit), start: String(start) })
   const r = await fetch(`${MAIL_API}/accounts/${accountId}/messages/view?${qs}`, {
     headers: { Authorization: `Zoho-oauthtoken ${token}` },
   })
   const d = await r.json()
-  return (d.data ?? []) as ZohoMessage[]
+  if (!Array.isArray(d.data)) return []
+  return d.data as ZohoMessage[]
 }
 
 export async function getEmailContent(messageId: string, folderId: string): Promise<ZohoMessageContent> {
