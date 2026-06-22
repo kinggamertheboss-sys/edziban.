@@ -123,7 +123,8 @@ export default function LoyaltyRewards({ orders }: { orders: MockOrder[] }) {
           used_at: null,
           used_order_id: null,
         }, ...prev])
-        setResults(r => ({ ...r, [customer.email]: { ok: true, msg: `Sent ${data.code} — ${formatCurrency(amount)} off` } }))
+        const emailNote = data.emailSent === false ? ' (email failed — check Zoho config)' : ' · email delivered'
+        setResults(r => ({ ...r, [customer.email]: { ok: true, msg: `${data.code} — ${formatCurrency(amount)} off${emailNote}` } }))
         setAmounts(a => ({ ...a, [customer.email]: '' }))
       } else {
         setResults(r => ({ ...r, [customer.email]: { ok: false, msg: data.error ?? 'Failed to send' } }))

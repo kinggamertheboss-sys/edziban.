@@ -86,15 +86,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to create discount code' }, { status: 500 })
     }
 
-    // Send the email — non-blocking, failure doesn't roll back the code
-    sendEmail(
+    // Send the email — awaited so the serverless function doesn't exit before it fires
+    const emailResult = await sendEmail(
       customerEmail,
       `A gift from Edziban — $${amount.toFixed(2)} off your next order`,
       loyaltyRewardEmail({ customerName, discountAmount: amount, code }),
       'customer'
-    ).catch(e => console.error('[LOYALTY] Email send failed:', e))
+    ).catch(e => { console.error('[LOYALTY] Email send failed:', e); return null })
 
-    return NextResponse.json({ success: true, code })
+    console.log(`[LOYALTY] Email ${emailResult?.success ? 'sent' : 'failed'} to ${customerEmail}`)
+
+    return NextResponse.json({ success: true, code, emailSent: emailResult?.success ?? false })
   } catch (e) {
     console.error('[LOYALTY]', e)
     return NextResponse.json({ error: 'Failed to send loyalty code' }, { status: 500 })
