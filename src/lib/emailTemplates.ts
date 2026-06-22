@@ -221,3 +221,41 @@ export function orderReadyEmail(data: OrderEmailData): string {
 
   return baseWrapper(content)
 }
+
+// ── 4. Loyalty Reward ──────────────────────────────────────────────────────
+export function loyaltyRewardEmail(data: {
+  customerName: string
+  discountAmount: number
+  code: string
+}): string {
+  const content = `
+    <tr>
+      <td style="padding:36px 40px 0;">
+        <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#C4622D;">A gift from us</p>
+        <h1 style="margin:0 0 16px;font-size:28px;font-weight:700;color:#1A0F0A;letter-spacing:-0.02em;">Thank you, ${esc(data.customerName)}.</h1>
+        <p style="margin:0;font-size:15px;color:#6B4C3B;line-height:1.7;">We appreciate your continued support. As a thank-you for being such a valued customer, we&rsquo;re sending you a personal discount for your next order.</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:28px 40px;">
+        <div style="background:#1A0F0A;border-radius:16px;padding:28px 32px;text-align:center;">
+          <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,248,240,0.4);">Your exclusive code</p>
+          <p style="margin:0 0 10px;font-size:36px;font-weight:700;color:#C4622D;letter-spacing:0.08em;font-family:monospace;">${esc(data.code)}</p>
+          <div style="width:48px;height:1px;background:rgba(196,98,45,0.3);margin:0 auto 10px;"></div>
+          <p style="margin:0;font-size:22px;font-weight:700;color:#FFF8F0;font-family:Georgia,serif;">$${data.discountAmount.toFixed(2)} off your next order</p>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:0 40px 36px;">
+        <div style="background:rgba(196,98,45,0.06);border:1px solid rgba(196,98,45,0.18);border-radius:12px;padding:16px 20px;margin-bottom:24px;">
+          <p style="margin:0;font-size:13px;color:#6B4C3B;line-height:1.7;">Enter the code above at checkout on your next order. This code is exclusive to you and can only be used once.</p>
+        </div>
+        <div style="text-align:center;">
+          <a href="https://edzibancatering.com/menu" style="display:inline-block;background:#C4622D;color:#FFF8F0;font-size:14px;font-weight:700;letter-spacing:0.05em;padding:16px 40px;border-radius:100px;text-decoration:none;box-shadow:0 8px 24px rgba(196,98,45,0.28);">Order Now</a>
+        </div>
+      </td>
+    </tr>`
+
+  return baseWrapper(content)
+}

@@ -75,7 +75,8 @@ export async function POST(req: NextRequest) {
       (data as OrderEmailData & { customerEmail?: string }).customerEmail ?? '',
       `Order ${data.orderNumber} confirmed – Edziban`,
       orderConfirmedEmail(data),
-      'customer'
+      'customer',
+      data.orderNumber,
     ),
 
   ])

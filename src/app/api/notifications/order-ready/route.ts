@@ -75,7 +75,8 @@ export async function POST(req: NextRequest) {
         ? `Your Edziban order is ready for pickup! – ${data.orderNumber}`
         : `Your Edziban order is on its way! – ${data.orderNumber}`,
       orderReadyEmail(data),
-      'customer'
+      'customer',
+      data.orderNumber,
     ),
 
   ])

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -19,6 +19,15 @@ export default function Navbar() {
   }, [])
 
   useEffect(() => { setMenuOpen(false) }, [pathname])
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape' && menuOpen) setMenuOpen(false)
+  }, [menuOpen])
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [handleKeyDown])
 
   if (pathname.startsWith('/admin')) return null
 
@@ -50,11 +59,12 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav aria-label="Main navigation" className="hidden md:flex items-center gap-8">
             {[{ href: '/', label: 'Home' }, { href: '/menu', label: 'Menu' }, { href: '/corporate', label: 'Corporate' }].map(link => (
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={pathname === link.href ? 'page' : undefined}
                 style={{
                   fontSize: '13px',
                   fontWeight: 600,
@@ -92,6 +102,7 @@ export default function Navbar() {
               Order Now
               {totalItems > 0 && (
                 <span
+                  aria-hidden="true"
                   style={{
                     position: 'absolute',
                     top: '-8px', right: '-8px',
@@ -128,7 +139,7 @@ export default function Navbar() {
                   <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
                   <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
                 </svg>
-                <span style={{
+                <span aria-hidden="true" style={{
                   position: 'absolute', top: '-6px', right: '-6px',
                   fontSize: '10px', fontWeight: 800,
                   minWidth: '18px', height: '18px',
@@ -144,7 +155,9 @@ export default function Navbar() {
             )}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              aria-label="Toggle menu"
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-menu"
               style={{
                 padding: '8px', borderRadius: '8px',
                 background: 'transparent', border: 'none',
@@ -167,7 +180,9 @@ export default function Navbar() {
       </div>
 
       {menuOpen && (
-        <div
+        <nav
+          id="mobile-menu"
+          aria-label="Mobile navigation"
           className="md:hidden"
           style={{
             borderTop: '1px solid #E2CEB8',
@@ -182,6 +197,7 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
+              aria-current={pathname === link.href ? 'page' : undefined}
               style={{
                 fontSize: '15px',
                 fontWeight: 600,
@@ -211,7 +227,7 @@ export default function Navbar() {
           >
             Order Now
           </Link>
-        </div>
+        </nav>
       )}
     </header>
   )

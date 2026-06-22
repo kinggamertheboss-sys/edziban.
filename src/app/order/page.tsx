@@ -108,7 +108,7 @@ export default function OrderPage() {
 
       {/* Dark page header */}
       <div style={{ background: '#1A0F0A', paddingTop: '56px', paddingBottom: '48px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{
+        <div aria-hidden="true" style={{
           position: 'absolute', right: '-40px', top: '50%',
           transform: 'translateY(-50%)',
           fontFamily: 'var(--font-playfair), Georgia, serif',
@@ -121,7 +121,7 @@ export default function OrderPage() {
           <div style={{ maxWidth: '640px', margin: '0 auto' }}>
 
             {/* Progress steps */}
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '36px' }}>
+            <nav aria-label="Order progress" style={{ display: 'flex', alignItems: 'center', marginBottom: '36px' }}>
               {STEPS.map((label, i) => {
                 const step = i + 1
                 const done = step < 2
@@ -129,7 +129,7 @@ export default function OrderPage() {
                 return (
                   <div key={label} style={{ display: 'flex', alignItems: 'center' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                      <div style={{
+                      <div aria-current={active ? 'step' : undefined} style={{
                         width: '30px', height: '30px', borderRadius: '50%',
                         background: done ? '#C4622D' : active ? 'transparent' : 'rgba(255,255,255,0.07)',
                         border: active ? '2px solid #C4622D' : 'none',
@@ -152,7 +152,7 @@ export default function OrderPage() {
                       }}>{label}</span>
                     </div>
                     {i < STEPS.length - 1 && (
-                      <div style={{
+                      <div aria-hidden="true" style={{
                         width: '64px', height: '1px', margin: '0 10px', marginBottom: '22px',
                         background: done ? '#C4622D' : 'rgba(255,255,255,0.1)',
                         flexShrink: 0,
@@ -161,7 +161,7 @@ export default function OrderPage() {
                   </div>
                 )
               })}
-            </div>
+            </nav>
 
             <h1 style={{
               fontFamily: 'var(--font-playfair), Georgia, serif',
@@ -176,7 +176,7 @@ export default function OrderPage() {
         </div>
       </div>
 
-      <main style={{ background: '#FFF8F0', paddingBottom: '80px' }}>
+      <main id="main-content" style={{ background: '#FFF8F0', paddingBottom: '80px' }}>
         <div className="wrap">
           <div style={{ maxWidth: '640px', margin: '0 auto', paddingTop: '48px' }}>
 
@@ -195,15 +195,18 @@ export default function OrderPage() {
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '16px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Approximate guest count</label>
+                      <label htmlFor="guestCount" style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Approximate guest count</label>
                       <input
+                        id="guestCount"
                         type="number" min="1"
                         value={form.guestCount}
                         onChange={e => set('guestCount', e.target.value)}
                         placeholder="e.g. 75"
+                        aria-describedby={errors.guestCount ? 'guestCount-error' : undefined}
+                        aria-invalid={!!errors.guestCount}
                         className={`field ${errors.guestCount ? 'error' : ''}`}
                       />
-                      {errors.guestCount && <p style={{ fontSize: '12px', color: '#dc2626' }}>{errors.guestCount}</p>}
+                      {errors.guestCount && <p id="guestCount-error" role="alert" style={{ fontSize: '12px', color: '#dc2626' }}>{errors.guestCount}</p>}
                     </div>
                   </div>
                 </div>
@@ -224,15 +227,18 @@ export default function OrderPage() {
                       { label: 'Email address', field: 'email', type: 'email', placeholder: 'e.g. kwame@example.com' },
                     ].map(({ label, field, type, placeholder }) => (
                       <div key={field} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>{label}</label>
+                        <label htmlFor={field} style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>{label}</label>
                         <input
+                          id={field}
                           type={type}
                           value={form[field as keyof typeof form] as string}
                           onChange={e => set(field, e.target.value)}
                           placeholder={placeholder}
+                          aria-describedby={errors[field] ? `${field}-error` : undefined}
+                          aria-invalid={!!errors[field]}
                           className={`field ${errors[field] ? 'error' : ''}`}
                         />
-                        {errors[field] && <p style={{ fontSize: '12px', color: '#dc2626' }}>{errors[field]}</p>}
+                        {errors[field] && <p id={`${field}-error`} role="alert" style={{ fontSize: '12px', color: '#dc2626' }}>{errors[field]}</p>}
                       </div>
                     ))}
                   </div>
@@ -247,12 +253,13 @@ export default function OrderPage() {
                       Delivery or pickup?
                     </h2>
                   </div>
-                  <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
+                  <div role="group" aria-label="Fulfillment method" style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
                     {(['delivery', 'pickup'] as const).map(type => (
                       <button
                         key={type}
                         type="button"
                         onClick={() => set('fulfillmentType', type)}
+                        aria-pressed={form.fulfillmentType === type}
                         style={{
                           flex: 1, padding: '14px',
                           borderRadius: '12px',
@@ -273,15 +280,18 @@ export default function OrderPage() {
                   {form.fulfillmentType === 'delivery' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Delivery address</label>
+                        <label htmlFor="address" style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Delivery address</label>
                         <input
+                          id="address"
                           type="text"
                           value={form.address}
                           onChange={e => set('address', e.target.value)}
                           placeholder="e.g. 123 Main St, Boston, MA 02101"
+                          aria-describedby={errors.address ? 'address-error' : undefined}
+                          aria-invalid={!!errors.address}
                           className={`field ${errors.address ? 'error' : ''}`}
                         />
-                        {errors.address && <p style={{ fontSize: '12px', color: '#dc2626' }}>{errors.address}</p>}
+                        {errors.address && <p id="address-error" role="alert" style={{ fontSize: '12px', color: '#dc2626' }}>{errors.address}</p>}
                       </div>
                       {(distanceLoading || distanceInfo) && (
                         <div style={{
@@ -321,28 +331,32 @@ export default function OrderPage() {
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Preferred date</label>
+                      <label htmlFor="preferredDate" style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Preferred date</label>
                       <input
+                        id="preferredDate"
                         type="date"
                         value={form.preferredDate}
                         min={minDate}
                         onChange={e => set('preferredDate', e.target.value)}
+                        aria-describedby={errors.preferredDate ? 'preferredDate-error' : 'preferredDate-hint'}
+                        aria-invalid={!!errors.preferredDate}
                         className={`field ${errors.preferredDate ? 'error' : ''}`}
                       />
-                      {errors.preferredDate && <p style={{ fontSize: '12px', color: '#dc2626' }}>{errors.preferredDate}</p>}
-                      <p style={{ fontSize: '11.5px', color: '#9E7A52', marginTop: '2px' }}>Minimum 5 days notice. Everything is cooked fresh to order.</p>
+                      {errors.preferredDate && <p id="preferredDate-error" role="alert" style={{ fontSize: '12px', color: '#dc2626' }}>{errors.preferredDate}</p>}
+                      <p id="preferredDate-hint" style={{ fontSize: '11.5px', color: '#6B4C3B', marginTop: '2px' }}>Minimum 5 days notice. Everything is cooked fresh to order.</p>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Preferred time window</label>
-                      <select value={form.preferredTime} onChange={e => set('preferredTime', e.target.value)} className="field">
+                      <label htmlFor="preferredTime" style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Preferred time window</label>
+                      <select id="preferredTime" value={form.preferredTime} onChange={e => set('preferredTime', e.target.value)} className="field">
                         <option value="morning">Morning (10am - 12pm)</option>
                         <option value="afternoon">Afternoon (12pm - 4pm)</option>
                         <option value="evening">Evening (4pm - 7pm)</option>
                       </select>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Special instructions <span style={{ fontWeight: 400, color: '#9E7A52' }}>(optional)</span></label>
+                      <label htmlFor="specialInstructions" style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Special instructions <span style={{ fontWeight: 400, color: '#6B4C3B' }}>(optional)</span></label>
                       <textarea
+                        id="specialInstructions"
                         value={form.specialInstructions}
                         onChange={e => set('specialInstructions', e.target.value)}
                         placeholder="Allergies, setup instructions, gate codes, etc."

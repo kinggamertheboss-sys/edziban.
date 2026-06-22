@@ -53,7 +53,7 @@ export default function CorporatePage() {
           position: 'relative',
           overflow: 'hidden',
         }}>
-          <div style={{
+          <div aria-hidden="true" style={{
             position: 'absolute',
             right: '-40px',
             top: '50%',

@@ -184,12 +184,15 @@ export async function POST(req: NextRequest) {
       const db = getAdminClient()
       const { data: codeData } = await db
         .from('discount_codes')
-        .select('amount, is_active, single_use')
+        .select('amount, is_active, single_use, customer_email')
         .eq('code', clean.discountCode)
         .single()
 
       if (codeData && codeData.is_active) {
-        if (codeData.single_use) {
+        // Loyalty codes are tied to one customer email — reject if it doesn't match
+        if (codeData.customer_email && codeData.customer_email !== clean.customerEmail) {
+          // No discount — treat as if no code was provided
+        } else if (codeData.single_use) {
           const { data: used } = await db
             .from('discount_code_uses')
             .select('id')
@@ -258,7 +261,7 @@ export async function POST(req: NextRequest) {
     // Square charges on the net total (after discount), so use serverNetTotal
     const squareFee = Math.round((serverNetTotal * 0.029 + 0.30) * 100) / 100
     const supplierPayoutsTotal = supplierPayouts.reduce((s, p) => s + p.amount, 0)
-    const commission = Math.round((serverTotal - supplierPayoutsTotal - squareFee) * 100) / 100
+    const commission = Math.round((serverNetTotal - supplierPayoutsTotal - squareFee) * 100) / 100
 
     // ── Save order to Supabase ────────────────────────────────────────────
     const orderNumber = generateOrderNumber()
@@ -366,6 +369,8 @@ export async function POST(req: NextRequest) {
       eventType:     clean.eventType,
     }
 
+    const adminEmail = process.env.ADMIN_EMAIL ?? EDZIBAN_CONFIG.myEmail
+
     Promise.all([
       sendSMS(
         clean.customerPhone,
@@ -376,7 +381,8 @@ export async function POST(req: NextRequest) {
         clean.customerEmail,
         `Order ${orderNumber} received – Edziban`,
         orderReceivedEmail(emailData),
-        'customer'
+        'customer',
+        orderNumber,
       ),
       sendWhatsApp(
         EDZIBAN_CONFIG.myWhatsapp,
@@ -384,10 +390,11 @@ export async function POST(req: NextRequest) {
         'admin'
       ),
       sendEmail(
-        EDZIBAN_CONFIG.myEmail,
+        adminEmail,
         `New order ${orderNumber} from ${clean.customerName}`,
         orderReceivedEmail({ ...emailData, customerName: `${clean.customerName} (Admin Copy)` }),
-        'admin'
+        'admin',
+        orderNumber,
       ),
     ]).catch(e => console.error('[PAYMENT] Notification error (non-fatal):', e))
 

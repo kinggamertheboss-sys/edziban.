@@ -181,3 +181,39 @@ create policy "deny all anon on suppliers"
 
 create policy "deny all anon on supplier_contacts"
   on supplier_contacts for all to anon using (false);
+
+-- ---------------------------------------------------------------------------
+-- Loyalty Rewards (run this migration to enable the loyalty code system)
+-- ---------------------------------------------------------------------------
+
+-- Add customer_email to discount_codes so loyalty codes can be tied to one person.
+-- Non-loyalty codes (like FIRST10) leave this NULL and remain universally usable.
+alter table discount_codes add column if not exists customer_email text default null;
+
+-- Index for fast lookup of loyalty codes by customer
+create index if not exists idx_discount_codes_customer_email
+  on discount_codes (customer_email)
+  where customer_email is not null;
+
+-- ---------------------------------------------------------------------------
+-- Notification Logs — persists email/SMS send history per order
+-- Run this in Supabase SQL Editor
+-- ---------------------------------------------------------------------------
+
+create table if not exists notification_logs (
+  id          uuid primary key default gen_random_uuid(),
+  order_id    text not null,
+  type        text not null check (type in ('email', 'sms', 'whatsapp')),
+  recipient   text not null,  -- 'customer' | 'admin'
+  to_address  text not null,
+  subject     text not null default '',
+  success     boolean not null default true,
+  provider    text not null default '',  -- 'zoho' | 'ses' | 'sns' | 'mock'
+  created_at  timestamptz not null default now()
+);
+
+create index if not exists idx_notification_logs_order_id on notification_logs (order_id);
+
+alter table notification_logs enable row level security;
+create policy "deny all anon on notification_logs"
+  on notification_logs for all to anon using (false);

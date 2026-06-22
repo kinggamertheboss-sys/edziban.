@@ -1,10 +1,38 @@
 // Edziban Notification Service
-// Handles: AWS SNS SMS, AWS SES email, Make.com webhooks, Manychat
+// Handles: Zoho Mail (primary), AWS SNS SMS, AWS SES (fallback), Make.com webhooks
 //
 // HOW TO ACTIVATE:
 //   1. Copy .env.local.example to .env.local
 //   2. Fill in real API keys where marked ADD_KEY_HERE
 //   In MOCK MODE (no keys), everything logs to console only — safe for dev.
+
+// ── Notification log (persists to Supabase for dashboard visibility) ───────
+
+export async function logNotification(entry: {
+  orderId: string
+  type: 'email' | 'sms' | 'whatsapp'
+  recipient: string
+  toAddress: string
+  subject: string
+  success: boolean
+  provider: string
+}): Promise<void> {
+  try {
+    const { getAdminClient } = await import('./supabase')
+    const db = getAdminClient()
+    await db.from('notification_logs').insert({
+      order_id:   entry.orderId,
+      type:       entry.type,
+      recipient:  entry.recipient,
+      to_address: entry.toAddress,
+      subject:    entry.subject,
+      success:    entry.success,
+      provider:   entry.provider,
+    })
+  } catch {
+    // Table may not exist yet — silently skip, never block email sending
+  }
+}
 
 // ── Config ─────────────────────────────────────────────────────────────────
 
@@ -77,9 +105,17 @@ export async function sendSMS(to: string, message: string, recipientLabel = 'cus
   }
 }
 
-// ── Email (AWS SES) ────────────────────────────────────────────────────────
+// ── Email ──────────────────────────────────────────────────────────────────
+// Zoho is the primary sender — no sandbox restrictions, works immediately.
+// AWS SES is the fallback for when SES production access is granted.
 
-export async function sendEmail(to: string, subject: string, html: string, recipientLabel = 'customer'): Promise<NotifResult> {
+export async function sendEmail(
+  to: string,
+  subject: string,
+  html: string,
+  recipientLabel = 'customer',
+  orderId?: string,
+): Promise<NotifResult> {
   const result: NotifResult = { type: 'email', recipient: recipientLabel, to, preview: subject, mock: false, success: false }
 
   const [u, d] = to.split('@')
@@ -87,14 +123,33 @@ export async function sendEmail(to: string, subject: string, html: string, recip
   console.log(`\n[EMAIL] ── To: ${maskedEmail} (${recipientLabel}) ──`)
   console.log(`[EMAIL] Subject: ${subject}`)
 
+  let provider = ''
+
+  // ── Try Zoho first (primary, no sandbox) ──────────────────────────────
+  const zohoReady = !!(process.env.ZOHO_CLIENT_ID && process.env.ZOHO_CLIENT_SECRET && process.env.ZOHO_REFRESH_TOKEN)
+  if (zohoReady) {
+    try {
+      const { sendZohoEmail } = await import('./zohoMail')
+      await sendZohoEmail(to, subject, html)
+      console.log(`[EMAIL] Sent via Zoho to ${to}`)
+      provider = 'zoho'
+      if (orderId) logNotification({ orderId, type: 'email', recipient: recipientLabel, toAddress: to, subject, success: true, provider }).catch(() => {})
+      return { ...result, success: true }
+    } catch (e) {
+      console.error(`[EMAIL] Zoho failed, trying SES fallback:`, e)
+    }
+  }
+
+  // ── Fallback: AWS SES ─────────────────────────────────────────────────
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID
   const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
   const region = process.env.AWS_REGION ?? 'us-east-1'
-  // ADD_KEY_HERE: Set AWS_SES_FROM in .env.local — must be a verified address/domain in AWS SES
-  const from = process.env.AWS_SES_FROM ?? 'Edziban <orders@edziban.com>'
+  const from = process.env.AWS_SES_FROM ?? 'Edziban <orders@edzibancatering.com>'
 
   if (!accessKeyId || !secretAccessKey) {
-    console.log(`[EMAIL] MOCK MODE — no AWS keys. Would email ${to}: "${subject}"`)
+    console.log(`[EMAIL] MOCK MODE — no email provider configured. Would email ${to}: "${subject}"`)
+    provider = 'mock'
+    if (orderId) logNotification({ orderId, type: 'email', recipient: recipientLabel, toAddress: to, subject, success: false, provider }).catch(() => {})
     return { ...result, mock: true, success: true }
   }
 
@@ -109,10 +164,14 @@ export async function sendEmail(to: string, subject: string, html: string, recip
         Body: { Html: { Data: html, Charset: 'UTF-8' } },
       },
     }))
-    console.log(`[EMAIL] Sent successfully to ${to}`)
+    console.log(`[EMAIL] Sent via SES to ${to}`)
+    provider = 'ses'
+    if (orderId) logNotification({ orderId, type: 'email', recipient: recipientLabel, toAddress: to, subject, success: true, provider }).catch(() => {})
     return { ...result, success: true }
   } catch (e) {
-    console.error(`[EMAIL] Error:`, e)
+    console.error(`[EMAIL] SES error:`, e)
+    provider = 'ses'
+    if (orderId) logNotification({ orderId, type: 'email', recipient: recipientLabel, toAddress: to, subject, success: false, provider }).catch(() => {})
     return { ...result, success: false, error: String(e) }
   }
 }

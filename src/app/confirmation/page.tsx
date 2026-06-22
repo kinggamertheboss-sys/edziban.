@@ -62,7 +62,7 @@ function ConfirmationContent() {
         }
       `}</style>
 
-      <main style={{
+      <main id="main-content" style={{
         flex: 1,
         background: '#FFF8F0',
         display: 'flex',

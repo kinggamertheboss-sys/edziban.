@@ -44,7 +44,7 @@ function MenuPageInner() {
   return (
     <>
 
-      <main className="page-enter" style={{ paddingBottom: '160px' }}>
+      <main id="main-content" className="page-enter" style={{ paddingBottom: '160px' }}>
 
         {/* Corporate order banner */}
         {isCorporate && (
@@ -78,7 +78,7 @@ function MenuPageInner() {
           overflow: 'hidden',
         }}>
           {/* Decorative background E */}
-          <div style={{
+          <div aria-hidden="true" style={{
             position: 'absolute',
             right: '-40px',
             top: '50%',
@@ -161,6 +161,7 @@ function MenuPageInner() {
                                 muted
                                 loop
                                 playsInline
+                                aria-label={item.name}
                                 style={{
                                   position: 'absolute',
                                   inset: 0,
@@ -251,14 +252,15 @@ function MenuPageInner() {
 
                             {/* Protein / option selector */}
                             {item.options && item.options.length > 0 && (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-                                <span style={{ fontSize: '12px', fontWeight: 600, color: '#6B4C3B', letterSpacing: '0.04em' }}>
+                              <div role="group" aria-label={`Protein choice for ${item.name}`} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+                                <span aria-hidden="true" style={{ fontSize: '12px', fontWeight: 600, color: '#6B4C3B', letterSpacing: '0.04em' }}>
                                   Protein:
                                 </span>
                                 {item.options.map(opt => (
                                   <button
                                     key={opt}
                                     onClick={() => setSelectedOptions(prev => ({ ...prev, [item.id]: opt }))}
+                                    aria-pressed={selectedOpt === opt}
                                     style={{
                                       padding: '4px 14px',
                                       borderRadius: '100px',

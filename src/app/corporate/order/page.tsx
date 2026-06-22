@@ -149,7 +149,7 @@ export default function CorporateOrderPage() {
     <>
 
       <div style={{ background: '#1A0F0A', paddingTop: '56px', paddingBottom: '48px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{
+        <div aria-hidden="true" style={{
           position: 'absolute', right: '-40px', top: '50%',
           transform: 'translateY(-50%)',
           fontFamily: 'var(--font-playfair), Georgia, serif',
@@ -168,7 +168,7 @@ export default function CorporateOrderPage() {
               </span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '28px' }}>
+            <nav aria-label="Order progress" style={{ display: 'flex', alignItems: 'center', marginBottom: '28px' }}>
               {STEPS.map((label, i) => {
                 const step = i + 1
                 const done = step < 2
@@ -176,7 +176,7 @@ export default function CorporateOrderPage() {
                 return (
                   <div key={label} style={{ display: 'flex', alignItems: 'center' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                      <div style={{
+                      <div aria-current={active ? 'step' : undefined} style={{
                         width: '30px', height: '30px', borderRadius: '50%',
                         background: done ? '#C4622D' : active ? 'transparent' : 'rgba(255,255,255,0.07)',
                         border: active ? '2px solid #C4622D' : 'none',
@@ -199,7 +199,7 @@ export default function CorporateOrderPage() {
                       }}>{label}</span>
                     </div>
                     {i < STEPS.length - 1 && (
-                      <div style={{
+                      <div aria-hidden="true" style={{
                         width: '64px', height: '1px', margin: '0 10px', marginBottom: '22px',
                         background: done ? '#C4622D' : 'rgba(255,255,255,0.1)',
                         flexShrink: 0,
@@ -208,7 +208,7 @@ export default function CorporateOrderPage() {
                   </div>
                 )
               })}
-            </div>
+            </nav>
 
             <h1 style={{
               fontFamily: 'var(--font-playfair), Georgia, serif',
@@ -223,7 +223,7 @@ export default function CorporateOrderPage() {
         </div>
       </div>
 
-      <main style={{ background: '#FFF8F0', paddingBottom: '80px' }}>
+      <main id="main-content" style={{ background: '#FFF8F0', paddingBottom: '80px' }}>
         <div className="wrap">
           <div style={{ maxWidth: '640px', margin: '0 auto', paddingTop: '48px' }}>
 
@@ -231,8 +231,8 @@ export default function CorporateOrderPage() {
 
               {/* ── Order type toggle ── */}
               <div style={{ marginBottom: '20px' }}>
-                <p style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9E7A52', marginBottom: '10px' }}>I am ordering as a</p>
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <p id="orderType-label" style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4C3B', marginBottom: '10px' }}>I am ordering as a</p>
+                <div role="group" aria-labelledby="orderType-label" style={{ display: 'flex', gap: '10px' }}>
                   {([
                     { value: 'corporate', label: 'Company or nonprofit' },
                     { value: 'student',   label: 'Student organization' },
@@ -241,6 +241,7 @@ export default function CorporateOrderPage() {
                       key={opt.value}
                       type="button"
                       onClick={() => set('orderType', opt.value)}
+                      aria-pressed={form.orderType === opt.value}
                       style={{
                         flex: 1, padding: '14px 16px',
                         borderRadius: '12px',
@@ -278,48 +279,58 @@ export default function CorporateOrderPage() {
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Organization or company name</label>
+                      <label htmlFor="orgName" style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Organization or company name</label>
                       <input
+                        id="orgName"
                         type="text"
                         value={form.orgName}
                         onChange={e => set('orgName', e.target.value)}
                         placeholder={form.orderType === 'student' ? 'e.g. Boston University — GASA' : 'e.g. Acme Corp, City Year Boston'}
+                        aria-describedby={errors.orgName ? 'orgName-error' : undefined}
+                        aria-invalid={!!errors.orgName}
                         style={inputStyle(!!errors.orgName)}
                       />
-                      {errors.orgName && <p style={{ fontSize: '12px', color: '#dc2626' }}>{errors.orgName}</p>}
+                      {errors.orgName && <p id="orgName-error" role="alert" style={{ fontSize: '12px', color: '#dc2626' }}>{errors.orgName}</p>}
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Contact person</label>
+                      <label htmlFor="contactPerson" style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Contact person</label>
                       <input
+                        id="contactPerson"
                         type="text"
                         value={form.contactPerson}
                         onChange={e => set('contactPerson', e.target.value)}
                         placeholder="Who is the main point of contact?"
+                        aria-describedby={errors.contactPerson ? 'contactPerson-error' : undefined}
+                        aria-invalid={!!errors.contactPerson}
                         style={inputStyle(!!errors.contactPerson)}
                       />
-                      {errors.contactPerson && <p style={{ fontSize: '12px', color: '#dc2626' }}>{errors.contactPerson}</p>}
+                      {errors.contactPerson && <p id="contactPerson-error" role="alert" style={{ fontSize: '12px', color: '#dc2626' }}>{errors.contactPerson}</p>}
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>
-                        Billing email <span style={{ fontWeight: 400, color: '#9E7A52' }}>(optional — defaults to contact email)</span>
+                      <label htmlFor="billingEmail" style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>
+                        Billing email <span style={{ fontWeight: 400, color: '#6B4C3B' }}>(optional — defaults to contact email)</span>
                       </label>
                       <input
+                        id="billingEmail"
                         type="email"
                         value={form.billingEmail}
                         onChange={e => set('billingEmail', e.target.value)}
                         placeholder="e.g. finance@yourorg.com"
+                        aria-describedby={errors.billingEmail ? 'billingEmail-error' : undefined}
+                        aria-invalid={!!errors.billingEmail}
                         style={inputStyle(!!errors.billingEmail)}
                       />
-                      {errors.billingEmail && <p style={{ fontSize: '12px', color: '#dc2626' }}>{errors.billingEmail}</p>}
+                      {errors.billingEmail && <p id="billingEmail-error" role="alert" style={{ fontSize: '12px', color: '#dc2626' }}>{errors.billingEmail}</p>}
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>
-                        PO number <span style={{ fontWeight: 400, color: '#9E7A52' }}>(optional)</span>
+                      <label htmlFor="poNumber" style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>
+                        PO number <span style={{ fontWeight: 400, color: '#6B4C3B' }}>(optional)</span>
                       </label>
                       <input
+                        id="poNumber"
                         type="text"
                         value={form.poNumber}
                         onChange={e => set('poNumber', e.target.value)}
@@ -358,15 +369,18 @@ export default function CorporateOrderPage() {
                     <h2 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '18px', fontWeight: 700, color: '#1A0F0A' }}>Event details</h2>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Approximate guest count</label>
+                    <label htmlFor="corp-guestCount" style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Approximate guest count</label>
                     <input
+                      id="corp-guestCount"
                       type="number" min="1"
                       value={form.guestCount}
                       onChange={e => set('guestCount', e.target.value)}
                       placeholder="e.g. 75"
+                      aria-describedby={errors.guestCount ? 'corp-guestCount-error' : undefined}
+                      aria-invalid={!!errors.guestCount}
                       style={inputStyle(!!errors.guestCount)}
                     />
-                    {errors.guestCount && <p style={{ fontSize: '12px', color: '#dc2626' }}>{errors.guestCount}</p>}
+                    {errors.guestCount && <p id="corp-guestCount-error" role="alert" style={{ fontSize: '12px', color: '#dc2626' }}>{errors.guestCount}</p>}
                   </div>
                 </div>
 
@@ -384,15 +398,18 @@ export default function CorporateOrderPage() {
                       { label: 'Email address', field: 'email', type: 'email', placeholder: 'e.g. kwame@example.com' },
                     ].map(({ label, field, type, placeholder }) => (
                       <div key={field} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>{label}</label>
+                        <label htmlFor={`corp-${field}`} style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>{label}</label>
                         <input
+                          id={`corp-${field}`}
                           type={type}
                           value={form[field as keyof typeof form] as string}
                           onChange={e => set(field, e.target.value)}
                           placeholder={placeholder}
+                          aria-describedby={errors[field] ? `corp-${field}-error` : undefined}
+                          aria-invalid={!!errors[field]}
                           style={inputStyle(!!errors[field])}
                         />
-                        {errors[field] && <p style={{ fontSize: '12px', color: '#dc2626' }}>{errors[field]}</p>}
+                        {errors[field] && <p id={`corp-${field}-error`} role="alert" style={{ fontSize: '12px', color: '#dc2626' }}>{errors[field]}</p>}
                       </div>
                     ))}
                   </div>
@@ -405,11 +422,12 @@ export default function CorporateOrderPage() {
                   <div style={{ marginBottom: '20px' }}>
                     <h2 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '18px', fontWeight: 700, color: '#1A0F0A' }}>Delivery or pickup?</h2>
                   </div>
-                  <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
+                  <div role="group" aria-label="Fulfillment method" style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
                     {(['delivery', 'pickup'] as const).map(type => (
                       <button
                         key={type} type="button"
                         onClick={() => set('fulfillmentType', type)}
+                        aria-pressed={form.fulfillmentType === type}
                         style={{
                           flex: 1, padding: '14px',
                           borderRadius: '12px',
@@ -430,15 +448,18 @@ export default function CorporateOrderPage() {
                   {form.fulfillmentType === 'delivery' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Delivery address</label>
+                        <label htmlFor="corp-address" style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Delivery address</label>
                         <input
+                          id="corp-address"
                           type="text"
                           value={form.address}
                           onChange={e => set('address', e.target.value)}
                           placeholder="e.g. 123 Commonwealth Ave, Boston, MA 02215"
+                          aria-describedby={errors.address ? 'corp-address-error' : undefined}
+                          aria-invalid={!!errors.address}
                           style={inputStyle(!!errors.address)}
                         />
-                        {errors.address && <p style={{ fontSize: '12px', color: '#dc2626' }}>{errors.address}</p>}
+                        {errors.address && <p id="corp-address-error" role="alert" style={{ fontSize: '12px', color: '#dc2626' }}>{errors.address}</p>}
                       </div>
                       {(distanceLoading || distanceInfo) && (
                         <div style={{
@@ -473,30 +494,34 @@ export default function CorporateOrderPage() {
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Preferred date</label>
+                      <label htmlFor="corp-preferredDate" style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Preferred date</label>
                       <input
+                        id="corp-preferredDate"
                         type="date"
                         value={form.preferredDate}
                         min={minDate}
                         onChange={e => set('preferredDate', e.target.value)}
+                        aria-describedby={errors.preferredDate ? 'corp-preferredDate-error' : 'corp-preferredDate-hint'}
+                        aria-invalid={!!errors.preferredDate}
                         style={inputStyle(!!errors.preferredDate)}
                       />
-                      {errors.preferredDate && <p style={{ fontSize: '12px', color: '#dc2626' }}>{errors.preferredDate}</p>}
-                      <p style={{ fontSize: '11.5px', color: '#9E7A52', marginTop: '2px' }}>Minimum 5 days notice. Everything is cooked fresh to order.</p>
+                      {errors.preferredDate && <p id="corp-preferredDate-error" role="alert" style={{ fontSize: '12px', color: '#dc2626' }}>{errors.preferredDate}</p>}
+                      <p id="corp-preferredDate-hint" style={{ fontSize: '11.5px', color: '#6B4C3B', marginTop: '2px' }}>Minimum 5 days notice. Everything is cooked fresh to order.</p>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Preferred time window</label>
-                      <select value={form.preferredTime} onChange={e => set('preferredTime', e.target.value)} style={inputStyle(false)}>
+                      <label htmlFor="corp-preferredTime" style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Preferred time window</label>
+                      <select id="corp-preferredTime" value={form.preferredTime} onChange={e => set('preferredTime', e.target.value)} style={inputStyle(false)}>
                         <option value="morning">Morning (10am - 12pm)</option>
                         <option value="afternoon">Afternoon (12pm - 4pm)</option>
                         <option value="evening">Evening (4pm - 7pm)</option>
                       </select>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>
-                        Special instructions <span style={{ fontWeight: 400, color: '#9E7A52' }}>(optional)</span>
+                      <label htmlFor="corp-specialInstructions" style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>
+                        Special instructions <span style={{ fontWeight: 400, color: '#6B4C3B' }}>(optional)</span>
                       </label>
                       <textarea
+                        id="corp-specialInstructions"
                         value={form.specialInstructions}
                         onChange={e => set('specialInstructions', e.target.value)}
                         placeholder="Allergies, setup instructions, gate codes, loading dock info, etc."

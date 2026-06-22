@@ -82,7 +82,8 @@ export async function POST(req: NextRequest) {
       data.customerEmail,
       `How was your Edziban order, ${data.customerName}?`,
       html,
-      'customer'
+      'customer',
+      data.orderNumber,
     ),
   ])
 

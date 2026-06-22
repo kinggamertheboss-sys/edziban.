@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
     const { data: codeData, error: codeError } = await db
       .from('discount_codes')
-      .select('code, amount, is_active, single_use')
+      .select('code, amount, is_active, single_use, customer_email')
       .eq('code', code)
       .single()
 
@@ -39,6 +39,11 @@ export async function POST(req: NextRequest) {
 
     if (!codeData.is_active) {
       return NextResponse.json({ valid: false, error: 'This code is no longer active' })
+    }
+
+    // Loyalty codes are tied to a specific customer email
+    if (codeData.customer_email && codeData.customer_email !== email) {
+      return NextResponse.json({ valid: false, error: 'This code is not valid for your account' })
     }
 
     if (codeData.single_use) {

@@ -44,8 +44,8 @@ export default function Footer() {
           </div>
 
           {/* Quick links */}
-          <div>
-            <p className="label-upper" style={{ color: 'rgba(255,248,240,0.35)', marginBottom: '22px' }}>
+          <nav aria-label="Footer navigation">
+            <p className="label-upper" style={{ color: 'rgba(255,248,240,0.60)', marginBottom: '22px' }}>
               Quick links
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -57,7 +57,7 @@ export default function Footer() {
               ].map(link => (
                 <Link key={link.href} href={link.href} style={{
                   fontSize: '14px',
-                  color: 'rgba(255,248,240,0.65)',
+                  color: 'rgba(255,248,240,0.80)',
                   textDecoration: 'none',
                   transition: 'color 0.2s',
                 }}>
@@ -65,11 +65,11 @@ export default function Footer() {
                 </Link>
               ))}
             </div>
-          </div>
+          </nav>
 
           {/* We cater */}
           <div>
-            <p className="label-upper" style={{ color: 'rgba(255,248,240,0.35)', marginBottom: '22px' }}>
+            <p className="label-upper" style={{ color: 'rgba(255,248,240,0.60)', marginBottom: '22px' }}>
               We cater
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -94,29 +94,29 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <p className="label-upper" style={{ color: 'rgba(255,248,240,0.35)', marginBottom: '22px' }}>
+            <p className="label-upper" style={{ color: 'rgba(255,248,240,0.60)', marginBottom: '22px' }}>
               Contact
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '14px' }}>
 
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,248,240,0.35)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}>
+                <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,248,240,0.55)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}>
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
                 </svg>
-                <span style={{ color: 'rgba(255,248,240,0.5)', lineHeight: 1.5 }}>Serving Greater Boston, MA</span>
+                <span style={{ color: 'rgba(255,248,240,0.75)', lineHeight: 1.5 }}>Serving Greater Boston, MA</span>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,248,240,0.35)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}>
+                <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,248,240,0.55)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}>
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z"/>
                 </svg>
-                <a href="tel:+16175550000" style={{ color: 'rgba(255,248,240,0.5)', lineHeight: 1.5, textDecoration: 'none' }}>
+                <a href="tel:+16175550000" style={{ color: 'rgba(255,248,240,0.80)', lineHeight: 1.5, textDecoration: 'none' }}>
                   Call/Text: (617) 555-0000
                 </a>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,248,240,0.35)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}>
+                <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,248,240,0.55)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}>
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
                 </svg>
                 <a href="mailto:hello@edzibancatering.com" style={{ color: '#C4622D', textDecoration: 'none', lineHeight: 1.5 }}>
@@ -142,7 +142,7 @@ export default function Footer() {
           letterSpacing: '0.06em',
           color: 'rgba(255,248,240,0.28)',
         }}>
-          <span>&copy; {new Date().getFullYear()} Edziban. All rights reserved.</span>
+          <span style={{ color: 'rgba(255,248,240,0.55)' }}>&copy; {new Date().getFullYear()} Edziban. All rights reserved.</span>
           <div />
         </div>
       </div>

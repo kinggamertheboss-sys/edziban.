@@ -10,6 +10,7 @@ import SupplierHub from '@/components/admin/SupplierHub'
 import Financials from '@/components/admin/Financials'
 import CorporateOrders from '@/components/admin/CorporateOrders'
 import Inbox from '@/components/admin/Inbox'
+import LoyaltyRewards from '@/components/admin/LoyaltyRewards'
 
 const D = { bg: '#0E0806', card: '#1A0F0A', border: 'rgba(255,255,255,0.07)', text: '#FFF8F0', muted: 'rgba(255,248,240,0.5)', faint: 'rgba(255,248,240,0.2)' }
 
@@ -91,7 +92,7 @@ export default function AdminDashboard() {
   const [expanded, setExpanded] = useState<string | null>(null)
   const [loadingBtn, setLoadingBtn] = useState<string | null>(null)
   const [notifLogs, setNotifLogs] = useState<Record<string, NotifLog[]>>({})
-  const [activeTab, setActiveTab] = useState<'orders' | 'payouts' | 'supplier' | 'financials' | 'corporate' | 'inbox'>('orders')
+  const [activeTab, setActiveTab] = useState<'orders' | 'payouts' | 'supplier' | 'financials' | 'corporate' | 'inbox' | 'loyalty'>('orders')
   const [paidPayouts, setPaidPayouts] = useState<PayoutRecord[]>([])
   const [payingKey, setPayingKey] = useState<string | null>(null)
   const [payMethod, setPayMethod] = useState<'check' | 'zelle'>('zelle')
@@ -99,6 +100,7 @@ export default function AdminDashboard() {
   const [dbLoading, setDbLoading] = useState(true)
   const [contacts, setContacts] = useState<ContactEntry[]>([])
   const [dbSuppliers, setDbSuppliers] = useState<{ id: string; name: string; phone: string }[]>([])
+  const [dbNotifLogs, setDbNotifLogs] = useState<Record<string, { type: string; recipient: string; subject: string; success: boolean; provider: string; created_at: string }[]>>({})
 
   useEffect(() => {
     // Middleware already verified the session cookie before this page loaded.
@@ -442,11 +444,11 @@ export default function AdminDashboard() {
           if (actionNeededCount > 0) tabBadge['orders'] = actionNeededCount
           if (vendorPayouts.filter(v => v.balanceDue > 0).length > 0) tabBadge['payouts'] = vendorPayouts.filter(v => v.balanceDue > 0).length
 
-          const TAB_LABELS: Record<string, string> = { orders: 'Orders', payouts: 'Payouts', supplier: 'Suppliers', financials: 'Financials', corporate: 'Corporate', inbox: 'Inbox' }
+          const TAB_LABELS: Record<string, string> = { orders: 'Orders', payouts: 'Payouts', supplier: 'Suppliers', financials: 'Financials', corporate: 'Corporate', inbox: 'Inbox', loyalty: 'Loyalty' }
 
           return (
             <div style={{ display: 'flex', gap: '4px', marginBottom: '24px', background: D.card, border: `1px solid ${D.border}`, borderRadius: '12px', padding: '4px', width: 'fit-content', flexWrap: 'wrap' }}>
-              {(['orders', 'payouts', 'supplier', 'financials', 'corporate', 'inbox'] as const).map(tab => {
+              {(['orders', 'payouts', 'supplier', 'financials', 'corporate', 'inbox', 'loyalty'] as const).map(tab => {
                 const badge = tabBadge[tab]
                 const isActive = activeTab === tab
                 return (
@@ -649,6 +651,11 @@ export default function AdminDashboard() {
         {/* ── INBOX tab ──────────────────────────────────────────────────── */}
         {activeTab === 'inbox' && <Inbox />}
 
+        {/* ── LOYALTY tab ────────────────────────────────────────────────── */}
+        {activeTab === 'loyalty' && (
+          <LoyaltyRewards orders={displayOrders} />
+        )}
+
         {/* ── ORDERS tab ─────────────────────────────────────────────────── */}
         {activeTab === 'orders' && (
           <>
@@ -712,7 +719,20 @@ export default function AdminDashboard() {
 
                     {/* Order summary row */}
                     <button
-                      onClick={() => setExpanded(isExpanded ? null : order.id)}
+                      onClick={() => {
+                        const next = isExpanded ? null : order.id
+                        setExpanded(next)
+                        if (next && !dbNotifLogs[next]) {
+                          fetch(`/api/admin/notification-logs?orderId=${encodeURIComponent(next)}`)
+                            .then(r => r.json())
+                            .then(d => {
+                              if (Array.isArray(d.logs)) {
+                                setDbNotifLogs(prev => ({ ...prev, [next]: d.logs }))
+                              }
+                            })
+                            .catch(() => {})
+                        }
+                      }}
                       style={{ width: '100%', textAlign: 'left', padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     >
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -927,52 +947,72 @@ export default function AdminDashboard() {
                         )}
 
                         {/* ── Email log ─────────────────────────────────── */}
-                        <div>
-                          <p className="label-upper" style={{ color: D.faint, marginBottom: '12px' }}>Emails sent to customer</p>
+                        {(() => {
+                          const liveLogs = dbNotifLogs[order.id]
+                          const emailLogs = liveLogs?.filter(l => l.type === 'email') ?? []
+                          const sessionEmailLogs = logs.filter(l => l.type === 'email')
+                          return (
+                            <div>
+                              <p className="label-upper" style={{ color: D.faint, marginBottom: '12px' }}>Emails sent</p>
 
-                          {/* Static schedule — always visible */}
-                          <div style={{ background: 'rgba(192,132,252,0.06)', border: '1px solid rgba(192,132,252,0.15)', borderRadius: '12px', padding: '16px 20px', marginBottom: '10px' }}>
-                            <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(192,132,252,0.7)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '12px' }}>3 emails are sent to every customer</p>
-                            {[
-                              { trigger: 'When they pay', label: 'Order Received', desc: 'Thank you email with full order summary, total paid, date/time, and a note that confirmation comes within 24 hours.' },
-                              { trigger: 'When you click Confirm Order', label: 'Order Confirmed', desc: 'Tells the customer their order is approved and being prepared. Includes order details and pickup/delivery info.' },
-                              { trigger: 'When you click Mark Ready', label: 'Order Ready', desc: `Tells the customer their food is ready for ${order.fulfillmentType === 'pickup' ? 'pickup' : 'delivery'} with the time and location.` },
-                            ].map((e, i) => (
-                              <div key={i} style={{ display: 'flex', gap: '14px', paddingBottom: i < 2 ? '12px' : 0, marginBottom: i < 2 ? '12px' : 0, borderBottom: i < 2 ? '1px solid rgba(192,132,252,0.1)' : 'none' }}>
-                                <div style={{ width: '6px', borderRadius: '3px', background: 'rgba(192,132,252,0.3)', flexShrink: 0, marginTop: '2px' }} />
-                                <div>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px', flexWrap: 'wrap' }}>
-                                    <span style={{ fontSize: '13px', fontWeight: 700, color: D.text }}>{e.label}</span>
-                                    <span style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(192,132,252,0.6)', background: 'rgba(192,132,252,0.1)', borderRadius: '100px', padding: '1px 8px' }}>{e.trigger}</span>
-                                  </div>
-                                  <p style={{ fontSize: '12px', color: D.muted, lineHeight: 1.6, margin: 0 }}>{e.desc}</p>
+                              {emailLogs.length > 0 ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                  {emailLogs.map((log, i) => (
+                                    <div key={i} style={{
+                                      display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12.5px',
+                                      padding: '12px 16px',
+                                      background: log.success ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)',
+                                      border: `1px solid ${log.success ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)'}`,
+                                      borderRadius: '10px',
+                                    }}>
+                                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={log.success ? '#22C55E' : '#EF4444'} strokeWidth="2" style={{ flexShrink: 0 }}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                      <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+                                        <p style={{ fontSize: '12px', fontWeight: 700, color: log.success ? '#22C55E' : '#EF4444', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0 }}>
+                                          {log.subject}
+                                        </p>
+                                        <p style={{ fontSize: '11px', color: D.faint, margin: '2px 0 0' }}>
+                                          {log.recipient} · via {log.provider || 'zoho'} · {new Date(log.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                        </p>
+                                      </div>
+                                      {log.success
+                                        ? <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                        : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                      }
+                                    </div>
+                                  ))}
                                 </div>
-                              </div>
-                            ))}
-                          </div>
-
-                          {/* Sent log */}
-                          {logs.filter(l => l.type === 'email').length > 0 ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                              {logs.filter(l => l.type === 'email').map((log, i) => (
-                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12.5px', padding: '10px 14px', background: 'rgba(192,132,252,0.06)', border: '1px solid rgba(192,132,252,0.15)', borderRadius: '10px' }}>
-                                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C084FC" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                                  <div style={{ flex: 1, minWidth: 0 }}>
-                                    <span style={{ fontWeight: 700, color: '#C084FC' }}>{log.preview}</span>
-                                    <span style={{ color: D.faint, marginLeft: '8px' }}>&rarr; {log.recipient}</span>
-                                    <span style={{ color: D.faint, marginLeft: '8px', fontSize: '11px' }}>{log.timestamp}</span>
-                                    {log.mock && <span style={{ color: 'rgba(245,158,11,0.7)', fontSize: '10px', fontWeight: 600, marginLeft: '8px' }}>NOT SENT (no AWS keys)</span>}
-                                  </div>
-                                  {log.success && !log.mock && (
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                                  )}
+                              ) : sessionEmailLogs.length > 0 ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                  {sessionEmailLogs.map((log, i) => (
+                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12.5px', padding: '10px 14px', background: 'rgba(192,132,252,0.06)', border: '1px solid rgba(192,132,252,0.15)', borderRadius: '10px' }}>
+                                      <div style={{ flex: 1 }}>
+                                        <span style={{ fontWeight: 700, color: '#C084FC' }}>{log.preview}</span>
+                                        <span style={{ color: D.faint, marginLeft: '8px' }}>{log.timestamp}</span>
+                                        {log.mock && <span style={{ color: 'rgba(245,158,11,0.7)', fontSize: '10px', fontWeight: 600, marginLeft: '8px' }}>NOT SENT</span>}
+                                      </div>
+                                    </div>
+                                  ))}
                                 </div>
-                              ))}
+                              ) : (
+                                <div style={{ background: D.bg, border: `1px solid ${D.border}`, borderRadius: '10px', padding: '16px', fontSize: '12px', color: D.faint }}>
+                                  <p style={{ margin: '0 0 10px', fontWeight: 600 }}>3 emails sent automatically:</p>
+                                  {[
+                                    { label: 'Order Received', when: 'on payment' },
+                                    { label: 'Order Confirmed', when: 'when you click Confirm Order' },
+                                    { label: 'Order Ready', when: 'when you click Mark Ready' },
+                                  ].map((e, i) => (
+                                    <p key={i} style={{ margin: '4px 0', color: D.faint }}>
+                                      <span style={{ color: D.muted, fontWeight: 600 }}>{e.label}</span> — {e.when}
+                                    </p>
+                                  ))}
+                                  <p style={{ margin: '10px 0 0', fontStyle: 'italic', color: 'rgba(255,248,240,0.2)' }}>
+                                    Logs will appear here once emails have been sent for this order.
+                                  </p>
+                                </div>
+                              )}
                             </div>
-                          ) : (
-                            <p style={{ fontSize: '12px', color: D.faint, fontStyle: 'italic' }}>No emails sent yet for this order this session.</p>
-                          )}
-                        </div>
+                          )
+                        })()}
 
                         {/* Manual status override */}
                         <div>

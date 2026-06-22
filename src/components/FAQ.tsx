@@ -43,6 +43,8 @@ export default function FAQ() {
         <div style={{ maxWidth: '680px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2px' }}>
           {FAQS.map((faq, i) => {
             const isOpen = open === i
+            const buttonId = `faq-btn-${i}`
+            const panelId = `faq-panel-${i}`
             return (
               <div
                 key={i}
@@ -52,6 +54,7 @@ export default function FAQ() {
                 }}
               >
                 <button
+                  id={buttonId}
                   onClick={() => setOpen(isOpen ? null : i)}
                   style={{
                     width: '100%',
@@ -66,6 +69,7 @@ export default function FAQ() {
                     textAlign: 'left',
                   }}
                   aria-expanded={isOpen}
+                  aria-controls={panelId}
                 >
                   <span style={{
                     fontFamily: 'var(--font-playfair), Georgia, serif',
@@ -77,7 +81,7 @@ export default function FAQ() {
                   }}>
                     {faq.q}
                   </span>
-                  <span style={{
+                  <span aria-hidden="true" style={{
                     width: '28px',
                     height: '28px',
                     borderRadius: '50%',
@@ -86,7 +90,7 @@ export default function FAQ() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
-                    color: isOpen ? '#C4622D' : '#9E7A52',
+                    color: isOpen ? '#C4622D' : '#6B4C3B',
                     transition: 'border-color 0.2s, color 0.2s, transform 0.2s',
                     transform: isOpen ? 'rotate(45deg)' : 'none',
                   }}>
@@ -95,16 +99,20 @@ export default function FAQ() {
                     </svg>
                   </span>
                 </button>
-                {isOpen && (
-                  <div style={{
-                    paddingBottom: '22px',
+                <div
+                  id={panelId}
+                  role="region"
+                  aria-labelledby={buttonId}
+                  hidden={!isOpen}
+                  style={{
+                    paddingBottom: isOpen ? '22px' : '0',
                     fontSize: '14px',
                     lineHeight: 1.8,
                     color: '#6B4C3B',
-                  }}>
-                    {faq.a}
-                  </div>
-                )}
+                  }}
+                >
+                  {faq.a}
+                </div>
               </div>
             )
           })}

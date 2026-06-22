@@ -46,7 +46,7 @@ export default function AdminLoginPage() {
     <div className="auth-grid">
 
       {/* Left: brand panel */}
-      <div className="auth-brand" style={{ background: '#0E0806' }}>
+      <div aria-hidden="true" className="auth-brand" style={{ background: '#0E0806' }}>
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '480px', height: '480px', borderRadius: '50%', border: '1px solid rgba(196,98,45,0.08)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '340px', height: '340px', borderRadius: '50%', border: '1px solid rgba(196,98,45,0.12)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '40%', background: 'linear-gradient(to top, rgba(196,98,45,0.1), transparent)', pointerEvents: 'none' }} />
@@ -71,7 +71,7 @@ export default function AdminLoginPage() {
       </div>
 
       {/* Right: form */}
-      <div style={{ background: '#FFF8F0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 40px' }}>
+      <main id="main-content" style={{ background: '#FFF8F0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 40px' }}>
         <div style={{ width: '100%', maxWidth: '360px' }}>
 
           <div style={{ marginBottom: '40px', textAlign: 'center' }}>
@@ -98,8 +98,9 @@ export default function AdminLoginPage() {
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-              <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Email</label>
+              <label htmlFor="admin-email" style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Email</label>
               <input
+                id="admin-email"
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
@@ -110,8 +111,9 @@ export default function AdminLoginPage() {
               />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-              <label style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Password</label>
+              <label htmlFor="admin-password" style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Password</label>
               <input
+                id="admin-password"
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -123,7 +125,7 @@ export default function AdminLoginPage() {
             </div>
 
             {error && (
-              <div style={{ background: 'rgba(220,38,38,0.07)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: '10px', padding: '12px 16px', fontSize: '13px', color: '#dc2626' }}>
+              <div role="alert" style={{ background: 'rgba(220,38,38,0.07)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: '10px', padding: '12px 16px', fontSize: '13px', color: '#dc2626' }}>
                 {error}
               </div>
             )}
@@ -156,12 +158,12 @@ export default function AdminLoginPage() {
           </form>
 
           <div style={{ marginTop: '32px', textAlign: 'center' }}>
-            <Link href="/" style={{ fontSize: '12px', color: '#9E7A52', textDecoration: 'none' }}>
+            <Link href="/" style={{ fontSize: '12px', color: '#6B4C3B', textDecoration: 'none' }}>
               Back to Edziban
             </Link>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }

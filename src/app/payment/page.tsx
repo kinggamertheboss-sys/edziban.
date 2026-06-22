@@ -187,7 +187,7 @@ export default function PaymentPage() {
 
       {/* Dark page header */}
       <div style={{ background: '#1A0F0A', paddingTop: '56px', paddingBottom: '48px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{
+        <div aria-hidden="true" style={{
           position: 'absolute', right: '-40px', top: '50%',
           transform: 'translateY(-50%)',
           fontFamily: 'var(--font-playfair), Georgia, serif',
@@ -200,7 +200,7 @@ export default function PaymentPage() {
           <div style={{ maxWidth: '640px', margin: '0 auto' }}>
 
             {/* Progress steps */}
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '36px' }}>
+            <nav aria-label="Order progress" style={{ display: 'flex', alignItems: 'center', marginBottom: '36px' }}>
               {STEPS.map((label, i) => {
                 const step = i + 1
                 const done = step < 3
@@ -208,7 +208,7 @@ export default function PaymentPage() {
                 return (
                   <div key={label} style={{ display: 'flex', alignItems: 'center' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                      <div style={{
+                      <div aria-current={active ? 'step' : undefined} style={{
                         width: '30px', height: '30px', borderRadius: '50%',
                         background: done ? '#C4622D' : active ? 'transparent' : 'rgba(255,255,255,0.07)',
                         border: active ? '2px solid #C4622D' : 'none',
@@ -231,7 +231,7 @@ export default function PaymentPage() {
                       }}>{label}</span>
                     </div>
                     {i < STEPS.length - 1 && (
-                      <div style={{
+                      <div aria-hidden="true" style={{
                         width: '64px', height: '1px', margin: '0 10px', marginBottom: '22px',
                         background: done ? '#C4622D' : 'rgba(255,255,255,0.1)',
                         flexShrink: 0,
@@ -240,7 +240,7 @@ export default function PaymentPage() {
                   </div>
                 )
               })}
-            </div>
+            </nav>
 
             <h1 style={{
               fontFamily: 'var(--font-playfair), Georgia, serif',
@@ -255,7 +255,7 @@ export default function PaymentPage() {
         </div>
       </div>
 
-      <main style={{ background: '#FFF8F0', paddingBottom: '80px' }}>
+      <main id="main-content" style={{ background: '#FFF8F0', paddingBottom: '80px' }}>
         <div className="wrap">
           <div style={{ maxWidth: '640px', margin: '0 auto', paddingTop: '48px' }}>
 
@@ -333,16 +333,18 @@ export default function PaymentPage() {
                     </div>
                   ) : (
                     <div>
-                      <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9E7A52', marginBottom: '10px' }}>
+                      <label htmlFor="discountCode" style={{ display: 'block', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B4C3B', marginBottom: '10px' }}>
                         Discount code
-                      </p>
+                      </label>
                       <div style={{ display: 'flex', gap: '8px' }}>
                         <input
+                          id="discountCode"
                           type="text"
                           value={discountInput}
                           onChange={e => setDiscountInput(e.target.value.toUpperCase())}
                           onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleApplyDiscount())}
                           placeholder="Enter code"
+                          aria-describedby={discountError ? 'discount-error' : undefined}
                           style={{
                             flex: 1,
                             border: '1px solid #E2CEB8',
@@ -378,7 +380,7 @@ export default function PaymentPage() {
                         </button>
                       </div>
                       {discountError && (
-                        <p style={{ fontSize: '12px', color: '#dc2626', marginTop: '6px' }}>{discountError}</p>
+                        <p id="discount-error" role="alert" style={{ fontSize: '12px', color: '#dc2626', marginTop: '6px' }}>{discountError}</p>
                       )}
                     </div>
                   )}
@@ -437,7 +439,7 @@ export default function PaymentPage() {
                   <div id="square-card" style={{ minHeight: '89px' }} />
 
                   {cardError && (
-                    <p style={{ fontSize: '12px', color: '#dc2626', marginTop: '8px' }}>{cardError}</p>
+                    <p role="alert" style={{ fontSize: '12px', color: '#dc2626', marginTop: '8px' }}>{cardError}</p>
                   )}
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#9E7A52', marginTop: '12px' }}>

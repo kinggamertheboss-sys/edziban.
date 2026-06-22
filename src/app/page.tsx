@@ -30,7 +30,7 @@ export default function HomePage() {
 
   return (
     <>
-      <main>
+      <main id="main-content">
 
         {/* ────────────── PROMO BANNER ────────────── */}
         <div style={{
@@ -74,7 +74,7 @@ export default function HomePage() {
           overflow: 'hidden',
         }}>
           {/* Soft radial glow */}
-          <div style={{
+          <div aria-hidden="true" style={{
             position: 'absolute',
             top: '-80px',
             right: '-80px',
@@ -84,7 +84,7 @@ export default function HomePage() {
             background: 'radial-gradient(circle, rgba(196,98,45,0.07) 0%, transparent 68%)',
             pointerEvents: 'none',
           }} />
-          <div style={{
+          <div aria-hidden="true" style={{
             position: 'absolute',
             bottom: '-60px',
             left: '-60px',
@@ -178,7 +178,7 @@ export default function HomePage() {
               </div>
 
               {/* Right: Decorative panel */}
-              <div className="hero-deco" style={{ flexShrink: 0 }}>
+              <div aria-hidden="true" className="hero-deco" style={{ flexShrink: 0 }}>
                 <div style={{
                   width: '240px',
                   height: '420px',
@@ -281,7 +281,7 @@ export default function HomePage() {
               maxWidth: '720px',
               margin: '0 auto',
             }}>
-              <div style={{
+              <div aria-hidden="true" style={{
                 fontFamily: 'var(--font-playfair), Georgia, serif',
                 fontSize: '52px',
                 fontWeight: 700,
@@ -315,11 +315,14 @@ export default function HomePage() {
         </section>
 
         {/* ────────────── MARQUEE ────────────── */}
-        <div style={{
-          background: '#C4622D',
-          padding: '13px 0',
-          overflow: 'hidden',
-        }}>
+        <div
+          aria-hidden="true"
+          style={{
+            background: '#C4622D',
+            padding: '13px 0',
+            overflow: 'hidden',
+          }}
+        >
           <div className="marquee-track" style={{
             display: 'flex',
             alignItems: 'center',
@@ -387,6 +390,7 @@ export default function HomePage() {
                         muted
                         loop
                         playsInline
+                        aria-label={item.name}
                         style={{
                           position: 'absolute',
                           inset: 0,
@@ -525,7 +529,7 @@ export default function HomePage() {
           overflow: 'hidden',
         }}>
           {/* Background oversized letterform */}
-          <div style={{
+          <div aria-hidden="true" style={{
             position: 'absolute',
             right: '-60px',
             top: '50%',
@@ -541,7 +545,7 @@ export default function HomePage() {
           }}>E</div>
 
           {/* Top-left ring decoration */}
-          <div style={{
+          <div aria-hidden="true" style={{
             position: 'absolute',
             top: '-80px', left: '-80px',
             width: '320px', height: '320px',
@@ -549,7 +553,7 @@ export default function HomePage() {
             border: '1px solid rgba(255,248,240,0.1)',
             pointerEvents: 'none',
           }} />
-          <div style={{
+          <div aria-hidden="true" style={{
             position: 'absolute',
             top: '-120px', left: '-120px',
             width: '480px', height: '480px',

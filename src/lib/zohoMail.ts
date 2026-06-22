@@ -124,3 +124,24 @@ export async function sendReply(to: string, subject: string, content: string): P
     throw new Error(d?.data?.errorMessage ?? `Zoho send failed: ${r.status}`)
   }
 }
+
+/** Send a transactional HTML email via Zoho Mail. No sandbox restrictions. */
+export async function sendZohoEmail(to: string, subject: string, html: string): Promise<void> {
+  const [token, accountId] = await Promise.all([getToken(), getAccountId()])
+  const from = process.env.ZOHO_FROM_ADDRESS ?? process.env.ADMIN_EMAIL ?? 'admin@edzibancatering.com'
+  const r = await fetch(`${MAIL_API}/accounts/${accountId}/messages`, {
+    method: 'POST',
+    headers: { Authorization: `Zoho-oauthtoken ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      fromAddress: from,
+      toAddress: to,
+      subject,
+      content: html,
+      mailFormat: 'html',
+    }),
+  })
+  const d = await r.json().catch(() => ({}))
+  if (!r.ok || d?.status?.code !== 200) {
+    throw new Error(d?.data?.errorMessage ?? d?.status?.description ?? `Zoho send failed: ${r.status}`)
+  }
+}

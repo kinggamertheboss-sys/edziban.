@@ -24,7 +24,9 @@ export function getDeliveryFee(distanceRange: string): number {
 }
 
 export function getServiceFee(subtotal: number, deliveryFee: number = 0): number {
-  return Math.round(((subtotal + deliveryFee) * 0.029 + 0.30 + 3.50) * 100) / 100
+  // Gross up so Square's 2.9% is calculated on the full total (including service fee itself),
+  // not just the food subtotal. Formula: fee = (base * 0.029 + 3.80) / (1 - 0.029)
+  return Math.round(((subtotal + deliveryFee) * 0.029 + 3.80) / 0.971 * 100) / 100
 }
 
 export function formatCurrency(amount: number): string {
