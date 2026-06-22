@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" version="1.2" baseProfile="tiny-ps">
+  <title>Edziban</title>
+  <circle cx="50" cy="50" r="50" fill="#1A0F0A"/>
+  <text
+    x="50"
+    y="73"
+    font-family="Georgia, serif"
+    font-size="68"
+    font-weight="700"
+    fill="#C4622D"
+    text-anchor="middle"
+  >E</text>
+</svg>
