@@ -38,25 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${playfair.variable} ${inter.variable} ${cormorant.variable} h-full`}>
       <body className="min-h-full flex flex-col bg-cream antialiased">
-        <a
-          href="#main-content"
-          style={{
-            position: 'absolute',
-            top: '-40px',
-            left: '16px',
-            zIndex: 9999,
-            background: '#1A0F0A',
-            color: '#FFF8F0',
-            padding: '10px 20px',
-            borderRadius: '0 0 8px 8px',
-            fontSize: '14px',
-            fontWeight: 700,
-            textDecoration: 'none',
-            transition: 'top 0.2s',
-          }}
-          onFocus={e => { (e.currentTarget as HTMLAnchorElement).style.top = '0' }}
-          onBlur={e => { (e.currentTarget as HTMLAnchorElement).style.top = '-40px' }}
-        >
+        <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
         <CartProvider>

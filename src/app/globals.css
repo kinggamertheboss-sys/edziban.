@@ -43,6 +43,25 @@ body::after {
 ::-webkit-scrollbar-track { background: #FFF8F0; }
 ::-webkit-scrollbar-thumb { background: #C4622D; border-radius: 2px; }
 
+/* Skip navigation link — hidden until focused by keyboard */
+.skip-link {
+  position: absolute;
+  top: -48px;
+  left: 16px;
+  z-index: 9999;
+  background: #1A0F0A;
+  color: #FFF8F0;
+  padding: 10px 20px;
+  border-radius: 0 0 8px 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 0;
+}
+
 /* Focus visible */
 :focus-visible {
   outline: 3px solid #C4622D;
