@@ -112,8 +112,7 @@ export async function sendReply(to: string, subject: string, content: string): P
     method: 'POST',
     headers: { Authorization: `Zoho-oauthtoken ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      fromAddress: process.env.ADMIN_EMAIL ?? 'admin@edzibancatering.com',
-      fromAddressName: 'Edziban',
+      fromAddress: `Edziban <${process.env.ADMIN_EMAIL ?? 'admin@edzibancatering.com'}>`,
       toAddress: to,
       subject,
       content,
@@ -129,13 +128,13 @@ export async function sendReply(to: string, subject: string, content: string): P
 /** Send a transactional HTML email via Zoho Mail. No sandbox restrictions. */
 export async function sendZohoEmail(to: string, subject: string, html: string): Promise<void> {
   const [token, accountId] = await Promise.all([getToken(), getAccountId()])
-  const from = process.env.ZOHO_FROM_ADDRESS ?? process.env.ADMIN_EMAIL ?? 'admin@edzibancatering.com'
+  const rawFrom = process.env.ZOHO_FROM_ADDRESS ?? process.env.ADMIN_EMAIL ?? 'admin@edzibancatering.com'
+  const from = `Edziban <${rawFrom}>`
   const r = await fetch(`${MAIL_API}/accounts/${accountId}/messages`, {
     method: 'POST',
     headers: { Authorization: `Zoho-oauthtoken ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       fromAddress: from,
-      fromAddressName: 'Edziban',
       toAddress: to,
       subject,
       content: html,
