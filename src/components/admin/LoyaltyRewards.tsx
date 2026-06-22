@@ -15,6 +15,9 @@ interface SentCode {
   is_active: boolean
   customer_email: string
   created_at: string
+  used: boolean
+  used_at: string | null
+  used_order_id: string | null
 }
 
 const GOOD_CUSTOMER_ORDERS = 2   // at least this many completed orders
@@ -116,6 +119,9 @@ export default function LoyaltyRewards({ orders }: { orders: MockOrder[] }) {
           is_active: true,
           customer_email: customer.email,
           created_at: new Date().toISOString(),
+          used: false,
+          used_at: null,
+          used_order_id: null,
         }, ...prev])
         setResults(r => ({ ...r, [customer.email]: { ok: true, msg: `Sent ${data.code} — ${formatCurrency(amount)} off` } }))
         setAmounts(a => ({ ...a, [customer.email]: '' }))
@@ -230,18 +236,44 @@ export default function LoyaltyRewards({ orders }: { orders: MockOrder[] }) {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '260px', flexShrink: 0 }}>
                     {sent ? (
                       <div style={{
-                        background: sent.is_active ? 'rgba(34,197,94,0.08)' : 'rgba(255,255,255,0.04)',
-                        border: `1px solid ${sent.is_active ? 'rgba(34,197,94,0.2)' : D.border}`,
+                        background: sent.used
+                          ? 'rgba(96,165,250,0.06)'
+                          : 'rgba(34,197,94,0.06)',
+                        border: `1px solid ${sent.used ? 'rgba(96,165,250,0.2)' : 'rgba(34,197,94,0.2)'}`,
                         borderRadius: '12px', padding: '14px 16px',
                       }}>
-                        <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: sent.is_active ? '#22C55E' : D.faint, marginBottom: '4px' }}>
-                          {sent.is_active ? 'Active code' : 'Redeemed'}
-                        </p>
-                        <p style={{ fontFamily: 'monospace', fontSize: '18px', fontWeight: 700, color: sent.is_active ? '#22C55E' : D.muted, letterSpacing: '0.08em', marginBottom: '4px' }}>
+                        {/* Status pill */}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <span style={{
+                            fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+                            color: sent.used ? '#60A5FA' : '#22C55E',
+                          }}>
+                            {sent.used ? 'Redeemed' : 'Active — not yet used'}
+                          </span>
+                          {sent.used && sent.used_order_id && (
+                            <span style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(96,165,250,0.7)', fontFamily: 'monospace' }}>
+                              {sent.used_order_id}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Code */}
+                        <p style={{
+                          fontFamily: 'monospace', fontSize: '18px', fontWeight: 700,
+                          color: sent.used ? 'rgba(255,248,240,0.35)' : '#22C55E',
+                          letterSpacing: '0.08em', marginBottom: '6px',
+                          textDecoration: sent.used ? 'line-through' : 'none',
+                        }}>
                           {sent.code}
                         </p>
-                        <p style={{ fontSize: '11px', color: D.faint }}>
-                          {formatCurrency(sent.amount)} off · sent {new Date(sent.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+
+                        {/* Meta */}
+                        <p style={{ fontSize: '11px', color: D.faint, lineHeight: 1.6 }}>
+                          {formatCurrency(sent.amount)} off
+                          {' · '}sent {new Date(sent.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          {sent.used && sent.used_at && (
+                            <> · used {new Date(sent.used_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</>
+                          )}
                         </p>
                       </div>
                     ) : (

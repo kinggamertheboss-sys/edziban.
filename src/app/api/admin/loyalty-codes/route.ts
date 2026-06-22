@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// List loyalty codes sent — used by the admin component to show sent history
+// List loyalty codes with redemption status
 export async function GET(req: NextRequest) {
   const rl = checkLimit(getClientIp(req) + ':loyalty-codes-get', 60, 60 * 1000)
   if (!rl.allowed) return deny(rl)
@@ -110,13 +110,36 @@ export async function GET(req: NextRequest) {
     const db = getAdminClient()
     const { data, error } = await db
       .from('discount_codes')
-      .select('code, amount, is_active, customer_email, created_at')
+      .select(`
+        code, amount, is_active, customer_email, created_at,
+        discount_code_uses ( order_id, created_at )
+      `)
       .ilike('code', 'LOYAL-%')
       .order('created_at', { ascending: false })
       .limit(sanitizeInt(new URL(req.url).searchParams.get('limit') ?? '100', 1, 500))
 
     if (error) throw error
-    return NextResponse.json({ codes: data ?? [] })
+
+    // Flatten: attach used_at and used_order_id directly to each code
+    const codes = (data ?? []).map((row: {
+      code: string; amount: number; is_active: boolean;
+      customer_email: string; created_at: string;
+      discount_code_uses: { order_id: string; created_at: string }[]
+    }) => {
+      const use = row.discount_code_uses?.[0] ?? null
+      return {
+        code: row.code,
+        amount: row.amount,
+        is_active: row.is_active,
+        customer_email: row.customer_email,
+        created_at: row.created_at,
+        used: !!use,
+        used_at: use?.created_at ?? null,
+        used_order_id: use?.order_id ?? null,
+      }
+    })
+
+    return NextResponse.json({ codes })
   } catch (e) {
     console.error('[LOYALTY GET]', e)
     return NextResponse.json({ error: 'Failed to fetch loyalty codes' }, { status: 500 })
