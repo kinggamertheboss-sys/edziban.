@@ -319,17 +319,21 @@ export default function PaymentPage() {
                       borderRadius: '10px', padding: '12px 16px',
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22803a" strokeWidth="2.5" strokeLinecap="round">
+                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22803a" strokeWidth="2.5" strokeLinecap="round">
                           <polyline points="20 6 9 17 4 12"/>
                         </svg>
                         <span style={{ fontSize: '13px', fontWeight: 600, color: '#22803a' }}>
                           Code <span style={{ fontFamily: 'monospace', letterSpacing: '0.06em' }}>{appliedCode}</span> — {formatCurrency(discountAmount)} off
                         </span>
                       </div>
-                      <button onClick={handleRemoveDiscount} style={{
-                        background: 'none', border: 'none', cursor: 'pointer',
-                        fontSize: '12px', color: '#9E7A52', textDecoration: 'underline',
-                      }}>Remove</button>
+                      <button
+                        onClick={handleRemoveDiscount}
+                        aria-label={`Remove discount code ${appliedCode}`}
+                        style={{
+                          background: 'none', border: 'none', cursor: 'pointer',
+                          fontSize: '12px', color: '#6B4C3B', textDecoration: 'underline',
+                        }}
+                      >Remove</button>
                     </div>
                   ) : (
                     <div>
@@ -375,8 +379,9 @@ export default function PaymentPage() {
                             opacity: discountLoading || !discountInput.trim() ? 0.5 : 1,
                             whiteSpace: 'nowrap',
                           }}
+                          aria-label={discountLoading ? 'Applying discount code' : 'Apply discount code'}
                         >
-                          {discountLoading ? '...' : 'Apply'}
+                          {discountLoading ? 'Applying…' : 'Apply'}
                         </button>
                       </div>
                       {discountError && (

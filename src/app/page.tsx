@@ -52,8 +52,8 @@ export default function HomePage() {
               <span style={{ color: '#C4622D', fontWeight: 700 }}>$10 off</span>
               {' '}your first order — use code{' '}
               <span style={{
-                background: 'rgba(196,98,45,0.18)',
-                color: '#C4622D',
+                background: 'rgba(196,98,45,0.35)',
+                color: '#FFF8F0',
                 fontWeight: 700,
                 padding: '1px 7px',
                 borderRadius: '4px',
