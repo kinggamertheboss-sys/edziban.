@@ -371,11 +371,12 @@ export async function POST(req: NextRequest) {
 
     const adminEmail = process.env.ADMIN_EMAIL ?? EDZIBAN_CONFIG.myEmail
 
-    Promise.all([
+    await Promise.all([
       sendSMS(
         clean.customerPhone,
         `Edziban: Hi ${clean.customerName}, order received. ${itemsText}. Total: $${serverNetTotal.toFixed(2)}. ${clean.fulfillmentType === 'delivery' ? 'Delivery' : 'Pickup'} on ${clean.requestedDate}. We confirm within 24hrs.`,
-        'customer'
+        'customer',
+        orderNumber,
       ),
       sendEmail(
         clean.customerEmail,

@@ -69,7 +69,7 @@ export interface NotifResult {
 
 // ── SMS (AWS SNS) ──────────────────────────────────────────────────────────
 
-export async function sendSMS(to: string, message: string, recipientLabel = 'customer'): Promise<NotifResult> {
+export async function sendSMS(to: string, message: string, recipientLabel = 'customer', orderId?: string): Promise<NotifResult> {
   const result: NotifResult = { type: 'sms', recipient: recipientLabel, to, preview: message.slice(0, 80), mock: false, success: false }
 
   const masked = to.slice(0, 4) + '****' + to.slice(-2)
@@ -98,9 +98,11 @@ export async function sendSMS(to: string, message: string, recipientLabel = 'cus
       },
     }))
     console.log(`[SMS] Sent successfully to ${to}`)
+    if (orderId) logNotification({ orderId, type: 'sms', recipient: recipientLabel, toAddress: to, subject: message.slice(0, 80), success: true, provider: 'sns' }).catch(() => {})
     return { ...result, success: true }
   } catch (e) {
     console.error(`[SMS] Error:`, e)
+    if (orderId) logNotification({ orderId, type: 'sms', recipient: recipientLabel, toAddress: to, subject: message.slice(0, 80), success: false, provider: 'sns' }).catch(() => {})
     return { ...result, success: false, error: String(e) }
   }
 }
