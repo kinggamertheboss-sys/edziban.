@@ -24,11 +24,12 @@ const PROTECTED_APIS: string[] = [
   '/api/batch',
   '/api/suppliers',
   '/api/supplier-contacts',
-  '/api/notifications/order-received',
+  '/api/admin/inbox',
+  '/api/admin/loyalty-codes',
+  '/api/admin/notification-logs',
   '/api/notifications/order-confirmed',
   '/api/notifications/order-ready',
   '/api/notifications/review-request',
-  '/api/admin/inbox',
 ]
 
 export async function proxy(req: NextRequest) {
@@ -74,7 +75,9 @@ export const config = {
     '/api/batch/:path*',
     '/api/suppliers/:path*',
     '/api/supplier-contacts/:path*',
-    '/api/notifications/order-received/:path*',
+    '/api/admin/inbox/:path*',
+    '/api/admin/loyalty-codes/:path*',
+    '/api/admin/notification-logs/:path*',
     '/api/notifications/order-confirmed/:path*',
     '/api/notifications/order-ready/:path*',
     '/api/notifications/review-request/:path*',
