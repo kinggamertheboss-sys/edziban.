@@ -113,6 +113,7 @@ export async function sendReply(to: string, subject: string, content: string): P
     headers: { Authorization: `Zoho-oauthtoken ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       fromAddress: process.env.ADMIN_EMAIL ?? 'admin@edzibancatering.com',
+      fromAddressName: 'Edziban',
       toAddress: to,
       subject,
       content,
@@ -134,6 +135,7 @@ export async function sendZohoEmail(to: string, subject: string, html: string): 
     headers: { Authorization: `Zoho-oauthtoken ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       fromAddress: from,
+      fromAddressName: 'Edziban',
       toAddress: to,
       subject,
       content: html,
