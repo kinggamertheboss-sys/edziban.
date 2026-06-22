@@ -37,6 +37,9 @@ export default function HomePage() {
           background: '#1A0F0A',
           padding: '10px 0',
           textAlign: 'center',
+          position: 'sticky',
+          top: '76px',
+          zIndex: 39,
         }}>
           <div className="wrap">
             <p style={{
