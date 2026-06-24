@@ -17,6 +17,19 @@ declare global {
         }>
       }>
     }
+    google?: {
+      maps: {
+        places: {
+          Autocomplete: new (
+            input: HTMLInputElement,
+            opts?: { componentRestrictions?: { country: string }; types?: string[] }
+          ) => {
+            addListener: (event: string, cb: () => void) => void
+            getPlace: () => { formatted_address?: string }
+          }
+        }
+      }
+    }
   }
 }
 
@@ -54,11 +67,13 @@ export default function OrderNowPage() {
 
   // Payment
   const [sdkReady, setSdkReady] = useState(false)
+  const [mapsReady, setMapsReady] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [orderNumber, setOrderNumber] = useState('')
   const cardRef = useRef<{ tokenize: () => Promise<{ status: string; token?: string; errors?: { message: string }[] }> } | null>(null)
   const cardInitialized = useRef(false)
+  const addressInputRef = useRef<HTMLInputElement>(null)
 
   const open = isOrderingOpen()
 
@@ -120,6 +135,22 @@ export default function OrderNowPage() {
       setFeeLoading(false)
     }
   }, [])
+
+  // Google Places autocomplete — init when checkout opens and Maps SDK is ready
+  useEffect(() => {
+    if (step !== 'checkout' || !mapsReady || !addressInputRef.current || !window.google?.maps?.places) return
+    const autocomplete = new window.google.maps.places.Autocomplete(addressInputRef.current, {
+      componentRestrictions: { country: 'us' },
+      types: ['address'],
+    })
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace()
+      if (place.formatted_address) {
+        setAddress(place.formatted_address)
+        fetchDeliveryFee(place.formatted_address)
+      }
+    })
+  }, [step, mapsReady, fetchDeliveryFee])
 
   const handleAddressChange = (val: string) => {
     setAddress(val)
@@ -206,6 +237,10 @@ export default function OrderNowPage() {
       <Script
         src="https://web.squarecdn.com/v1/square.js"
         onLoad={() => setSdkReady(true)}
+      />
+      <Script
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+        onLoad={() => setMapsReady(true)}
       />
 
       <div style={{ minHeight: '100vh', background: '#FFF8F0', paddingTop: '76px' }}>
@@ -431,10 +466,12 @@ export default function OrderNowPage() {
                         <div>
                           <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4C3B', marginBottom: '6px' }}>Delivery Address *</label>
                           <input
+                            ref={addressInputRef}
                             type="text"
                             value={address}
                             onChange={e => handleAddressChange(e.target.value)}
-                            placeholder="123 Main St, Brockton, MA"
+                            placeholder="Start typing your address…"
+                            autoComplete="off"
                             style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: `1.5px solid ${feeError ? '#FF6B6B' : '#E2CEB8'}`, background: '#FEFAF6', fontSize: '14px', color: '#1A0F0A', outline: 'none', boxSizing: 'border-box' }}
                           />
                           {feeLoading && <p style={{ margin: '6px 0 0', fontSize: '12px', color: '#A08070' }}>Calculating…</p>}
