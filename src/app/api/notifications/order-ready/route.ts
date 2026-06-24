@@ -11,7 +11,7 @@ import { checkLimit, deny, getClientIp } from '@/lib/rateLimit'
 const ALLOWED_KEYS = new Set([
   'orderNumber', 'customerName', 'customerPhone', 'customerEmail',
   'items', 'subtotal', 'serviceFee', 'deliveryFee', 'total',
-  'fulfillmentType', 'address', 'requestedDate', 'requestedTime', 'specialInstructions',
+  'fulfillmentType', 'address', 'requestedDate', 'requestedTime', 'specialInstructions', 'eventType',
 ])
 const ALLOWED_ITEM_KEYS = new Set(['name', 'quantity', 'unitPrice'])
 
@@ -52,16 +52,15 @@ export async function POST(req: NextRequest) {
   console.log(`\n========== ORDER READY: ${data.orderNumber} ==========`)
 
   const isPickup = data.fulfillmentType === 'pickup'
+  const isPlate = (data as OrderEmailData & { eventType?: string }).eventType === 'plate'
 
-  const customerSMS = isPickup
-    ? `Your Edziban order is ready! 🇬🇭\n` +
-      `Head to ${EDZIBAN_CONFIG.pickupLocation} anytime between ${timeLabel(data.requestedTime)}.\n` +
-      `Bring your order number: ${data.orderNumber}\n` +
-      `See you soon! - Edziban`
-    : `Your Edziban order is ready! 🇬🇭\n` +
-      `Your order is on its way!\n` +
-      `Estimated arrival: ${timeLabel(data.requestedTime)} today.\n` +
-      `Order: ${data.orderNumber} - Edziban`
+  const customerSMS = isPlate
+    ? isPickup
+      ? `Edziban: Your order ${data.orderNumber} is ready for pickup! Head to ${EDZIBAN_CONFIG.pickupLocation}. See you soon!`
+      : `Edziban: Your order ${data.orderNumber} is on its way to you now! We'll be there shortly.`
+    : isPickup
+      ? `Your Edziban order is ready! Head to ${EDZIBAN_CONFIG.pickupLocation} anytime between ${timeLabel(data.requestedTime)}. Order: ${data.orderNumber} - Edziban`
+      : `Your Edziban order is on its way! Estimated arrival: ${timeLabel(data.requestedTime)} today. Order: ${data.orderNumber} - Edziban`
 
   const notifications = await Promise.all([
 
