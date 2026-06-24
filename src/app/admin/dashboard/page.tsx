@@ -102,7 +102,7 @@ export default function AdminDashboard() {
   const [expanded, setExpanded] = useState<string | null>(null)
   const [loadingBtn, setLoadingBtn] = useState<string | null>(null)
   const [notifLogs, setNotifLogs] = useState<Record<string, NotifLog[]>>({})
-  const [activeTab, setActiveTab] = useState<'orders' | 'payouts' | 'supplier' | 'financials' | 'corporate' | 'inbox' | 'loyalty' | 'notifications'>('orders')
+  const [activeTab, setActiveTab] = useState<'orders' | 'suppliers' | 'financials' | 'corporate' | 'inbox' | 'loyalty' | 'notifications'>('orders')
   const [paidPayouts, setPaidPayouts] = useState<PayoutRecord[]>([])
   const [payingKey, setPayingKey] = useState<string | null>(null)
   const [payMethod, setPayMethod] = useState<'check' | 'zelle'>('zelle')
@@ -435,7 +435,7 @@ export default function AdminDashboard() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
                       <span style={{ fontSize: '11px', fontWeight: 700, color: urgency.dot }}>{urgency.label} away</span>
-                      <button onClick={() => setActiveTab('supplier')} style={{
+                      <button onClick={() => setActiveTab('suppliers')} style={{
                         fontSize: '11px', fontWeight: 700, padding: '6px 14px', borderRadius: '100px',
                         border: `1px solid ${D.border}`, background: 'transparent', color: D.muted, cursor: 'pointer',
                       }}>Contact →</button>
@@ -452,13 +452,13 @@ export default function AdminDashboard() {
           const actionNeededCount = displayOrders.filter(o => ['pending', 'confirmed', 'supplier_notified'].includes(getStatus(o.id))).length
           const tabBadge: Record<string, number> = {}
           if (actionNeededCount > 0) tabBadge['orders'] = actionNeededCount
-          if (vendorPayouts.filter(v => v.balanceDue > 0).length > 0) tabBadge['payouts'] = vendorPayouts.filter(v => v.balanceDue > 0).length
+          if (vendorPayouts.filter(v => v.balanceDue > 0).length > 0) tabBadge['suppliers'] = vendorPayouts.filter(v => v.balanceDue > 0).length
 
-          const TAB_LABELS: Record<string, string> = { orders: 'Orders', payouts: 'Payouts', supplier: 'Suppliers', financials: 'Financials', corporate: 'Corporate', inbox: 'Inbox', loyalty: 'Loyalty', notifications: 'Notifications' }
+          const TAB_LABELS: Record<string, string> = { orders: 'Orders', suppliers: 'Suppliers', financials: 'Financials', corporate: 'Corporate', inbox: 'Inbox', loyalty: 'Loyalty', notifications: 'Notifications' }
 
           return (
             <div style={{ display: 'flex', gap: '4px', marginBottom: '24px', background: D.card, border: `1px solid ${D.border}`, borderRadius: '12px', padding: '4px', width: 'fit-content', flexWrap: 'wrap' }}>
-              {(['orders', 'payouts', 'supplier', 'financials', 'corporate', 'inbox', 'loyalty', 'notifications'] as const).map(tab => {
+              {(['orders', 'suppliers', 'financials', 'corporate', 'inbox', 'loyalty', 'notifications'] as const).map(tab => {
                 const badge = tabBadge[tab]
                 const isActive = activeTab === tab
                 return (
@@ -493,8 +493,8 @@ export default function AdminDashboard() {
         })()}
 
 
-        {/* ── PAYOUTS tab ────────────────────────────────────────────────── */}
-        {activeTab === 'payouts' && (
+        {/* ── SUPPLIERS tab (payouts + supplier hub combined) ────────────── */}
+        {activeTab === 'suppliers' && (
           <div>
             {/* Summary bar */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '28px' }}>
@@ -633,12 +633,15 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* ── SUPPLIER HUB tab ───────────────────────────────────────────── */}
-        {activeTab === 'supplier' && (
-          <SupplierHub
-            orders={displayOrders}
-            paidPayouts={paidPayouts.map(p => ({ orderId: p.orderId, supplierId: p.supplierId, amount: p.amount }))}
-          />
+        {/* Supplier Hub section appended inside the suppliers tab */}
+        {activeTab === 'suppliers' && (
+          <div style={{ marginTop: '32px', borderTop: `1px solid ${D.border}`, paddingTop: '32px' }}>
+            <p className="label-upper" style={{ color: D.faint, marginBottom: '20px' }}>Supplier Hub</p>
+            <SupplierHub
+              orders={displayOrders}
+              paidPayouts={paidPayouts.map(p => ({ orderId: p.orderId, supplierId: p.supplierId, amount: p.amount }))}
+            />
+          </div>
         )}
 
 
