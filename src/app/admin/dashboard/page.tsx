@@ -70,6 +70,15 @@ const PIPELINE: Record<string, PipelineStep> = {
   reviewed:  { label: 'Mark Completed', apiRoute: null, nextStatus: 'completed', color: '#6B7280', icon: '✓' },
 }
 
+// Plate orders are pre-paid — skip "Confirm" step, go straight to prep → ready → delivered
+const PLATE_PIPELINE: Record<string, PipelineStep> = {
+  pending:   { label: 'Mark Ready', apiRoute: '/api/notifications/order-ready', nextStatus: 'ready', color: '#4ADE80', icon: '✓' },
+  confirmed: { label: 'Mark Ready', apiRoute: '/api/notifications/order-ready', nextStatus: 'ready', color: '#4ADE80', icon: '✓' },
+  ready:     { label: 'Mark Delivered', apiRoute: null, nextStatus: 'delivered', color: '#22C55E', icon: '✓' },
+  delivered: { label: 'Request Review', apiRoute: '/api/notifications/review-request', nextStatus: 'reviewed', color: '#9CA3AF', icon: '★' },
+  reviewed:  { label: 'Mark Completed', apiRoute: null, nextStatus: 'completed', color: '#6B7280', icon: '✓' },
+}
+
 const ALL_STATUSES = ['all', 'pending', 'confirmed', 'supplier_notified', 'ready', 'delivered', 'reviewed', 'completed']
 
 
@@ -714,7 +723,7 @@ export default function AdminDashboard() {
                 const status = getStatus(order.id)
                 const isExpanded = expanded === order.id
                 const st = statusStyle(status)
-                const pipelineStep = PIPELINE[status]
+                const pipelineStep = (order.eventType === 'plate' ? PLATE_PIPELINE : PIPELINE)[status]
                 const logs = notifLogs[order.id] ?? []
                 const btnKey = `${order.id}-pipeline`
 
@@ -743,13 +752,16 @@ export default function AdminDashboard() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '6px' }}>
                           <p style={{ fontSize: '15px', fontWeight: 700, color: D.text }}>{order.customerName}</p>
                           <span className="badge" style={{ background: st.bg, color: st.color }}>{getStatusLabel(status)}</span>
-                          {pipelineStep && (
+                          {order.eventType === 'plate' && (
+                            <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(196,98,45,0.12)', color: '#C4622D', padding: '2px 8px', borderRadius: '100px', border: '1px solid rgba(196,98,45,0.25)' }}>PLATE ORDER</span>
+                          )}
+                          {pipelineStep && order.eventType !== 'plate' && (
                             <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: pipelineStep.color, opacity: 0.8 }}>
                               Next: {pipelineStep.label}
                             </span>
                           )}
                         </div>
-                        <p style={{ fontSize: '12px', color: D.muted }}>{order.id} &nbsp;·&nbsp; {order.requestedDate} &nbsp;·&nbsp; {order.fulfillmentType}</p>
+                        <p style={{ fontSize: '12px', color: D.muted }}>{order.id} &nbsp;·&nbsp; {order.eventType === 'plate' ? 'Today · ASAP' : order.requestedDate} &nbsp;·&nbsp; {order.fulfillmentType}</p>
                       </div>
                       <div style={{ textAlign: 'right', flexShrink: 0 }}>
                         <p style={{ fontSize: '16px', fontWeight: 700, color: D.text }}>{formatCurrency(order.total)}</p>
@@ -863,8 +875,10 @@ export default function AdminDashboard() {
                             { title: 'Fulfillment', rows: [
                               { l: 'Type',  v: order.fulfillmentType },
                               ...(order.address ? [{ l: 'Address', v: order.address }] : []),
-                              { l: 'Date',  v: order.requestedDate },
-                              { l: 'Time',  v: getTimeLabel(order.requestedTime) },
+                              ...(order.eventType === 'plate'
+                                ? [{ l: 'When', v: 'Today · ASAP (5pm)' }]
+                                : [{ l: 'Date', v: order.requestedDate }, { l: 'Time', v: getTimeLabel(order.requestedTime) }]
+                              ),
                             ]},
                           ].map(col => (
                             <div key={col.title}>

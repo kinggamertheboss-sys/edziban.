@@ -84,18 +84,31 @@ function itemsTable(items: OrderEmailData['items']) {
 
 // ── 1. Order Received ──────────────────────────────────────────────────────
 export function orderReceivedEmail(data: OrderEmailData): string {
+  const isPlate = data.eventType === 'plate'
   const isCorporate = data.eventType === 'Student Organization' || data.eventType === 'Corporate Event'
   const hours = isCorporate ? '48' : '24'
   const orderTypeLabel = data.eventType === 'Student Organization' ? 'Student Organization Order'
     : data.eventType === 'Corporate Event' ? 'Corporate Order'
     : ''
+
+  const fulfillmentDetail = isPlate
+    ? (data.fulfillmentType === 'delivery'
+        ? `<tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;width:100px;">Delivery to</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${esc(data.address ?? '')}</td></tr>`
+        : `<tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;width:100px;">Pickup from</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">Randolph, MA 02368 — we'll text you when it's ready</td></tr>`)
+    : `${data.address ? `<tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Address</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${esc(data.address)}</td></tr>` : '<tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Location</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">Randolph, MA 02368</td></tr>'}
+          <tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Date</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${esc(data.requestedDate)}</td></tr>
+          <tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Time</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${timeLabel(data.requestedTime)}</td></tr>`
+
   const content = `
     <tr>
       <td style="padding:36px 40px 0;">
-        ${orderTypeLabel ? `<p style="margin:0 0 8px;display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#C4622D;background:rgba(196,98,45,0.08);border:1px solid rgba(196,98,45,0.2);border-radius:100px;padding:4px 12px;">${orderTypeLabel}</p><br/>` : ''}
-        <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#C4622D;">Order Received</p>
-        <h1 style="margin:0 0 8px;font-size:28px;font-weight:700;color:#1A0F0A;letter-spacing:-0.02em;">Thank you, ${esc(data.customerName)}.</h1>
-        <p style="margin:0;font-size:15px;color:#6B4C3B;line-height:1.7;">Your order has been received and is currently under review. You will receive a confirmation email within ${hours} hours once it has been approved.</p>
+        ${!isPlate && orderTypeLabel ? `<p style="margin:0 0 8px;display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#C4622D;background:rgba(196,98,45,0.08);border:1px solid rgba(196,98,45,0.2);border-radius:100px;padding:4px 12px;">${orderTypeLabel}</p><br/>` : ''}
+        <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${isPlate ? '#22C55E' : '#C4622D'};">${isPlate ? 'Order Confirmed' : 'Order Received'}</p>
+        <h1 style="margin:0 0 8px;font-size:28px;font-weight:700;color:#1A0F0A;letter-spacing:-0.02em;">${isPlate ? `Your order is confirmed, ${esc(data.customerName)}.` : `Thank you, ${esc(data.customerName)}.`}</h1>
+        <p style="margin:0;font-size:15px;color:#6B4C3B;line-height:1.7;">${isPlate
+          ? `Your payment was received and your food is being prepared. ${data.fulfillmentType === 'delivery' ? 'We\'ll be on our way to you around 5pm.' : 'We\'ll text you when it\'s ready for pickup.'}`
+          : `Your order has been received and is currently under review. You will receive a confirmation email within ${hours} hours once it has been approved.`
+        }</p>
       </td>
     </tr>
     <tr>
@@ -112,7 +125,7 @@ export function orderReceivedEmail(data: OrderEmailData): string {
         ${itemsTable(data.items)}
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:16px;">
           <tr><td style="font-size:13px;color:#6B4C3B;padding:6px 0;">Subtotal</td><td style="font-size:13px;color:#1A0F0A;text-align:right;padding:6px 0;">${money(data.subtotal)}</td></tr>
-          <tr><td style="font-size:13px;color:#6B4C3B;padding:6px 0;">Service fee</td><td style="font-size:13px;color:#1A0F0A;text-align:right;padding:6px 0;">${money(data.serviceFee)}</td></tr>
+          <tr><td style="font-size:13px;color:#6B4C3B;padding:6px 0;">Processing fee</td><td style="font-size:13px;color:#1A0F0A;text-align:right;padding:6px 0;">${money(data.serviceFee)}</td></tr>
           ${data.deliveryFee > 0 ? `<tr><td style="font-size:13px;color:#6B4C3B;padding:6px 0;">Delivery fee</td><td style="font-size:13px;color:#1A0F0A;text-align:right;padding:6px 0;">${money(data.deliveryFee)}</td></tr>` : ''}
           <tr><td style="font-size:15px;font-weight:700;color:#1A0F0A;padding:12px 0 0;border-top:2px solid #1A0F0A;">Total</td><td style="font-size:15px;font-weight:700;color:#C4622D;text-align:right;padding:12px 0 0;border-top:2px solid #1A0F0A;">${money(data.total)}</td></tr>
         </table>
@@ -120,25 +133,28 @@ export function orderReceivedEmail(data: OrderEmailData): string {
     </tr>
     <tr>
       <td style="padding:28px 40px 0;">
-        <p style="margin:0 0 16px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#6B4C3B;">Delivery Details</p>
+        <p style="margin:0 0 16px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#6B4C3B;">${isPlate ? 'Order Details' : 'Delivery Details'}</p>
         <table width="100%" cellpadding="0" cellspacing="0" border="0">
           <tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;width:100px;">Type</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;text-transform:capitalize;">${esc(data.fulfillmentType)}</td></tr>
-          ${data.address ? `<tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Address</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${esc(data.address)}</td></tr>` : '<tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Location</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">Randolph, MA 02368</td></tr>'}
-          <tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Date</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${esc(data.requestedDate)}</td></tr>
-          <tr><td style="font-size:13px;color:#6B4C3B;padding:5px 0;">Time</td><td style="font-size:13px;color:#1A0F0A;font-weight:600;">${timeLabel(data.requestedTime)}</td></tr>
+          ${fulfillmentDetail}
         </table>
       </td>
     </tr>
     <tr>
       <td style="padding:28px 40px 36px;">
-        <div style="background:#FFF0E8;border-left:4px solid #C4622D;border-radius:0 8px 8px 0;padding:16px 20px;">
-          <p style="margin:0;font-size:13px;color:#6B4C3B;line-height:1.7;">Our team will review your order and send a confirmation email within <strong style="color:#1A0F0A;">${hours} hours</strong> with everything you need to know ahead of your event.</p>
+        <div style="background:${isPlate ? '#F0FFF4' : '#FFF0E8'};border-left:4px solid ${isPlate ? '#22C55E' : '#C4622D'};border-radius:0 8px 8px 0;padding:16px 20px;">
+          <p style="margin:0;font-size:13px;color:#6B4C3B;line-height:1.7;">${isPlate
+            ? `Questions? Reply to this email or call/text us at <strong style="color:#1A0F0A;">${EDZIBAN_PHONE}</strong>.`
+            : `Our team will review your order and send a confirmation email within <strong style="color:#1A0F0A;">${hours} hours</strong> with everything you need to know ahead of your event.`
+          }</p>
         </div>
       </td>
     </tr>`
 
   return baseWrapper(content)
 }
+
+const EDZIBAN_PHONE = '(617) 000-0000'
 
 // ── 2. Order Confirmed ─────────────────────────────────────────────────────
 export function orderConfirmedEmail(data: OrderEmailData): string {
