@@ -84,14 +84,15 @@ export async function POST(req: NextRequest) {
   const rl = checkLimit(getClientIp(req) + ':manychat', 300, 60 * 1000)
   if (!rl.allowed) return deny(rl)
 
-  // Verify shared secret if configured — set MANYCHAT_WEBHOOK_SECRET in .env and in
+  // Require shared secret — set MANYCHAT_WEBHOOK_SECRET in .env and in
   // Manychat External Request → Headers → "x-webhook-secret: <your-secret>"
   const webhookSecret = process.env.MANYCHAT_WEBHOOK_SECRET
-  if (webhookSecret) {
-    const provided = req.headers.get('x-webhook-secret') ?? ''
-    if (!safeCompare(provided, webhookSecret)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+  if (!webhookSecret) {
+    return NextResponse.json({ error: 'Webhook not configured' }, { status: 503 })
+  }
+  const provided = req.headers.get('x-webhook-secret') ?? ''
+  if (!safeCompare(provided, webhookSecret)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const raw = await req.json()

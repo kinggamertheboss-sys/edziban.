@@ -33,18 +33,11 @@ export async function POST(req: NextRequest) {
       .eq('code', code)
       .single()
 
-    if (codeError || !codeData) {
-      return NextResponse.json({ valid: false, error: 'Invalid discount code' })
-    }
+    const INVALID = { valid: false, error: 'Invalid or expired discount code' }
 
-    if (!codeData.is_active) {
-      return NextResponse.json({ valid: false, error: 'This code is no longer active' })
-    }
-
-    // Loyalty codes are tied to a specific customer email
-    if (codeData.customer_email && codeData.customer_email !== email) {
-      return NextResponse.json({ valid: false, error: 'This code is not valid for your account' })
-    }
+    if (codeError || !codeData) return NextResponse.json(INVALID)
+    if (!codeData.is_active) return NextResponse.json(INVALID)
+    if (codeData.customer_email && codeData.customer_email !== email) return NextResponse.json(INVALID)
 
     if (codeData.single_use) {
       const { data: existing } = await db

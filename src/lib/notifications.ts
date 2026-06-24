@@ -82,7 +82,7 @@ export async function sendSMS(to: string, message: string, recipientLabel = 'cus
   const region = process.env.AWS_REGION ?? 'us-east-1'
 
   if (!accessKeyId || !secretAccessKey) {
-    console.log(`[SMS] MOCK MODE — no AWS keys. Would send to ${to}.`)
+    console.log(`[SMS] MOCK MODE — no AWS keys. Would send to ${masked}.`)
     return { ...result, mock: true, success: true }
   }
 
@@ -97,7 +97,7 @@ export async function sendSMS(to: string, message: string, recipientLabel = 'cus
         'AWS.SNS.SMS.SenderID': { DataType: 'String', StringValue: 'Edziban' },
       },
     }))
-    console.log(`[SMS] Sent successfully to ${to}`)
+    console.log(`[SMS] Sent successfully to ${masked}`)
     if (orderId) logNotification({ orderId, type: 'sms', recipient: recipientLabel, toAddress: to, subject: message.slice(0, 80), success: true, provider: 'sns' }).catch(() => {})
     return { ...result, success: true }
   } catch (e) {
@@ -133,7 +133,7 @@ export async function sendEmail(
     try {
       const { sendZohoEmail } = await import('./zohoMail')
       await sendZohoEmail(to, subject, html)
-      console.log(`[EMAIL] Sent via Zoho to ${to}`)
+      console.log(`[EMAIL] Sent via Zoho to ${maskedEmail}`)
       provider = 'zoho'
       if (orderId) logNotification({ orderId, type: 'email', recipient: recipientLabel, toAddress: to, subject, success: true, provider }).catch(() => {})
       return { ...result, success: true }
@@ -149,7 +149,7 @@ export async function sendEmail(
   const from = process.env.AWS_SES_FROM ?? 'Edziban <orders@edzibancatering.com>'
 
   if (!accessKeyId || !secretAccessKey) {
-    console.log(`[EMAIL] MOCK MODE — no email provider configured. Would email ${to}: "${subject}"`)
+    console.log(`[EMAIL] MOCK MODE — no email provider configured. Would email ${maskedEmail}: "${subject}"`)
     provider = 'mock'
     if (orderId) logNotification({ orderId, type: 'email', recipient: recipientLabel, toAddress: to, subject, success: false, provider }).catch(() => {})
     return { ...result, mock: true, success: true }
@@ -166,7 +166,7 @@ export async function sendEmail(
         Body: { Html: { Data: html, Charset: 'UTF-8' } },
       },
     }))
-    console.log(`[EMAIL] Sent via SES to ${to}`)
+    console.log(`[EMAIL] Sent via SES to ${maskedEmail}`)
     provider = 'ses'
     if (orderId) logNotification({ orderId, type: 'email', recipient: recipientLabel, toAddress: to, subject, success: true, provider }).catch(() => {})
     return { ...result, success: true }
@@ -184,9 +184,8 @@ export async function sendEmail(
 
 export async function sendWhatsApp(to: string, message: string, recipientLabel = 'admin', context: Record<string, unknown> = {}): Promise<NotifResult> {
   const result: NotifResult = { type: 'whatsapp', recipient: recipientLabel, to, preview: message.slice(0, 80), mock: false, success: false }
-
-  console.log(`\n[WHATSAPP] ── To: ${to} (${recipientLabel}) ──`)
-  console.log(`[WHATSAPP] ${message}`)
+  const maskedWA = to.slice(0, 4) + '****' + to.slice(-2)
+  console.log(`\n[WHATSAPP] ── To: ${maskedWA} (${recipientLabel}) ──`)
 
   // ADD_KEY_HERE: Set MAKE_WHATSAPP_WEBHOOK in .env.local
   // This is the webhook URL from your Make.com scenario
@@ -217,8 +216,7 @@ export async function sendWhatsApp(to: string, message: string, recipientLabel =
 // For triggering any Make.com scenario (order alerts, automations, etc.)
 
 export async function triggerMakeWebhook(eventType: string, payload: Record<string, unknown>): Promise<void> {
-  console.log(`\n[MAKE] Triggering scenario: ${eventType}`)
-  console.log(`[MAKE] Payload:`, JSON.stringify(payload, null, 2))
+  console.log(`\n[MAKE] Triggering scenario: ${eventType} — keys: ${Object.keys(payload).join(', ')}`)
 
   // ADD_KEY_HERE: Set MAKE_ORDER_WEBHOOK in .env.local
   // This is your general Edziban automation webhook on Make.com

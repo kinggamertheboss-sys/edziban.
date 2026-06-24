@@ -342,7 +342,7 @@ export default function AdminDashboard() {
             ) : (
               <span style={{ fontSize: '11px', color: '#F59E0B' }}>Mock data</span>
             )}
-            <span style={{ fontSize: '12px', color: D.faint }} className="hidden sm:block">admin@edzibancatering.com</span>
+            <span style={{ fontSize: '12px', color: D.faint }} className="hidden sm:block">Edziban Admin</span>
             <button onClick={handleLogout} style={{ fontSize: '12px', fontWeight: 600, padding: '7px 16px', borderRadius: '100px', border: `1px solid ${D.border}`, background: 'transparent', color: D.muted, cursor: 'pointer' }}>
               Sign out
             </button>

@@ -133,6 +133,10 @@ export async function POST(req: NextRequest) {
   const serverServiceFee = getPlatesServiceFee(serverSubtotal, serverDeliveryFee)
   const serverTotal = Math.round((serverSubtotal + serverServiceFee + serverDeliveryFee) * 100) / 100
 
+  if (serverTotal < 0.50) {
+    return NextResponse.json({ error: 'Order total is too low to process' }, { status: 400 })
+  }
+
   const clientAmount = sanitizeAmount(amount)
   if (Math.abs(clientAmount - serverTotal) > 0.02) {
     console.warn(`[SECURITY] Plates price mismatch — client: $${clientAmount}, server: $${serverTotal}, IP: ${ip}`)

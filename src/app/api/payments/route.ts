@@ -209,6 +209,10 @@ export async function POST(req: NextRequest) {
     }
     const serverNetTotal = Math.round((serverTotal - serverDiscountAmount) * 100) / 100
 
+    if (serverNetTotal < 0.50) {
+      return NextResponse.json({ error: 'Order total is too low to process' }, { status: 400 })
+    }
+
     // Allow $0.02 tolerance for floating-point rounding between client and server
     if (Math.abs(amount - serverNetTotal) > 0.02) {
       console.warn(`[SECURITY] Price mismatch — client: $${amount}, server: $${serverNetTotal}, IP: ${ip}`)
@@ -322,7 +326,7 @@ export async function POST(req: NextRequest) {
             item_id: i.itemId,
             name: i.name,
             quantity: i.quantity,
-            unit_price: mi?.price ?? i.unitPrice,
+            unit_price: mi?.price ?? 0,
           }
         })
       )
