@@ -48,7 +48,7 @@ export default function TermsPage() {
             <ul style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <li>All catering orders require a minimum of <strong>5 days advance notice</strong>.</li>
               <li>Payment is collected in full at the time of ordering.</li>
-              <li>Orders are subject to review and confirmation within 24 hours. You will receive a confirmation email once approved.</li>
+              <li>Orders are subject to review and confirmation. Regular catering orders are confirmed within <strong>24 hours</strong>. Corporate catering orders are confirmed within <strong>48 hours</strong>. You will receive a confirmation email once approved.</li>
               <li><strong>Cancellations:</strong> Catering orders cancelled more than 72 hours before the event date will receive a full refund. Cancellations within 72 hours of the event are non-refundable as ingredients and preparation will have begun.</li>
               <li>We reserve the right to decline any order that we cannot fulfill to our quality standards.</li>
             </ul>
