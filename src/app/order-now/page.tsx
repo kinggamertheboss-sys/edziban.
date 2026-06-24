@@ -31,13 +31,7 @@ interface DeliveryInfo {
 }
 
 function isOrderingOpen(): boolean {
-  const now = new Date()
-  const et = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }))
-  const hours = et.getHours()
-  const minutes = et.getMinutes()
-  const timeInMinutes = hours * 60 + minutes
-  // Open 11am–4:30pm ET
-  return timeInMinutes >= 660 && timeInMinutes < 990
+  return true // temporarily open for testing — restore hours check before going live
 }
 
 export default function OrderNowPage() {
