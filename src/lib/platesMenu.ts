@@ -39,6 +39,15 @@ export const PLATES_MENU: PlateItem[] = [
     gradient: 'linear-gradient(150deg, #B87820 0%, #D49A38 60%, #E8BE50 100%)',
   },
   {
+    id: 'test-plate',
+    name: 'Test Item — Remove After Testing',
+    description: 'For checkout testing only. $1.00.',
+    price: 1.00,
+    category: 'Rice Dishes',
+    available: true,
+    gradient: 'linear-gradient(150deg, #4A4A4A 0%, #6A6A6A 55%, #8A8A8A 100%)',
+  },
+  {
     id: 'kontomire-plate',
     name: 'Kontomire Stew & Rice',
     description: 'Creamy cocoyam leaf stew with white rice and fried plantain.',
@@ -48,6 +57,11 @@ export const PLATES_MENU: PlateItem[] = [
     gradient: 'linear-gradient(150deg, #1A3A1A 0%, #2E6030 55%, #4A8040 100%)',
   },
 ]
+
+export function getPlatesServiceFee(subtotal: number, deliveryFee: number = 0): number {
+  const base = subtotal + deliveryFee
+  return Math.round((base * 0.029 + 0.30) * 100) / 100
+}
 
 export function calculatePlateDeliveryFee(miles: number): number {
   const BASE_FEE = 2.99

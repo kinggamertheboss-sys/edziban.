@@ -4,8 +4,8 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Script from 'next/script'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
-import { PLATES_MENU, PLATE_CATEGORIES } from '@/lib/platesMenu'
-import { getServiceFee, formatCurrency } from '@/lib/utils'
+import { PLATES_MENU, PLATE_CATEGORIES, getPlatesServiceFee } from '@/lib/platesMenu'
+import { formatCurrency } from '@/lib/utils'
 
 declare global {
   interface Window {
@@ -74,7 +74,7 @@ export default function OrderNowPage() {
   const totalQty = cartItems.reduce((s, i) => s + i.quantity, 0)
   const subtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0)
   const deliveryFee = fulfillment === 'delivery' ? (deliveryInfo?.fee ?? 0) : 0
-  const serviceFee = getServiceFee(subtotal, deliveryFee)
+  const serviceFee = getPlatesServiceFee(subtotal, deliveryFee)
   const total = subtotal + serviceFee + deliveryFee
 
   // Square SDK init

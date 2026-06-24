@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { SquareClient, SquareEnvironment } from 'square'
 import { randomUUID } from 'crypto'
 import { getAdminClient } from '@/lib/supabase'
-import { PLATES_MENU, calculatePlateDeliveryFee, calculateEstimatedMinutes } from '@/lib/platesMenu'
-import { generateOrderNumber, getServiceFee } from '@/lib/utils'
+import { PLATES_MENU, calculatePlateDeliveryFee, calculateEstimatedMinutes, getPlatesServiceFee } from '@/lib/platesMenu'
+import { generateOrderNumber } from '@/lib/utils'
 import { sanitizeText, sanitizeEmail, sanitizePhone, sanitizeAmount, sanitizeEnum, VALID_FULFILLMENT_TYPES } from '@/lib/sanitize'
 import { checkLimit, deny, getClientIp } from '@/lib/rateLimit'
 import { sendSMS, sendEmail, EDZIBAN_CONFIG } from '@/lib/notifications'
@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const serverServiceFee = getServiceFee(serverSubtotal, serverDeliveryFee)
+  const serverServiceFee = getPlatesServiceFee(serverSubtotal, serverDeliveryFee)
   const serverTotal = Math.round((serverSubtotal + serverServiceFee + serverDeliveryFee) * 100) / 100
 
   const clientAmount = sanitizeAmount(amount)
