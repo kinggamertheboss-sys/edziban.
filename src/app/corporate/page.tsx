@@ -43,7 +43,7 @@ export default function CorporatePage() {
 
   return (
     <>
-      <main>
+      <main id="main-content">
 
         {/* ── Hero ── */}
         <section style={{

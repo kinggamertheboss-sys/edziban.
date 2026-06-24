@@ -73,24 +73,19 @@ export default function Footer() {
             <p className="label-upper" style={{ color: 'rgba(255,248,240,0.60)', marginBottom: '22px' }}>
               We cater
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {[
                 'Funerals & Memorials',
                 'Weddings',
                 'Naming Ceremonies',
                 'Birthday Parties',
               ].map(ev => (
-                <div key={ev} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{
-                    width: '4px', height: '4px', borderRadius: '50%',
-                    background: '#C4622D', flexShrink: 0,
-                  }} />
-                  <span style={{ fontSize: '14px', color: 'rgba(255,248,240,0.6)' }}>
-                    {ev}
-                  </span>
-                </div>
+                <li key={ev} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span aria-hidden="true" style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#C4622D', flexShrink: 0 }} />
+                  <span style={{ fontSize: '14px', color: 'rgba(255,248,240,0.75)' }}>{ev}</span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
 
           {/* Contact */}
@@ -143,10 +138,10 @@ export default function Footer() {
           letterSpacing: '0.06em',
           color: 'rgba(255,248,240,0.28)',
         }}>
-          <span style={{ color: 'rgba(255,248,240,0.55)' }}>&copy; {new Date().getFullYear()} Edziban. All rights reserved.</span>
-          <Link href="/privacy" style={{ color: 'rgba(255,248,240,0.4)', textDecoration: 'none' }}>Privacy Policy</Link>
-          <span style={{ color: 'rgba(255,248,240,0.2)' }}>·</span>
-          <Link href="/terms" style={{ color: 'rgba(255,248,240,0.4)', textDecoration: 'none' }}>Terms & Conditions</Link>
+          <span style={{ color: 'rgba(255,248,240,0.7)' }}>&copy; {new Date().getFullYear()} Edziban. All rights reserved.</span>
+          <Link href="/privacy" style={{ color: 'rgba(255,248,240,0.7)', textDecoration: 'none' }}>Privacy Policy</Link>
+          <span aria-hidden="true" style={{ color: 'rgba(255,248,240,0.4)' }}>·</span>
+          <Link href="/terms" style={{ color: 'rgba(255,248,240,0.7)', textDecoration: 'none' }}>Terms & Conditions</Link>
         </div>
       </div>
     </footer>

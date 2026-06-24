@@ -71,8 +71,7 @@ body::after {
 a:focus-visible, button:focus-visible { border-radius: 6px; }
 
 /* High-contrast focus for elements on dark backgrounds */
-[style*="background: #1A0F0A"] :focus-visible,
-[style*="background: #0E0806"] :focus-visible {
+.bg-dark :focus-visible {
   outline-color: #FFF8F0;
 }
 
@@ -239,7 +238,7 @@ a:focus-visible, button:focus-visible { border-radius: 6px; }
 
 /* ─── Quantity controls ───────────────────────────────── */
 .qty-btn {
-  width: 38px; height: 38px;
+  width: 44px; height: 44px;
   border-radius: 50%;
   border: 1.5px solid #C4622D;
   background: transparent;

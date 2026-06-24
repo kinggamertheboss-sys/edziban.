@@ -101,7 +101,6 @@ export default function FAQ() {
                 </button>
                 <div
                   id={panelId}
-                  role="region"
                   aria-labelledby={buttonId}
                   hidden={!isOpen}
                   style={{

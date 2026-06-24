@@ -243,10 +243,10 @@ export default function OrderNowPage() {
         onLoad={() => setMapsReady(true)}
       />
 
-      <div style={{ minHeight: '100vh', background: '#FFF8F0', paddingTop: '76px' }}>
+      <main id="main-content" style={{ minHeight: '100vh', background: '#FFF8F0', paddingTop: '76px' }}>
 
         {/* ── Dark header banner ───────────────────────────────────────── */}
-        <div style={{ background: '#1A0F0A', color: '#FFF8F0', padding: '36px 0 28px' }}>
+        <div className="bg-dark" style={{ background: '#1A0F0A', color: '#FFF8F0', padding: '36px 0 28px' }}>
           <div className="wrap">
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
               <div>
@@ -255,7 +255,7 @@ export default function OrderNowPage() {
                     onClick={() => setStep(step === 'checkout' ? 'menu' : 'menu')}
                     style={{ background: 'none', border: 'none', color: '#C4622D', cursor: 'pointer', fontSize: '13px', fontWeight: 600, letterSpacing: '0.04em', marginBottom: '8px', padding: 0, display: 'flex', alignItems: 'center', gap: '4px' }}
                   >
-                    ← {step === 'checkout' ? 'Back to Menu' : ''}
+                    ← {step === 'checkout' ? 'Back to Menu' : 'Back to Home'}
                   </button>
                 )}
                 <h1 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: 'clamp(28px, 5vw, 42px)', fontWeight: 700, margin: 0, lineHeight: 1.1 }}>
@@ -273,7 +273,7 @@ export default function OrderNowPage() {
 
               {/* Hours badge */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: open ? 'rgba(196,98,45,0.15)' : 'rgba(255,255,255,0.07)', border: `1px solid ${open ? '#C4622D' : '#3A2A20'}`, borderRadius: '100px', padding: '6px 14px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: open ? '#4CAF50' : '#FF6B6B', flexShrink: 0 }} />
+                <span aria-hidden="true" style={{ width: '8px', height: '8px', borderRadius: '50%', background: open ? '#4CAF50' : '#FF6B6B', flexShrink: 0 }} />
                 <span style={{ fontSize: '12px', fontWeight: 600, color: open ? '#C4622D' : '#A08070', letterSpacing: '0.05em' }}>
                   {open ? 'OPEN NOW' : 'CLOSED'}
                 </span>
@@ -382,12 +382,14 @@ export default function OrderNowPage() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0', width: '100%', background: '#F5EDE0', borderRadius: '10px', overflow: 'hidden' }}>
                               <button
                                 onClick={() => adjustQty(item.id, -1)}
-                                style={{ flex: 1, padding: '10px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', fontWeight: 700, color: '#C4622D' }}
+                                aria-label={`Remove ${item.name} from order`}
+                                style={{ flex: 1, padding: '10px', minHeight: '44px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', fontWeight: 700, color: '#C4622D' }}
                               >−</button>
-                              <span style={{ fontSize: '15px', fontWeight: 800, color: '#1A0F0A', minWidth: '28px', textAlign: 'center' }}>{qty}</span>
+                              <span aria-label={`${item.name} quantity: ${qty}`} style={{ fontSize: '15px', fontWeight: 800, color: '#1A0F0A', minWidth: '28px', textAlign: 'center' }}>{qty}</span>
                               <button
                                 onClick={() => adjustQty(item.id, 1)}
-                                style={{ flex: 1, padding: '10px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', fontWeight: 700, color: '#C4622D' }}
+                                aria-label={`Add another ${item.name} to order`}
+                                style={{ flex: 1, padding: '10px', minHeight: '44px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', fontWeight: 700, color: '#C4622D' }}
                               >+</button>
                             </div>
                           )}
@@ -415,29 +417,30 @@ export default function OrderNowPage() {
                     <h2 style={{ margin: '0 0 20px', fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '20px', color: '#1A0F0A' }}>Your Details</h2>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                       {[
-                        { label: 'Full Name', value: name, setter: setName, type: 'text', required: true, placeholder: 'Kwame Mensah' },
-                        { label: 'Phone Number', value: phone, setter: setPhone, type: 'tel', required: false, placeholder: '+1 617 000 0000' },
-                        { label: 'Email Address', value: email, setter: setEmail, type: 'email', required: true, placeholder: 'you@example.com' },
+                        { id: 'on-name',  label: 'Full Name',     value: name,  setter: setName,  type: 'text',  required: true,  placeholder: 'Kwame Mensah' },
+                        { id: 'on-phone', label: 'Phone Number',  value: phone, setter: setPhone, type: 'tel',   required: false, placeholder: '+1 617 000 0000' },
+                        { id: 'on-email', label: 'Email Address', value: email, setter: setEmail, type: 'email', required: true,  placeholder: 'you@example.com' },
                       ].map(field => (
                         <div key={field.label}>
-                          <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4C3B', marginBottom: '6px' }}>
+                          <label htmlFor={field.id} style={{ display: 'block', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4C3B', marginBottom: '6px' }}>
                             {field.label}{field.required && ' *'}
                           </label>
                           <input
+                            id={field.id}
                             type={field.type}
                             value={field.value}
                             onChange={e => field.setter(e.target.value)}
                             placeholder={field.placeholder}
                             required={field.required}
-                            style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #E2CEB8', background: '#FEFAF6', fontSize: '14px', color: '#1A0F0A', outline: 'none', boxSizing: 'border-box' }}
+                            style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #E2CEB8', background: '#FEFAF6', fontSize: '14px', color: '#1A0F0A', boxSizing: 'border-box' }}
                           />
                         </div>
                       ))}
 
                       {/* Fulfillment */}
                       <div>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4C3B', marginBottom: '6px' }}>Fulfillment</label>
-                        <div style={{ display: 'flex', gap: '8px' }}>
+                        <label id="on-fulfillment-label" style={{ display: 'block', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4C3B', marginBottom: '6px' }}>Fulfillment</label>
+                        <div role="group" aria-labelledby="on-fulfillment-label" style={{ display: 'flex', gap: '8px' }}>
                           {(['pickup', 'delivery'] as Fulfillment[]).map(type => (
                             <button
                               key={type}
@@ -464,16 +467,19 @@ export default function OrderNowPage() {
                       {/* Delivery address in checkout */}
                       {fulfillment === 'delivery' && (
                         <div>
-                          <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4C3B', marginBottom: '6px' }}>Delivery Address *</label>
+                          <label htmlFor="on-address" style={{ display: 'block', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4C3B', marginBottom: '6px' }}>Delivery Address *</label>
                           <input
+                            id="on-address"
                             ref={addressInputRef}
                             type="text"
                             value={address}
                             onChange={e => handleAddressChange(e.target.value)}
                             placeholder="Start typing your address…"
                             autoComplete="off"
-                            style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: `1.5px solid ${feeError ? '#FF6B6B' : '#E2CEB8'}`, background: '#FEFAF6', fontSize: '14px', color: '#1A0F0A', outline: 'none', boxSizing: 'border-box' }}
+                            aria-describedby={feeError ? 'on-address-error' : undefined}
+                            style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: `1.5px solid ${feeError ? '#FF6B6B' : '#E2CEB8'}`, background: '#FEFAF6', fontSize: '14px', color: '#1A0F0A', boxSizing: 'border-box' }}
                           />
+                          <span id="on-address-error" role="alert" style={{ display: feeError ? 'block' : 'none', fontSize: '12px', color: '#E05050', marginTop: '6px' }}>{feeError}</span>
                           {feeLoading && <p style={{ margin: '6px 0 0', fontSize: '12px', color: '#A08070' }}>Calculating…</p>}
                           {feeError && <p style={{ margin: '6px 0 0', fontSize: '12px', color: '#E05050' }}>{feeError}</p>}
                           {deliveryInfo && !feeError && (
@@ -495,13 +501,14 @@ export default function OrderNowPage() {
 
                       {/* Special instructions */}
                       <div>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4C3B', marginBottom: '6px' }}>Special Instructions</label>
+                        <label htmlFor="on-instructions" style={{ display: 'block', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4C3B', marginBottom: '6px' }}>Special Instructions</label>
                         <textarea
+                          id="on-instructions"
                           value={specialInstructions}
                           onChange={e => setSpecialInstructions(e.target.value)}
                           placeholder="Any allergies or requests?"
                           rows={2}
-                          style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #E2CEB8', background: '#FEFAF6', fontSize: '14px', color: '#1A0F0A', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
+                          style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #E2CEB8', background: '#FEFAF6', fontSize: '14px', color: '#1A0F0A', resize: 'vertical', boxSizing: 'border-box' }}
                         />
                       </div>
                     </div>
@@ -643,7 +650,7 @@ export default function OrderNowPage() {
             </div>
           </div>
         )}
-      </div>
+      </main>
 
       <Footer />
     </>
