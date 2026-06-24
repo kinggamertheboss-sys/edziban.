@@ -144,7 +144,9 @@ export default function Footer() {
           color: 'rgba(255,248,240,0.28)',
         }}>
           <span style={{ color: 'rgba(255,248,240,0.55)' }}>&copy; {new Date().getFullYear()} Edziban. All rights reserved.</span>
-          <div />
+          <Link href="/privacy" style={{ color: 'rgba(255,248,240,0.4)', textDecoration: 'none' }}>Privacy Policy</Link>
+          <span style={{ color: 'rgba(255,248,240,0.2)' }}>·</span>
+          <Link href="/terms" style={{ color: 'rgba(255,248,240,0.4)', textDecoration: 'none' }}>Terms & Conditions</Link>
         </div>
       </div>
     </footer>
