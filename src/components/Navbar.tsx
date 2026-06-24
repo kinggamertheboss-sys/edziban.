@@ -80,7 +80,7 @@ export default function Navbar() {
             ))}
 
             <Link
-              href="/menu"
+              href="/order-now"
               style={{
                 position: 'relative',
                 display: 'inline-flex',
@@ -210,7 +210,7 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="/menu"
+            href="/order-now"
             style={{
               marginTop: '4px',
               fontSize: '13px',

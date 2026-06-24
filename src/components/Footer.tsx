@@ -53,7 +53,8 @@ export default function Footer() {
                 { href: '/',           label: 'Home' },
                 { href: '/menu',       label: 'Menu' },
                 { href: '/corporate',  label: 'Corporate' },
-                { href: '/order',      label: 'Order Now' },
+                { href: '/order-now',  label: 'Order Plates' },
+                { href: '/order',      label: 'Book Catering' },
               ].map(link => (
                 <Link key={link.href} href={link.href} style={{
                   fontSize: '14px',
