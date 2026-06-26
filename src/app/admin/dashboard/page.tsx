@@ -65,7 +65,7 @@ const PIPELINE: Record<string, PipelineStep> = {
   pending: { label: 'Confirm Order', apiRoute: '/api/notifications/order-confirmed', nextStatus: 'confirmed', color: '#60A5FA', icon: '✓' },
   confirmed: { label: 'Start Prep', apiRoute: null, nextStatus: 'supplier_notified', color: '#C084FC', icon: '→' },
   supplier_notified: { label: 'Mark Ready', apiRoute: '/api/notifications/order-ready', nextStatus: 'ready', color: '#4ADE80', icon: '✓' },
-  ready: { label: 'Mark Delivered', apiRoute: null, nextStatus: 'delivered', color: '#22C55E', icon: '✓' },
+  ready: { label: 'Mark Delivered', apiRoute: '/api/notifications/order-delivered', nextStatus: 'delivered', color: '#22C55E', icon: '✓' },
   delivered: { label: 'Request Review', apiRoute: '/api/notifications/review-request', nextStatus: 'reviewed', color: '#9CA3AF', icon: '★' },
   reviewed:  { label: 'Mark Completed', apiRoute: null, nextStatus: 'completed', color: '#6B7280', icon: '✓' },
 }
@@ -74,7 +74,7 @@ const PIPELINE: Record<string, PipelineStep> = {
 const PLATE_PIPELINE: Record<string, PipelineStep> = {
   pending:   { label: 'Mark Ready', apiRoute: '/api/notifications/order-ready', nextStatus: 'ready', color: '#4ADE80', icon: '✓' },
   confirmed: { label: 'Mark Ready', apiRoute: '/api/notifications/order-ready', nextStatus: 'ready', color: '#4ADE80', icon: '✓' },
-  ready:     { label: 'Mark Delivered', apiRoute: null, nextStatus: 'delivered', color: '#22C55E', icon: '✓' },
+  ready:     { label: 'Mark Delivered', apiRoute: '/api/notifications/order-delivered', nextStatus: 'delivered', color: '#22C55E', icon: '✓' },
   delivered: { label: 'Request Review', apiRoute: '/api/notifications/review-request', nextStatus: 'reviewed', color: '#9CA3AF', icon: '★' },
   reviewed:  { label: 'Mark Completed', apiRoute: null, nextStatus: 'completed', color: '#6B7280', icon: '✓' },
 }

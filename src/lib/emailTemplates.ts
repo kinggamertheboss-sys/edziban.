@@ -238,7 +238,39 @@ export function orderReadyEmail(data: OrderEmailData): string {
   return baseWrapper(content)
 }
 
-// ── 4. Loyalty Reward ──────────────────────────────────────────────────────
+// ── 4. Order Delivered ─────────────────────────────────────────────────────
+export function orderDeliveredEmail(data: OrderEmailData): string {
+  const isPickup = data.fulfillmentType === 'pickup'
+
+  const content = `
+    <tr>
+      <td style="padding:36px 40px 0;">
+        <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#22C55E;">${isPickup ? 'Picked Up' : 'Delivered'}</p>
+        <h1 style="margin:0 0 8px;font-size:28px;font-weight:700;color:#1A0F0A;letter-spacing:-0.02em;">Enjoy your food, ${esc(data.customerName)}.</h1>
+        <p style="margin:0;font-size:15px;color:#6B4C3B;line-height:1.7;">Your Edziban order has been ${isPickup ? 'picked up' : 'delivered'}. We hope you and your guests love every bite.</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:24px 40px 0;">
+        <div style="background:#1A0F0A;border-radius:12px;padding:18px 24px;">
+          <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,248,240,0.4);">Order Number</p>
+          <p style="margin:4px 0 0;font-size:22px;font-weight:700;color:#C4622D;letter-spacing:-0.01em;font-family:Georgia,serif;">${esc(data.orderNumber)}</p>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:28px 40px 36px;">
+        <div style="background:#EDFCF0;border-left:4px solid #22C55E;border-radius:0 8px 8px 0;padding:16px 20px;">
+          <p style="margin:0;font-size:14px;color:#14532D;font-weight:700;">Thank you for choosing Edziban.</p>
+          <p style="margin:8px 0 0;font-size:13px;color:#166534;line-height:1.7;">It means the world to us. Watch out for an email from us shortly &mdash; we&rsquo;d love to hear what you thought.</p>
+        </div>
+      </td>
+    </tr>`
+
+  return baseWrapper(content)
+}
+
+// ── 5. Loyalty Reward ──────────────────────────────────────────────────────
 export function loyaltyRewardEmail(data: {
   customerName: string
   discountAmount: number
