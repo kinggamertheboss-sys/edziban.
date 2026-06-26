@@ -11,6 +11,7 @@ interface Subscriber {
   customer_email: string
   code: string
   created_at: string
+  is_active: boolean
 }
 
 type View = 'list' | 'compose'
@@ -266,7 +267,18 @@ export default function Subscribers() {
               {subscribers.map((sub, i) => (
                 <div key={sub.customer_email} style={{ display: 'grid', gridTemplateColumns: '1fr 160px 120px', gap: '0 16px', padding: '16px 24px', borderBottom: i < subscribers.length - 1 ? `1px solid ${D.border}` : 'none', alignItems: 'center' }}>
                   <span style={{ fontSize: '14px', color: D.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sub.customer_email}</span>
-                  <span style={{ fontFamily: 'monospace', fontSize: '12px', fontWeight: 700, color: '#C4622D', background: 'rgba(196,98,45,0.1)', borderRadius: '6px', padding: '4px 8px', display: 'inline-block' }}>{sub.code}</span>
+                  <span style={{
+                    fontFamily: 'monospace', fontSize: '12px', fontWeight: 700,
+                    color: sub.is_active ? '#C4622D' : 'rgba(255,248,240,0.25)',
+                    background: sub.is_active ? 'rgba(196,98,45,0.1)' : 'rgba(255,255,255,0.04)',
+                    borderRadius: '6px', padding: '4px 8px', display: 'inline-block',
+                    textDecoration: sub.is_active ? 'none' : 'line-through',
+                  }}>
+                    {sub.code}
+                  </span>
+                  {!sub.is_active && (
+                    <span style={{ marginLeft: '8px', fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,248,240,0.25)' }}>Used</span>
+                  )}
                   <span style={{ fontSize: '12px', color: D.muted }}>{sub.created_at ? formatDate(sub.created_at) : '—'}</span>
                 </div>
               ))}

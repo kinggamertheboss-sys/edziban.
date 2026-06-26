@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
 
     const { data, error } = await db
       .from('discount_codes')
-      .select('customer_email, code, created_at')
+      .select('customer_email, code, created_at, is_active')
       .eq('amount', 5)
       .not('customer_email', 'is', null)
       .order('created_at', { ascending: false })
