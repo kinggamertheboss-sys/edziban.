@@ -343,13 +343,16 @@ export async function POST(req: NextRequest) {
         )
       }
 
-      // Record discount code use so it can't be reused by the same email
+      // Record discount code use and deactivate it so it can never be reused
       if (clean.discountCode && serverDiscountAmount > 0) {
-        await db.from('discount_code_uses').insert({
-          code: clean.discountCode,
-          customer_email: clean.customerEmail,
-          order_id: orderNumber,
-        })
+        await Promise.all([
+          db.from('discount_code_uses').insert({
+            code: clean.discountCode,
+            customer_email: clean.customerEmail,
+            order_id: orderNumber,
+          }),
+          db.from('discount_codes').update({ is_active: false }).eq('code', clean.discountCode),
+        ])
       }
     }
 

@@ -5,7 +5,6 @@ import { useState } from 'react'
 export default function EmailCapture() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-  const [code, setCode] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
@@ -26,7 +25,6 @@ export default function EmailCapture() {
         setErrorMsg(data.error ?? 'Something went wrong. Please try again.')
         return
       }
-      setCode(data.code)
       setStatus('success')
     } catch {
       setStatus('error')
@@ -94,26 +92,11 @@ export default function EmailCapture() {
               borderRadius: '16px',
               padding: '32px',
             }}>
-              <p style={{ fontSize: '14px', color: 'rgba(255,248,240,0.7)', marginBottom: '16px', lineHeight: 1.6 }}>
-                You&apos;re in. Use this code at checkout to get{' '}
-                <span style={{ color: '#C4622D', fontWeight: 700 }}>$5 off</span>:
+              <p style={{ fontSize: '20px', fontWeight: 700, color: '#FFF8F0', marginBottom: '10px', fontFamily: 'var(--font-playfair), Georgia, serif' }}>
+                Check your inbox.
               </p>
-              <div style={{
-                display: 'inline-block',
-                background: 'rgba(196,98,45,0.2)',
-                border: '1px dashed rgba(196,98,45,0.5)',
-                borderRadius: '10px',
-                padding: '14px 32px',
-                fontFamily: 'monospace',
-                fontSize: '22px',
-                fontWeight: 700,
-                letterSpacing: '0.14em',
-                color: '#FFF8F0',
-              }}>
-                {code}
-              </div>
-              <p style={{ fontSize: '12px', color: 'rgba(255,248,240,0.35)', marginTop: '14px' }}>
-                We also sent this code to your email.
+              <p style={{ fontSize: '14px', color: 'rgba(255,248,240,0.6)', margin: 0, lineHeight: 1.7 }}>
+                Your <span style={{ color: '#C4622D', fontWeight: 700 }}>$5 off</span> discount code has been sent to <span style={{ color: 'rgba(255,248,240,0.85)' }}>{email}</span>. Use it at checkout on your next order.
               </p>
             </div>
           ) : (
