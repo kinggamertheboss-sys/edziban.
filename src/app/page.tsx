@@ -619,12 +619,12 @@ export default function HomePage() {
               <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <Link href="/order-now" style={{
                   display: 'inline-flex', alignItems: 'center', gap: '12px',
-                  background: '#C4622D', color: '#FFF8F0',
+                  background: '#1A0F0A', color: '#FFF8F0',
                   fontWeight: 700, fontSize: '13px',
                   letterSpacing: '0.07em',
                   padding: '18px 40px', borderRadius: '100px',
                   textDecoration: 'none',
-                  boxShadow: '0 12px 48px rgba(196,98,45,0.35)',
+                  boxShadow: '0 12px 48px rgba(0,0,0,0.35)',
                   transition: 'transform 0.25s cubic-bezier(0.22,1,0.36,1)',
                 }}>
                   Order a Plate Today
