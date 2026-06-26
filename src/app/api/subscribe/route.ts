@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminClient } from '@/lib/supabase'
-import { sanitizeEmail } from '@/lib/sanitize'
+import { sanitizeEmail, sanitizePhone } from '@/lib/sanitize'
 import { checkLimit, deny, getClientIp } from '@/lib/rateLimit'
 import { sendEmail } from '@/lib/notifications'
 
@@ -90,6 +90,7 @@ export async function POST(req: NextRequest) {
   if (!email) {
     return NextResponse.json({ error: 'A valid email address is required' }, { status: 400 })
   }
+  const phone = raw.smsOptIn ? sanitizePhone(raw.phone ?? '') : ''
 
   const db = getAdminClient()
 
@@ -116,6 +117,7 @@ export async function POST(req: NextRequest) {
     is_active: true,
     single_use: true,
     customer_email: email,
+    ...(phone ? { customer_phone: phone } : {}),
   })
 
   if (insertError) {
