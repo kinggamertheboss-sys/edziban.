@@ -10,7 +10,6 @@ import SupplierHub from '@/components/admin/SupplierHub'
 import Financials from '@/components/admin/Financials'
 import CorporateOrders from '@/components/admin/CorporateOrders'
 import Inbox from '@/components/admin/Inbox'
-import LoyaltyRewards from '@/components/admin/LoyaltyRewards'
 import Notifications from '@/components/admin/Notifications'
 import Subscribers from '@/components/admin/Subscribers'
 
@@ -103,7 +102,7 @@ export default function AdminDashboard() {
   const [expanded, setExpanded] = useState<string | null>(null)
   const [loadingBtn, setLoadingBtn] = useState<string | null>(null)
   const [notifLogs, setNotifLogs] = useState<Record<string, NotifLog[]>>({})
-  const [activeTab, setActiveTab] = useState<'orders' | 'suppliers' | 'financials' | 'corporate' | 'inbox' | 'loyalty' | 'notifications' | 'subscribers'>('orders')
+  const [activeTab, setActiveTab] = useState<'orders' | 'suppliers' | 'financials' | 'corporate' | 'inbox' | 'notifications' | 'subscribers'>('orders')
   const [paidPayouts, setPaidPayouts] = useState<PayoutRecord[]>([])
   const [payingKey, setPayingKey] = useState<string | null>(null)
   const [payMethod, setPayMethod] = useState<'check' | 'zelle'>('zelle')
@@ -455,11 +454,11 @@ export default function AdminDashboard() {
           if (actionNeededCount > 0) tabBadge['orders'] = actionNeededCount
           if (vendorPayouts.filter(v => v.balanceDue > 0).length > 0) tabBadge['suppliers'] = vendorPayouts.filter(v => v.balanceDue > 0).length
 
-          const TAB_LABELS: Record<string, string> = { orders: 'Orders', suppliers: 'Suppliers', financials: 'Financials', corporate: 'Corporate', inbox: 'Inbox', loyalty: 'Loyalty', notifications: 'Notifications', subscribers: 'Subscribers' }
+          const TAB_LABELS: Record<string, string> = { orders: 'Orders', suppliers: 'Suppliers', financials: 'Financials', corporate: 'Corporate', inbox: 'Inbox', notifications: 'Notifications', subscribers: 'Subscribers' }
 
           return (
             <div style={{ display: 'flex', gap: '4px', marginBottom: '24px', background: D.card, border: `1px solid ${D.border}`, borderRadius: '12px', padding: '4px', width: 'fit-content', flexWrap: 'wrap' }}>
-              {(['orders', 'suppliers', 'financials', 'corporate', 'inbox', 'loyalty', 'notifications', 'subscribers'] as const).map(tab => {
+              {(['orders', 'suppliers', 'financials', 'corporate', 'inbox', 'notifications', 'subscribers'] as const).map(tab => {
                 const badge = tabBadge[tab]
                 const isActive = activeTab === tab
                 return (
@@ -664,11 +663,6 @@ export default function AdminDashboard() {
 
         {/* ── INBOX tab ──────────────────────────────────────────────────── */}
         {activeTab === 'inbox' && <Inbox />}
-
-        {/* ── LOYALTY tab ────────────────────────────────────────────────── */}
-        {activeTab === 'loyalty' && (
-          <LoyaltyRewards orders={displayOrders} />
-        )}
 
         {/* ── NOTIFICATIONS tab ───────────────────────────────────────────── */}
         {activeTab === 'notifications' && <Notifications />}

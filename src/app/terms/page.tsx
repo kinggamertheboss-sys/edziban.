@@ -81,10 +81,6 @@ export default function TermsPage() {
             </ul>
           </Section>
 
-          <Section title="Loyalty rewards">
-            <p>We may issue discount codes to valued customers at our discretion. Discount codes are personal, non-transferable, and valid for a single use unless otherwise stated. Codes have no cash value and cannot be exchanged for cash.</p>
-          </Section>
-
           <Section title="Limitation of liability">
             <p>Edziban's total liability to you for any claim arising from your use of our service is limited to the amount you paid for the relevant order. We are not liable for indirect, incidental, or consequential damages of any kind.</p>
           </Section>
