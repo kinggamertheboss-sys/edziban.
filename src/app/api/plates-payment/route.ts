@@ -109,13 +109,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Delivery address is required' }, { status: 400 })
   }
 
+  // Strip --variant suffix (e.g. jollof-build-plate--Shito → jollof-build-plate)
+  const baseId = (itemId: string) => itemId.split('--')[0]
+
   // Server-side price verification
-  const unknownItem = clean.items.find(i => !PLATES_MENU.find(m => m.id === i.itemId))
+  const unknownItem = clean.items.find(i => !PLATES_MENU.find(m => m.id === baseId(i.itemId)))
   if (unknownItem) return NextResponse.json({ error: 'Unrecognized item' }, { status: 400 })
 
   const serverSubtotal = Math.round(
     clean.items.reduce((sum, item) => {
-      const menuItem = PLATES_MENU.find(m => m.id === item.itemId)!
+      const menuItem = PLATES_MENU.find(m => m.id === baseId(item.itemId))!
       return sum + menuItem.price * item.quantity
     }, 0) * 100
   ) / 100
@@ -192,7 +195,7 @@ export async function POST(req: NextRequest) {
         item_id: i.itemId,
         name: i.name,
         quantity: i.quantity,
-        unit_price: PLATES_MENU.find(m => m.id === i.itemId)?.price ?? i.unitPrice,
+        unit_price: PLATES_MENU.find(m => m.id === baseId(i.itemId))?.price ?? i.unitPrice,
       }))
     ).then(({ error: e }) => { if (e) console.error('[DB] Plate items save error:', e.message) })
 
@@ -203,7 +206,7 @@ export async function POST(req: NextRequest) {
       items: clean.items.map(i => ({
         name: i.name,
         quantity: i.quantity,
-        unitPrice: PLATES_MENU.find(m => m.id === i.itemId)?.price ?? i.unitPrice,
+        unitPrice: PLATES_MENU.find(m => m.id === baseId(i.itemId))?.price ?? i.unitPrice,
       })),
       subtotal: serverSubtotal,
       serviceFee: serverServiceFee,

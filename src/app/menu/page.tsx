@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect, Suspense } from 'react'
 import Footer from '@/components/Footer'
+import JollofPlateBuilder from '@/components/JollofPlateBuilder'
 import { MENU_ITEMS, MENU_CATEGORIES } from '@/lib/mockData'
 import { useCart } from '@/context/CartContext'
 import { formatCurrency, getItemGradient } from '@/lib/utils'
@@ -122,6 +123,10 @@ function MenuPageInner() {
         {/* Items by category */}
         <div className="wrap" style={{ paddingTop: '64px' }}>
           <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '64px' }}>
+
+            {/* Jollof Plate Builder */}
+            <JollofPlateBuilder />
+
             {MENU_CATEGORIES.map(cat => {
               const catItems = MENU_ITEMS.filter(i => i.category === cat.key)
               if (catItems.length === 0) return null
