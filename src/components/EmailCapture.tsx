@@ -73,9 +73,7 @@ export default function EmailCapture() {
           </h2>
 
           <p style={{ fontSize: '15px', lineHeight: 1.75, color: 'rgba(255,248,240,0.5)', marginBottom: '40px' }}>
-            Sign up and we&apos;ll send you a{' '}
-            <span style={{ color: '#C4622D', fontWeight: 700 }}>$5 welcome code</span>
-            {' '}— use it on any order. No spam, just real Ghanaian food news.
+            Sign up and check your email for a welcome surprise. No spam, just real Ghanaian food news.
           </p>
 
           {status === 'success' ? (
@@ -88,8 +86,9 @@ export default function EmailCapture() {
                 Check your inbox.
               </p>
               <p style={{ fontSize: '14px', color: 'rgba(255,248,240,0.6)', margin: 0, lineHeight: 1.7 }}>
-                Your <span style={{ color: '#C4622D', fontWeight: 700 }}>$5 welcome code</span> is on its way to{' '}
+                We sent something to{' '}
                 <span style={{ color: 'rgba(255,248,240,0.85)' }}>{email}</span>.
+                {' '}Go check it.
                 {smsOptIn && phone && ' You\'ll also get text updates.'}
               </p>
             </div>
