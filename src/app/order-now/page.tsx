@@ -127,6 +127,11 @@ export default function OrderNowPage() {
   const modalAddonSum = JOLLOF_ADDONS.filter(a => modalAddons.has(a.id)).reduce((s, a) => s + a.price, 0)
   const modalPlateTotal = (15 + modalAddonSum) * modalQty
 
+  // If the cart empties out while on checkout, send them back to pick something else
+  useEffect(() => {
+    if (step === 'checkout' && totalQty === 0) setStep('menu')
+  }, [step, totalQty])
+
   // Square SDK init
   useEffect(() => {
     if (step !== 'checkout' || !sdkReady || cardInitialized.current || !window.Square) return
@@ -690,7 +695,23 @@ export default function OrderNowPage() {
                             <p style={{ margin: 0, fontSize: '12px', color: '#A08070' }}>× {item.quantity}</p>
                           </div>
                         </div>
-                        <span style={{ fontSize: '14px', fontWeight: 700, color: '#1A0F0A', flexShrink: 0 }}>{formatCurrency(item.price * item.quantity)}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+                          <span style={{ fontSize: '14px', fontWeight: 700, color: '#1A0F0A' }}>{formatCurrency(item.price * item.quantity)}</span>
+                          <button
+                            type="button"
+                            onClick={() => adjustQty(item.id, -item.quantity)}
+                            aria-label={`Remove ${item.name} from order`}
+                            style={{
+                              width: '22px', height: '22px', flexShrink: 0,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              borderRadius: '50%', border: 'none', cursor: 'pointer',
+                              background: 'rgba(196,98,45,0.1)', color: '#C4622D',
+                              fontSize: '13px', fontWeight: 700, lineHeight: 1, padding: 0,
+                            }}
+                          >
+                            ×
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
