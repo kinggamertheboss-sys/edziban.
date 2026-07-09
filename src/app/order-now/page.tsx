@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Script from 'next/script'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
+import AutoplayVideo from '@/components/AutoplayVideo'
 import { PLATES_MENU, PLATE_CATEGORIES, getPlatesServiceFee } from '@/lib/platesMenu'
 import { formatCurrency } from '@/lib/utils'
 
@@ -69,6 +70,8 @@ export default function OrderNowPage() {
   const [modalSauce, setModalSauce] = useState<'Shito' | 'Stew'>('Shito')
   const [modalAddons, setModalAddons] = useState<Set<string>>(new Set())
   const [modalQty, setModalQty] = useState(1)
+  const jollofModalRef = useRef<HTMLDivElement>(null)
+  const jollofTriggerRef = useRef<HTMLElement | null>(null)
 
   // Fulfillment
   const [fulfillment, setFulfillment] = useState<Fulfillment>('pickup')
@@ -159,12 +162,35 @@ export default function OrderNowPage() {
     }
   }, [step])
 
-  // Close modal on Escape
+  // Close modal on Escape, trap Tab focus inside it while open
   useEffect(() => {
     if (!jollofModal) return
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setJollofModal(false) }
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setJollofModal(false); return }
+      if (e.key !== 'Tab' || !jollofModalRef.current) return
+      const focusable = jollofModalRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+      if (focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault(); last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus()
+      }
+    }
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
+  }, [jollofModal])
+
+  // Move focus into the modal on open, restore it to the trigger on close
+  useEffect(() => {
+    if (jollofModal) {
+      jollofModalRef.current?.querySelector<HTMLElement>('button, [href], input')?.focus()
+    } else {
+      jollofTriggerRef.current?.focus()
+    }
   }, [jollofModal])
 
   // Lock body scroll when modal open
@@ -409,9 +435,10 @@ export default function OrderNowPage() {
                     {/* Card image */}
                     <div style={{ height: '160px', background: item.gradient, position: 'relative', overflow: 'hidden' }}>
                       {item.video && (
-                        <video
+                        <AutoplayVideo
                           src={item.video}
-                          autoPlay muted loop playsInline
+                          ariaLabel={item.name}
+                          pausable
                           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
                         />
                       )}
@@ -441,7 +468,7 @@ export default function OrderNowPage() {
                     <div style={{ padding: '16px' }}>
                       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px', marginBottom: '12px' }}>
                         <div style={{ flex: 1 }}>
-                          <h3 style={{ margin: 0, fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '17px', fontWeight: 700, color: '#1A0F0A' }}>{item.name}</h3>
+                          <h2 style={{ margin: 0, fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '17px', fontWeight: 700, color: '#1A0F0A' }}>{item.name}</h2>
                           <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#6B4C3B', lineHeight: 1.5 }}>{item.description}</p>
                         </div>
                         <span style={{ fontWeight: 800, fontSize: '16px', color: '#C4622D', flexShrink: 0 }}>
@@ -454,7 +481,7 @@ export default function OrderNowPage() {
                           {item.customizable ? (
                             /* Customizable: always show "Customize & Add" */
                             <button
-                              onClick={() => { if (open) setJollofModal(true) }}
+                              onClick={e => { if (open) { jollofTriggerRef.current = e.currentTarget; setJollofModal(true) } }}
                               disabled={!open}
                               style={{
                                 width: '100%',
@@ -662,7 +689,7 @@ export default function OrderNowPage() {
                     </div>
                   )}
 
-                  <p style={{ fontSize: '12px', textAlign: 'center', color: '#9E7A52', lineHeight: 1.7, margin: 0 }}>
+                  <p style={{ fontSize: '12px', textAlign: 'center', color: '#7A5D3E', lineHeight: 1.7, margin: 0 }}>
                     This is a same-day order — you&apos;ll get your confirmation right away, no 24-hour wait.
                   </p>
 
@@ -810,6 +837,7 @@ export default function OrderNowPage() {
       {/* ── Jollof Plate Customizer Modal (Uber Eats style) ──────────────── */}
       {jollofModal && (
         <div
+          ref={jollofModalRef}
           role="dialog"
           aria-modal="true"
           aria-label="Build Your Jollof Plate"
@@ -838,9 +866,10 @@ export default function OrderNowPage() {
 
             {/* Jollof image header */}
             <div style={{ height: '200px', background: 'linear-gradient(150deg, #C4622D 0%, #E07840 55%, #F0A560 100%)', position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
-              <video
+              <AutoplayVideo
                 src="/videos/jollof.mp4"
-                autoPlay muted loop playsInline
+                ariaLabel="Jollof rice"
+                pausable
                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
               />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,15,10,0.65) 0%, transparent 55%)' }} />
@@ -907,7 +936,7 @@ export default function OrderNowPage() {
                         </div>
                         <span style={{ fontSize: '14px', fontWeight: modalSauce === s ? 600 : 400, color: '#1A0F0A' }}>{s}</span>
                       </div>
-                      <span style={{ fontSize: '13px', color: '#9E7A52' }}>Included</span>
+                      <span style={{ fontSize: '13px', color: '#7A5D3E' }}>Included</span>
                     </button>
                   ))}
                 </div>
@@ -920,7 +949,7 @@ export default function OrderNowPage() {
               <div style={{ marginBottom: '24px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                   <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#1A0F0A' }}>Add-ons</p>
-                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#9E7A52', background: 'rgba(158,122,82,0.1)', padding: '2px 8px', borderRadius: '100px' }}>Optional</span>
+                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#7A5D3E', background: 'rgba(122,93,62,0.1)', padding: '2px 8px', borderRadius: '100px' }}>Optional</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {JOLLOF_ADDONS.map(addon => {

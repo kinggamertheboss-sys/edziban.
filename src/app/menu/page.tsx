@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
+import AutoplayVideo from '@/components/AutoplayVideo'
 import { MENU_ITEMS, MENU_CATEGORIES } from '@/lib/mockData'
 import { useCart } from '@/context/CartContext'
 import { formatCurrency, getItemGradient } from '@/lib/utils'
@@ -142,7 +143,7 @@ function MenuPageInner() {
               <Link href="/order-now" style={{
                 flexShrink: 0,
                 display: 'inline-flex', alignItems: 'center',
-                background: '#C4622D', color: '#FFF8F0',
+                background: '#A85425', color: '#FFF8F0',
                 fontWeight: 700, fontSize: '13px',
                 letterSpacing: '0.03em',
                 padding: '12px 24px', borderRadius: '100px',
@@ -159,9 +160,9 @@ function MenuPageInner() {
                 <div key={cat.key}>
                   {/* Category label */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '28px' }}>
-                    <span className="label-upper" style={{ color: '#C4622D', whiteSpace: 'nowrap' }}>
+                    <h2 className="label-upper" style={{ margin: 0, color: '#C4622D', whiteSpace: 'nowrap' }}>
                       {cat.label}
-                    </span>
+                    </h2>
                     <div style={{ flex: 1, height: '1px', background: '#E2CEB8' }} />
                   </div>
 
@@ -185,13 +186,10 @@ function MenuPageInner() {
                             paddingBottom: (item.video || item.image) ? '0' : '18px',
                           }}>
                             {item.video ? (
-                              <video
+                              <AutoplayVideo
                                 src={item.video}
-                                autoPlay
-                                muted
-                                loop
-                                playsInline
-                                aria-label={item.name}
+                                ariaLabel={item.name}
+                                pausable
                                 style={{
                                   position: 'absolute',
                                   inset: 0,
@@ -242,18 +240,18 @@ function MenuPageInner() {
                               marginBottom: '14px',
                             }}>
                               <div style={{ flex: 1, minWidth: 0 }}>
-                                <h2 style={{
+                                <h3 style={{
                                   fontFamily: 'var(--font-playfair), Georgia, serif',
                                   fontSize: '19px', fontWeight: 700,
                                   color: '#1A0F0A', marginBottom: '8px',
                                   lineHeight: 1.15,
-                                }}>{item.name}</h2>
+                                }}>{item.name}</h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
                                     <span style={{ fontWeight: 700, fontSize: '17px', color: '#C4622D' }}>
                                       {formatCurrency(item.price)}
                                     </span>
-                                    <span style={{ fontSize: '12px', color: '#9E7A52' }}>{item.unit}</span>
+                                    <span style={{ fontSize: '12px', color: '#7A5D3E' }}>{item.unit}</span>
                                   </div>
                                   <span style={{ fontSize: '11px', color: '#6B4C3B', letterSpacing: '0.01em' }}>{item.serves}</span>
                                 </div>
@@ -376,7 +374,7 @@ function MenuPageInner() {
               onClick={handleCheckout}
               disabled={totalItems === 0}
               style={{
-                background: totalItems > 0 ? '#C4622D' : 'rgba(255,255,255,0.08)',
+                background: totalItems > 0 ? '#A85425' : 'rgba(255,255,255,0.08)',
                 color: totalItems > 0 ? '#FFF8F0' : 'rgba(255,255,255,0.25)',
                 border: 'none',
                 cursor: totalItems > 0 ? 'pointer' : 'not-allowed',

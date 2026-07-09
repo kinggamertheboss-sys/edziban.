@@ -377,7 +377,7 @@ export default function OrderPage() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {items.map(item => (
                       <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13.5px', gap: '8px' }}>
-                        <span style={{ color: '#1A0F0A' }}>{item.name} <span style={{ color: '#9E7A52' }}>× {item.quantity}</span></span>
+                        <span style={{ color: '#1A0F0A' }}>{item.name} <span style={{ color: '#7A5D3E' }}>× {item.quantity}</span></span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
                           <span style={{ fontWeight: 600, color: '#1A0F0A' }}>{formatCurrency(item.price * item.quantity)}</span>
                           <button
@@ -414,7 +414,7 @@ export default function OrderPage() {
 
               {/* Submit */}
               <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <p style={{ fontSize: '12px', textAlign: 'center', color: '#9E7A52', lineHeight: 1.7 }}>
+                <p style={{ fontSize: '12px', textAlign: 'center', color: '#7A5D3E', lineHeight: 1.7 }}>
                   You will receive a confirmation within 24 hours of placing your order.
                 </p>
                 <button

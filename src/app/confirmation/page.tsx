@@ -124,7 +124,7 @@ function ConfirmationContent() {
           }}>
             <span style={{
               fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em',
-              textTransform: 'uppercase', color: '#9E7A52',
+              textTransform: 'uppercase', color: '#7A5D3E',
             }}>
               Order number
             </span>
@@ -247,7 +247,7 @@ export default function ConfirmationPage() {
     <>
       <Suspense fallback={
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FFF8F0' }}>
-          <p style={{ color: '#9E7A52', fontSize: '14px' }}>Loading&hellip;</p>
+          <p style={{ color: '#7A5D3E', fontSize: '14px' }}>Loading&hellip;</p>
         </div>
       }>
         <ConfirmationContent />

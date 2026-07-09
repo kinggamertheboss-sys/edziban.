@@ -72,7 +72,7 @@ export default function CorporatePage() {
             <div style={{ maxWidth: '720px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '36px' }}>
                 <div style={{ width: '32px', height: '1px', background: '#C4622D' }} />
-                <span className="label-upper" style={{ color: '#C4622D' }}>Corporate and student org catering</span>
+                <span className="label-upper" style={{ color: '#A85425' }}>Corporate and student org catering</span>
               </div>
 
               <h1 style={{
@@ -85,7 +85,7 @@ export default function CorporatePage() {
                 marginBottom: '32px',
               }}>
                 Food worth talking<br />
-                <span style={{ color: '#C4622D' }}>about at work.</span>
+                <span style={{ color: '#A85425' }}>about at work.</span>
               </h1>
 
               <p style={{
@@ -103,7 +103,7 @@ export default function CorporatePage() {
               <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                 <Link href="/order?type=corporate" style={{
                   display: 'inline-flex', alignItems: 'center', gap: '12px',
-                  background: '#C4622D', color: '#FFF8F0',
+                  background: '#A85425', color: '#FFF8F0',
                   fontWeight: 600, fontSize: '13px',
                   letterSpacing: '0.04em',
                   padding: '16px 36px', borderRadius: '100px',
@@ -118,7 +118,7 @@ export default function CorporatePage() {
                 </Link>
                 <a href="tel:+16175550000" style={{
                   display: 'inline-flex', alignItems: 'center', gap: '10px',
-                  border: '1px solid rgba(196,98,45,0.4)', color: '#C4622D',
+                  border: '1px solid rgba(196,98,45,0.4)', color: '#A85425',
                   fontWeight: 600, fontSize: '13px',
                   letterSpacing: '0.04em',
                   padding: '16px 28px', borderRadius: '100px',
@@ -136,7 +136,7 @@ export default function CorporatePage() {
         </section>
 
         {/* ── Student org callout ── */}
-        <section style={{ background: '#C4622D', padding: '20px 0' }}>
+        <section style={{ background: '#A85425', padding: '20px 0' }}>
           <div className="wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
             <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,248,240,0.7)' }}>Student Organizations</span>
             <div style={{ width: '1px', height: '16px', background: 'rgba(255,248,240,0.3)' }} />
@@ -162,7 +162,7 @@ export default function CorporatePage() {
             <div className="sec-head">
               <div className="overline">
                 <div className="bar" />
-                <span className="label-upper" style={{ color: '#C4622D' }}>What we cater</span>
+                <span className="label-upper" style={{ color: '#A85425' }}>What we cater</span>
                 <div className="bar" />
               </div>
               <h2>Built for groups,<br />not just parties.</h2>
@@ -203,7 +203,7 @@ export default function CorporatePage() {
             <div className="sec-head">
               <div className="overline">
                 <div className="bar" style={{ background: '#C4622D' }} />
-                <span className="label-upper" style={{ color: '#C4622D' }}>Popular for groups</span>
+                <span className="label-upper" style={{ color: '#A85425' }}>Popular for groups</span>
                 <div className="bar" style={{ background: '#C4622D' }} />
               </div>
               <h2 style={{ color: '#FFF8F0' }}>Items that work<br />at any office event.</h2>
@@ -228,7 +228,7 @@ export default function CorporatePage() {
                 }}>
                   <div style={{
                     fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em',
-                    textTransform: 'uppercase', color: '#C4622D',
+                    textTransform: 'uppercase', color: '#A85425',
                   }}>{item.unit}</div>
                   <h3 style={{
                     fontFamily: 'var(--font-playfair), Georgia, serif',
@@ -245,7 +245,7 @@ export default function CorporatePage() {
                     paddingTop: '12px',
                     borderTop: '1px solid rgba(255,255,255,0.06)',
                   }}>
-                    <span style={{ fontSize: '22px', fontWeight: 700, color: '#C4622D' }}>
+                    <span style={{ fontSize: '22px', fontWeight: 700, color: '#A85425' }}>
                       {formatCurrency(item.price)}
                     </span>
                   </div>
@@ -256,7 +256,7 @@ export default function CorporatePage() {
             <div style={{ textAlign: 'center', marginTop: '48px' }}>
               <Link href="/menu" style={{
                 display: 'inline-flex', alignItems: 'center', gap: '10px',
-                border: '1px solid rgba(196,98,45,0.45)', color: '#C4622D',
+                border: '1px solid rgba(196,98,45,0.45)', color: '#A85425',
                 fontWeight: 600, fontSize: '13px', letterSpacing: '0.06em',
                 padding: '15px 36px', borderRadius: '100px',
                 textDecoration: 'none',
@@ -284,7 +284,7 @@ export default function CorporatePage() {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '28px' }}>
                   <div style={{ width: '28px', height: '1px', background: '#C4622D' }} />
-                  <span className="label-upper" style={{ color: '#C4622D' }}>How it works</span>
+                  <span className="label-upper" style={{ color: '#A85425' }}>How it works</span>
                 </div>
                 <h2 style={{
                   fontFamily: 'var(--font-playfair), Georgia, serif',
@@ -305,7 +305,7 @@ export default function CorporatePage() {
                 <div style={{ marginTop: '36px' }}>
                   <Link href="/order?type=corporate" style={{
                     display: 'inline-flex', alignItems: 'center', gap: '10px',
-                    background: '#C4622D', color: '#FFF8F0',
+                    background: '#A85425', color: '#FFF8F0',
                     fontWeight: 600, fontSize: '13px', letterSpacing: '0.04em',
                     padding: '15px 32px', borderRadius: '100px',
                     textDecoration: 'none',
@@ -330,7 +330,7 @@ export default function CorporatePage() {
                   }}>
                     <span style={{
                       fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em',
-                      textTransform: 'uppercase', color: '#9E7A52',
+                      textTransform: 'uppercase', color: '#7A5D3E',
                     }}>{fact.label}</span>
                     <span style={{ fontSize: '15px', fontWeight: 600, color: '#1A0F0A' }}>
                       {fact.value}

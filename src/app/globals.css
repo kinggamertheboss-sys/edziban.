@@ -129,7 +129,6 @@ a:focus-visible, button:focus-visible { border-radius: 6px; }
 .stagger > *:nth-child(6) { animation-delay: 0.57s; }
 
 .marquee-track { animation: marquee 32s linear infinite; }
-.marquee-track:hover { animation-play-state: paused; }
 
 /* ─── Layout ──────────────────────────────────────────── */
 .wrap {
@@ -240,16 +239,16 @@ a:focus-visible, button:focus-visible { border-radius: 6px; }
 .qty-btn {
   width: 44px; height: 44px;
   border-radius: 50%;
-  border: 1.5px solid #C4622D;
+  border: 1.5px solid #A85425;
   background: transparent;
-  color: #C4622D;
+  color: #A85425;
   font-size: 20px;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   transition: background 0.18s, color 0.18s, transform 0.18s;
   user-select: none; flex-shrink: 0; line-height: 1;
 }
-.qty-btn:hover:not(:disabled) { background: #C4622D; color: #FFF8F0; transform: scale(1.1); }
+.qty-btn:hover:not(:disabled) { background: #A85425; color: #FFF8F0; transform: scale(1.1); }
 .qty-btn:disabled { opacity: 0.2; cursor: not-allowed; }
 
 /* ─── Inputs ──────────────────────────────────────────── */
@@ -262,6 +261,9 @@ a:focus-visible, button:focus-visible { border-radius: 6px; }
 }
 .field:focus { border-color: #C4622D; box-shadow: 0 0 0 3px rgba(196,98,45,0.11); }
 .field.error { border-color: #dc2626; }
+
+/* Explicit placeholder color for inputs on dark backgrounds — browser defaults are too low-contrast there */
+.input-on-dark::placeholder { color: rgba(255,248,240,0.55); }
 
 .rule { height: 1px; background: #E2CEB8; }
 

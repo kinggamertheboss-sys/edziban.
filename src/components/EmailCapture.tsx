@@ -98,7 +98,12 @@ export default function EmailCapture() {
 
               {/* Email + button row */}
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
+                <label htmlFor="signup-email" style={{ position: 'absolute', width: '1px', height: '1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap' }}>
+                  Email address
+                </label>
                 <input
+                  id="signup-email"
+                  className="input-on-dark"
                   type="email"
                   required
                   placeholder="your@email.com"
@@ -134,28 +139,32 @@ export default function EmailCapture() {
               </div>
 
               {/* SMS opt-in */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => setSmsOptIn(v => !v)}>
-                <div style={{
-                  width: '18px', height: '18px', borderRadius: '5px', flexShrink: 0,
-                  border: `1.5px solid ${smsOptIn ? '#C4622D' : 'rgba(255,248,240,0.2)'}`,
-                  background: smsOptIn ? '#C4622D' : 'transparent',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all 0.15s',
-                }}>
-                  {smsOptIn && (
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FFF8F0" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                  )}
-                </div>
+              <label htmlFor="signup-sms-optin" style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                <input
+                  id="signup-sms-optin"
+                  type="checkbox"
+                  checked={smsOptIn}
+                  onChange={e => setSmsOptIn(e.target.checked)}
+                  style={{
+                    width: '18px', height: '18px', borderRadius: '5px', flexShrink: 0,
+                    accentColor: '#C4622D', cursor: 'pointer', margin: 0,
+                  }}
+                />
                 <span style={{ fontSize: '13px', color: 'rgba(255,248,240,0.5)', userSelect: 'none' }}>
                   Also text me deals and new menu drops
                 </span>
-              </div>
+              </label>
 
               {/* Phone field — only shown if SMS opted in */}
               {smsOptIn && (
+                <label htmlFor="signup-phone" style={{ position: 'absolute', width: '1px', height: '1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap' }}>
+                  Phone number
+                </label>
+              )}
+              {smsOptIn && (
                 <input
+                  id="signup-phone"
+                  className="input-on-dark"
                   type="tel"
                   placeholder="(617) 555-0000"
                   value={phone}

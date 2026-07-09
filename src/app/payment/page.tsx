@@ -274,7 +274,7 @@ export default function PaymentPage() {
                     {items.map(item => (
                       <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}>
                         <span style={{ color: '#1A0F0A' }}>
-                          {item.name} <span style={{ color: '#9E7A52' }}>× {item.quantity}</span>
+                          {item.name} <span style={{ color: '#7A5D3E' }}>× {item.quantity}</span>
                         </span>
                         <span style={{ fontWeight: 600, color: '#1A0F0A' }}>{formatCurrency(item.price * item.quantity)}</span>
                       </div>
@@ -412,7 +412,7 @@ export default function PaymentPage() {
                       ...(od.specialInstructions ? [{ label: 'Notes', value: od.specialInstructions }] : []),
                     ].filter(r => r.value).map(row => (
                       <div key={row.label} style={{ display: 'flex', gap: '16px', fontSize: '13.5px' }}>
-                        <span style={{ width: '80px', flexShrink: 0, color: '#9E7A52', fontWeight: 600 }}>{row.label}</span>
+                        <span style={{ width: '80px', flexShrink: 0, color: '#7A5D3E', fontWeight: 600 }}>{row.label}</span>
                         <span style={{ color: '#1A0F0A', fontWeight: 500 }}>{row.value}</span>
                       </div>
                     ))}
@@ -432,7 +432,7 @@ export default function PaymentPage() {
                         <span key={b} style={{
                           fontSize: '10px', fontWeight: 700,
                           padding: '4px 8px', borderRadius: '6px',
-                          border: '1px solid #E2CEB8', color: '#9E7A52',
+                          border: '1px solid #E2CEB8', color: '#7A5D3E',
                           letterSpacing: '0.05em',
                         }}>{b}</span>
                       ))}
@@ -440,7 +440,7 @@ export default function PaymentPage() {
                   </div>
 
                   {!sdkReady && (
-                    <div style={{ fontSize: '13px', color: '#9E7A52', padding: '16px 0' }}>Loading payment form...</div>
+                    <div style={{ fontSize: '13px', color: '#7A5D3E', padding: '16px 0' }}>Loading payment form...</div>
                   )}
 
                   <div id="square-card" style={{ minHeight: '89px' }} />
@@ -449,7 +449,7 @@ export default function PaymentPage() {
                     <p role="alert" style={{ fontSize: '12px', color: '#dc2626', marginTop: '8px' }}>{cardError}</p>
                   )}
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#9E7A52', marginTop: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#7A5D3E', marginTop: '12px' }}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2">
                       <rect x="3" y="11" width="18" height="11" rx="2"/>
                       <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -516,7 +516,7 @@ export default function PaymentPage() {
                     `Place Order · ${formatCurrency(discountedTotal)}`
                   )}
                 </button>
-                <p style={{ fontSize: '11.5px', textAlign: 'center', color: '#9E7A52', lineHeight: 1.6 }}>
+                <p style={{ fontSize: '11.5px', textAlign: 'center', color: '#7A5D3E', lineHeight: 1.6 }}>
                   By placing this order you also agree to our Terms & Conditions and Privacy Policy.
                 </p>
               </div>

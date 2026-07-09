@@ -272,7 +272,7 @@ export default function CorporateOrderPage() {
                     <h2 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '18px', fontWeight: 700, color: '#1A0F0A' }}>
                       Organization details
                     </h2>
-                    <p style={{ fontSize: '13px', color: '#9E7A52', marginTop: '4px' }}>
+                    <p style={{ fontSize: '13px', color: '#7A5D3E', marginTop: '4px' }}>
                       For companies, nonprofits, and student orgs. We use this to generate your invoice.
                     </p>
                   </div>
@@ -355,7 +355,7 @@ export default function CorporateOrderPage() {
                       />
                       <div>
                         <div style={{ fontSize: '13px', fontWeight: 600, color: '#1A0F0A' }}>Request a formal invoice</div>
-                        <div style={{ fontSize: '12px', color: '#9E7A52', marginTop: '2px' }}>Available to download from your admin dashboard after confirmation</div>
+                        <div style={{ fontSize: '12px', color: '#7A5D3E', marginTop: '2px' }}>Available to download from your admin dashboard after confirmation</div>
                       </div>
                     </label>
                   </div>
@@ -542,7 +542,7 @@ export default function CorporateOrderPage() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {items.map(item => (
                       <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}>
-                        <span style={{ color: '#1A0F0A' }}>{item.name} <span style={{ color: '#9E7A52' }}>× {item.quantity}</span></span>
+                        <span style={{ color: '#1A0F0A' }}>{item.name} <span style={{ color: '#7A5D3E' }}>× {item.quantity}</span></span>
                         <span style={{ fontWeight: 600, color: '#1A0F0A' }}>{formatCurrency(item.price * item.quantity)}</span>
                       </div>
                     ))}
@@ -562,7 +562,7 @@ export default function CorporateOrderPage() {
               </div>
 
               <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <p style={{ fontSize: '12px', textAlign: 'center', color: '#9E7A52', lineHeight: 1.7 }}>
+                <p style={{ fontSize: '12px', textAlign: 'center', color: '#7A5D3E', lineHeight: 1.7 }}>
                   Corporate and student org orders are confirmed within <strong>48 hours</strong>.
                   {form.requestInvoice && ' A formal invoice will be available after confirmation.'}
                 </p>

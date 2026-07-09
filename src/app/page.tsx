@@ -2,6 +2,8 @@ import Link from 'next/link'
 import Footer from '@/components/Footer'
 import FAQ from '@/components/FAQ'
 import EmailCapture from '@/components/EmailCapture'
+import AutoplayVideo from '@/components/AutoplayVideo'
+import Marquee from '@/components/Marquee'
 import { MENU_ITEMS } from '@/lib/mockData'
 import { getItemGradient, formatCurrency } from '@/lib/utils'
 
@@ -106,7 +108,7 @@ export default function HomePage() {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '40px' }}>
                   <div style={{ width: '32px', height: '1px', background: '#C4622D' }} />
-                  <span className="label-upper" style={{ color: '#C4622D' }}>Ghanaian Catering · Randolph/Brockton</span>
+                  <span className="label-upper" style={{ color: '#A85425' }}>Ghanaian Catering · Randolph/Brockton</span>
                 </div>
 
                 <h1 style={{
@@ -137,7 +139,7 @@ export default function HomePage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
                   <Link href="/order-now" style={{
                     display: 'inline-flex', alignItems: 'center', gap: '12px',
-                    background: '#C4622D', color: '#FFF8F0',
+                    background: '#A85425', color: '#FFF8F0',
                     fontWeight: 600, fontSize: '14px',
                     letterSpacing: '0.03em',
                     padding: '17px 38px', borderRadius: '100px',
@@ -153,7 +155,7 @@ export default function HomePage() {
                   <Link href="/order" style={{
                     display: 'inline-flex', alignItems: 'center', gap: '8px',
                     border: '1px solid rgba(196,98,45,0.45)',
-                    color: '#C4622D',
+                    color: '#A85425',
                     fontWeight: 600, fontSize: '13px',
                     letterSpacing: '0.04em',
                     padding: '16px 28px', borderRadius: '100px',
@@ -170,7 +172,7 @@ export default function HomePage() {
                   borderTop: '1px solid #E2CEB8',
                   fontSize: '10.5px', fontWeight: 700,
                   letterSpacing: '0.13em', textTransform: 'uppercase',
-                  color: '#9E7A52',
+                  color: '#7A5D3E',
                 }}>
                   <span>Plates: pickup or delivery today</span>
                   <span>Catering: 5-day advance booking</span>
@@ -296,7 +298,7 @@ export default function HomePage() {
                     Feeding a crowd? We cater funerals, weddings, naming ceremonies, and birthday parties across the Randolph/Brockton area. Book at least 5 days in advance.
                   </p>
                   <div style={{ marginTop: 'auto', paddingTop: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,248,240,0.4)' }}>Book Catering →</span>
+                    <span style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,248,240,0.55)' }}>Book Catering →</span>
                     <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(255,255,255,0.07)', color: 'rgba(255,248,240,0.5)', padding: '4px 10px', borderRadius: '100px' }}>5-Day Advance</span>
                   </div>
                 </div>
@@ -345,43 +347,7 @@ export default function HomePage() {
         </section>
 
         {/* ────────────── MARQUEE ────────────── */}
-        <div
-          aria-hidden="true"
-          style={{
-            background: '#C4622D',
-            padding: '13px 0',
-            overflow: 'hidden',
-          }}
-        >
-          <div className="marquee-track" style={{
-            display: 'flex',
-            alignItems: 'center',
-            whiteSpace: 'nowrap',
-          }}>
-            {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
-              <span key={i} style={{
-                fontSize: '10.5px',
-                fontWeight: 700,
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                color: '#FFF8F0',
-                padding: '0 28px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '28px',
-              }}>
-                {item}
-                <span style={{
-                  display: 'inline-block',
-                  width: '3px', height: '3px',
-                  borderRadius: '50%',
-                  background: 'rgba(255,248,240,0.45)',
-                  flexShrink: 0,
-                }} />
-              </span>
-            ))}
-          </div>
-        </div>
+        <Marquee items={MARQUEE_ITEMS} />
 
         {/* ────────────── FEATURED MENU ────────────── */}
         <section style={{ padding: '108px 0', background: '#1A0F0A' }}>
@@ -414,13 +380,9 @@ export default function HomePage() {
                     paddingBottom: (item.video || item.image) ? '0' : '20px',
                   }}>
                     {item.video ? (
-                      <video
+                      <AutoplayVideo
                         src={item.video}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        aria-label={item.name}
+                        ariaLabel={item.name}
                         style={{
                           position: 'absolute',
                           inset: 0,
@@ -485,7 +447,7 @@ export default function HomePage() {
                       <span style={{ fontWeight: 700, fontSize: '21px', color: '#C4622D' }}>
                         {formatCurrency(item.price)}
                       </span>
-                      <span style={{ fontSize: '11px', color: 'rgba(255,248,240,0.35)', letterSpacing: '0.04em' }}>
+                      <span style={{ fontSize: '11px', color: 'rgba(255,248,240,0.55)', letterSpacing: '0.04em' }}>
                         {item.unit}
                       </span>
                     </div>

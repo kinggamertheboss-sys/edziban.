@@ -5,7 +5,7 @@ import { MENU_ITEMS, MENU_CATEGORIES, type MockOrder } from '@/lib/mockData'
 
 const D = {
   bg: '#0E0806', card: '#1A0F0A', border: 'rgba(255,255,255,0.07)',
-  text: '#FFF8F0', muted: 'rgba(255,248,240,0.5)', faint: 'rgba(255,248,240,0.2)',
+  text: '#FFF8F0', muted: 'rgba(255,248,240,0.5)', faint: 'rgba(255,248,240,0.5)',
 }
 
 // UPDATE this to your kitchen/pickup address before going live
@@ -149,7 +149,13 @@ function ProductsPicker({ value, onChange }: { value: string; onChange: (v: stri
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <div
+        role="button"
+        tabIndex={0}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label="Select menu items"
         onClick={() => setOpen(o => !o)}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen(o => !o) } }}
         style={{
           width: '100%', minHeight: '42px', padding: '8px 14px', borderRadius: '10px',
           border: `1px solid ${open ? '#C4622D' : D.border}`,
@@ -169,7 +175,11 @@ function ProductsPicker({ value, onChange }: { value: string; onChange: (v: stri
             }}>
               {name}
               <span
+                role="button"
+                tabIndex={0}
+                aria-label={`Remove ${name}`}
                 onClick={e => { e.stopPropagation(); toggle(name) }}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); toggle(name) } }}
                 style={{ cursor: 'pointer', opacity: 0.7, fontSize: '13px', lineHeight: 1 }}
               >×</span>
             </span>
@@ -179,7 +189,7 @@ function ProductsPicker({ value, onChange }: { value: string; onChange: (v: stri
       </div>
 
       {open && (
-        <div style={{
+        <div role="listbox" aria-label="Menu items" style={{
           position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, zIndex: 200,
           background: '#1E1008', border: `1px solid ${D.border}`, borderRadius: '12px',
           overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
@@ -197,7 +207,11 @@ function ProductsPicker({ value, onChange }: { value: string; onChange: (v: stri
                   return (
                     <div
                       key={item.id}
+                      role="option"
+                      aria-selected={checked}
+                      tabIndex={0}
                       onClick={() => toggle(item.name)}
+                      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(item.name) } }}
                       style={{
                         display: 'flex', alignItems: 'center', gap: '10px',
                         padding: '9px 14px', cursor: 'pointer',

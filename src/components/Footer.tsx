@@ -29,7 +29,7 @@ export default function Footer() {
               fontWeight: 700,
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
-              color: 'rgba(255,248,240,0.28)',
+              color: 'rgba(255,248,240,0.5)',
               marginBottom: '20px',
             }}>Ghana&apos;s finest, delivered to you.</p>
             <p style={{

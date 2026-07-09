@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 
 const D = {
   card: '#1A0F0A', border: 'rgba(255,255,255,0.07)',
-  text: '#FFF8F0', muted: 'rgba(255,248,240,0.5)', faint: 'rgba(255,248,240,0.2)',
+  text: '#FFF8F0', muted: 'rgba(255,248,240,0.5)', faint: 'rgba(255,248,240,0.5)',
 }
 
 interface NotifLog {
