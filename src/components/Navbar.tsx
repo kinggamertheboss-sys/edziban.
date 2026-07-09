@@ -100,22 +100,6 @@ export default function Navbar() {
               }}
             >
               Order Now
-              {totalItems > 0 && (
-                <span
-                  aria-hidden="true"
-                  style={{
-                    position: 'absolute',
-                    top: '-8px', right: '-8px',
-                    fontSize: '11px', fontWeight: 800,
-                    width: '20px', height: '20px',
-                    borderRadius: '50%',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: '#1A0F0A', color: '#FFF8F0',
-                  }}
-                >
-                  {totalItems}
-                </span>
-              )}
             </Link>
           </nav>
 

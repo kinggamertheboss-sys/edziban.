@@ -662,6 +662,10 @@ export default function OrderNowPage() {
                     </div>
                   )}
 
+                  <p style={{ fontSize: '12px', textAlign: 'center', color: '#9E7A52', lineHeight: 1.7, margin: 0 }}>
+                    This is a same-day order — you&apos;ll get your confirmation right away, no 24-hour wait.
+                  </p>
+
                   <button
                     type="submit"
                     disabled={loading || !sdkReady || (fulfillment === 'delivery' && !deliveryInfo)}
