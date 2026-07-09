@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 
 export default function EmailCapture() {
   const [email, setEmail]       = useState('')
@@ -174,8 +175,11 @@ export default function EmailCapture() {
               )}
 
               {smsOptIn && (
-                <p style={{ fontSize: '11px', color: 'rgba(255,248,240,0.25)', margin: 0 }}>
-                  By checking this box you agree to receive marketing texts from Edziban. Message & data rates may apply.
+                <p style={{ fontSize: '11.5px', color: 'rgba(255,248,240,0.55)', margin: 0, lineHeight: 1.6, maxWidth: '340px' }}>
+                  By checking this box, I agree to receive recurring marketing text messages from Edziban Catering (deals, new menu drops) at the phone number provided. Consent is not a condition of purchase. Message frequency varies. Message and data rates may apply. Reply STOP to opt out at any time, or HELP for help. See our{' '}
+                  <Link href="/privacy" target="_blank" style={{ color: '#C4622D', fontWeight: 600 }}>Privacy Policy</Link>
+                  {' '}and{' '}
+                  <Link href="/terms" target="_blank" style={{ color: '#C4622D', fontWeight: 600 }}>Terms & Conditions</Link>.
                 </p>
               )}
 

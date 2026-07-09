@@ -240,8 +240,6 @@ export default function OrderNowPage() {
     if (!cardRef.current) { setError('Payment form not ready. Refresh and try again.'); return }
     if (!name.trim() || !email.trim()) { setError('Name and email are required.'); return }
     if (fulfillment === 'delivery' && !deliveryInfo) { setError('Please enter a valid delivery address.'); return }
-    if (phone.trim() && !smsConsent) { setError('Please check the box to consent to SMS order updates, or remove your phone number.'); return }
-
     setLoading(true)
     setError('')
 
@@ -560,14 +558,13 @@ export default function OrderNowPage() {
                         }}>
                           <input
                             type="checkbox"
-                            required
                             checked={smsConsent}
                             onChange={e => setSmsConsent(e.target.checked)}
                             aria-describedby="on-sms-consent-copy"
                             style={{ width: '16px', height: '16px', marginTop: '1px', accentColor: '#C4622D', cursor: 'pointer', flexShrink: 0 }}
                           />
                           <span id="on-sms-consent-copy" style={{ fontSize: '12.5px', color: '#4A2E20', lineHeight: 1.6 }}>
-                            I agree to receive SMS/text messages from Edziban Catering about this order, including order confirmation and pickup/delivery ready alerts. Message frequency varies. Message and data rates may apply. Reply STOP to opt out. See our{' '}
+                            I agree to receive SMS/text messages from Edziban Catering about this order, including order confirmation and pickup/delivery ready alerts. Message frequency varies. Message and data rates may apply. Reply STOP to opt out, or HELP for help. See our{' '}
                             <Link href="/privacy" target="_blank" style={{ color: '#C4622D', fontWeight: 600 }}>Privacy Policy</Link>
                             {' '}and{' '}
                             <Link href="/terms" target="_blank" style={{ color: '#C4622D', fontWeight: 600 }}>Terms & Conditions</Link>.
@@ -662,7 +659,7 @@ export default function OrderNowPage() {
 
                   <button
                     type="submit"
-                    disabled={loading || !sdkReady || (fulfillment === 'delivery' && !deliveryInfo) || (!!phone.trim() && !smsConsent)}
+                    disabled={loading || !sdkReady || (fulfillment === 'delivery' && !deliveryInfo)}
                     style={{
                       width: '100%',
                       padding: '16px',

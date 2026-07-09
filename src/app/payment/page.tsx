@@ -109,7 +109,6 @@ export default function PaymentPage() {
   async function handlePlaceOrder(e: React.FormEvent) {
     e.preventDefault()
     if (!cardRef.current) { setCardError('Card form not ready. Please wait a moment.'); return }
-    if (!smsConsent) { setCardError('Please check the box to consent to SMS order updates before placing your order.'); return }
     setLoading(true)
     setCardError('')
 
@@ -472,14 +471,13 @@ export default function PaymentPage() {
               }}>
                 <input
                   type="checkbox"
-                  required
                   checked={smsConsent}
                   onChange={e => setSmsConsent(e.target.checked)}
                   aria-describedby="sms-consent-copy"
                   style={{ width: '17px', height: '17px', marginTop: '1px', accentColor: '#C4622D', cursor: 'pointer', flexShrink: 0 }}
                 />
                 <span id="sms-consent-copy" style={{ fontSize: '13px', color: '#4A2E20', lineHeight: 1.6 }}>
-                  I agree to receive SMS/text messages from Edziban Catering about this order, including order confirmation and pickup/delivery ready alerts, sent to the phone number I provided. Message frequency varies. Message and data rates may apply. Reply STOP to opt out at any time. See our{' '}
+                  I agree to receive SMS/text messages from Edziban Catering about this order, including order confirmation and pickup/delivery ready alerts, sent to the phone number I provided. Message frequency varies. Message and data rates may apply. Reply STOP to opt out at any time, or HELP for help. See our{' '}
                   <Link href="/privacy" target="_blank" style={{ color: '#C4622D', fontWeight: 600 }}>Privacy Policy</Link>
                   {' '}and{' '}
                   <Link href="/terms" target="_blank" style={{ color: '#C4622D', fontWeight: 600 }}>Terms & Conditions</Link>.
@@ -490,7 +488,7 @@ export default function PaymentPage() {
               <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <button
                   type="submit"
-                  disabled={loading || !sdkReady || !smsConsent}
+                  disabled={loading || !sdkReady}
                   style={{
                     width: '100%',
                     background: '#C4622D',

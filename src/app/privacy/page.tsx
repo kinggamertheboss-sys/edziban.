@@ -66,7 +66,12 @@ export default function PrivacyPage() {
           </Section>
 
           <Section title="SMS messages">
-            <p>By providing your phone number at checkout you consent to receive SMS messages from Edziban about your order status (confirmation, ready for pickup, out for delivery). Message and data rates may apply. You can opt out at any time by replying STOP to any message.</p>
+            <p style={{ marginBottom: '12px' }}>We send two kinds of text messages, each requiring its own opt-in:</p>
+            <ul style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <li><strong>Order updates</strong> — if you check the SMS consent box at checkout, we&apos;ll text the phone number you provide about that order&apos;s status (confirmation, ready for pickup, out for delivery). This is optional and is never required to place an order.</li>
+              <li><strong>Marketing texts</strong> — if you separately opt in on our homepage sign-up form, we&apos;ll text you about deals and new menu drops. This is a separate, unchecked-by-default opt-in and is never bundled with order updates.</li>
+            </ul>
+            <p style={{ marginTop: '12px' }}>Message frequency varies. Message and data rates may apply. Reply STOP to any message to opt out at any time, or HELP for help. No mobile information will be shared with third parties for marketing purposes.</p>
           </Section>
 
           <Section title="Data retention">
