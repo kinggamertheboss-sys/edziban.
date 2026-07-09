@@ -29,7 +29,7 @@ export default function PrivacyPage() {
         <div className="wrap" style={{ maxWidth: '720px', padding: '56px 24px 80px' }}>
 
           <Section title="Who we are">
-            <p>Edziban is a Ghanaian food business operating in the Greater Boston area, serving individual plate orders and event catering. Our website is <strong>{SITE}</strong>. Questions about this policy can be sent to <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: '#C4622D' }}>{CONTACT_EMAIL}</a>.</p>
+            <p>Edziban is a Ghanaian food business operating in the Randolph/Brockton area, serving individual plate orders and event catering. Our website is <strong>{SITE}</strong>. Questions about this policy can be sent to <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: '#C4622D' }}>{CONTACT_EMAIL}</a>.</p>
           </Section>
 
           <Section title="What information we collect">

@@ -286,7 +286,7 @@ export default function OrderPage() {
                           type="text"
                           value={form.address}
                           onChange={e => set('address', e.target.value)}
-                          placeholder="e.g. 123 Main St, Boston, MA 02101"
+                          placeholder="e.g. 123 Main St, Randolph, MA 02368"
                           aria-describedby={errors.address ? 'address-error' : undefined}
                           aria-invalid={!!errors.address}
                           className={`field ${errors.address ? 'error' : ''}`}
@@ -315,7 +315,7 @@ export default function OrderPage() {
 
                   {form.fulfillmentType === 'pickup' && (
                     <div style={{ background: '#F0E4D0', borderRadius: '12px', padding: '16px 18px', fontSize: '13px', lineHeight: 1.7, color: '#4A2E20' }}>
-                      Pickup is available in the Greater Boston area. Exact location confirmed over WhatsApp after your order.
+                      Pickup is available in the Randolph/Brockton area. Exact location confirmed over WhatsApp after your order.
                     </div>
                   )}
                 </div>

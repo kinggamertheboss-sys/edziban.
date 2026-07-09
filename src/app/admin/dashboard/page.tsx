@@ -102,7 +102,7 @@ export default function AdminDashboard() {
   const [expanded, setExpanded] = useState<string | null>(null)
   const [loadingBtn, setLoadingBtn] = useState<string | null>(null)
   const [notifLogs, setNotifLogs] = useState<Record<string, NotifLog[]>>({})
-  const [activeTab, setActiveTab] = useState<'orders' | 'suppliers' | 'financials' | 'corporate' | 'inbox' | 'notifications' | 'subscribers'>('orders')
+  const [activeTab, setActiveTab] = useState<'orders' | 'suppliers' | 'financials' | 'corporate' | 'inbox' | 'notifications' | 'subscribers' | 'tickets'>('orders')
   const [paidPayouts, setPaidPayouts] = useState<PayoutRecord[]>([])
   const [payingKey, setPayingKey] = useState<string | null>(null)
   const [payMethod, setPayMethod] = useState<'check' | 'zelle'>('zelle')
@@ -246,7 +246,12 @@ export default function AdminDashboard() {
 
   const thisMonthOrders = nonCancelledOrders.filter(o => new Date(o.createdAt) >= monthStart)
   const thisWeekOrders  = nonCancelledOrders.filter(o => new Date(o.createdAt) >= weekAgo)
-  const todayOrders     = nonCancelledOrders.filter(o => o.createdAt.startsWith(todayStr))
+  const todayOrders      = nonCancelledOrders.filter(o => o.createdAt.startsWith(todayStr))
+  const todayPlateOrders = displayOrders.filter(o =>
+    o.eventType === 'plate' &&
+    o.createdAt.startsWith(todayStr) &&
+    getStatus(o.id) !== 'cancelled'
+  )
 
   const activeOrders = displayOrders.filter(o => !['cancelled', 'delivered', 'reviewed'].includes(getStatus(o.id)))
   const supplierTotals = MOCK_SUPPLIERS.map(sup => ({
@@ -454,11 +459,14 @@ export default function AdminDashboard() {
           if (actionNeededCount > 0) tabBadge['orders'] = actionNeededCount
           if (vendorPayouts.filter(v => v.balanceDue > 0).length > 0) tabBadge['suppliers'] = vendorPayouts.filter(v => v.balanceDue > 0).length
 
-          const TAB_LABELS: Record<string, string> = { orders: 'Orders', suppliers: 'Suppliers', financials: 'Financials', corporate: 'Corporate', inbox: 'Inbox', notifications: 'Notifications', subscribers: 'Subscribers' }
+          const pendingTickets = todayPlateOrders.filter(o => !['delivered', 'reviewed', 'completed'].includes(getStatus(o.id))).length
+          if (pendingTickets > 0) tabBadge['tickets'] = pendingTickets
+
+          const TAB_LABELS: Record<string, string> = { orders: 'Orders', tickets: 'Tickets', suppliers: 'Suppliers', financials: 'Financials', corporate: 'Corporate', inbox: 'Inbox', notifications: 'Notifications', subscribers: 'Subscribers' }
 
           return (
             <div style={{ display: 'flex', gap: '4px', marginBottom: '24px', background: D.card, border: `1px solid ${D.border}`, borderRadius: '12px', padding: '4px', width: 'fit-content', flexWrap: 'wrap' }}>
-              {(['orders', 'suppliers', 'financials', 'corporate', 'inbox', 'notifications', 'subscribers'] as const).map(tab => {
+              {(['orders', 'tickets', 'suppliers', 'financials', 'corporate', 'inbox', 'notifications', 'subscribers'] as const).map(tab => {
                 const badge = tabBadge[tab]
                 const isActive = activeTab === tab
                 return (
@@ -669,6 +677,145 @@ export default function AdminDashboard() {
 
         {/* ── SUBSCRIBERS tab ─────────────────────────────────────────────── */}
         {activeTab === 'subscribers' && <Subscribers />}
+
+        {/* ── TICKETS tab ────────────────────────────────────────────────── */}
+        {activeTab === 'tickets' && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+              <p style={{ fontSize: '13px', color: D.muted }}>
+                {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+              </p>
+              {todayPlateOrders.length > 0 && (
+                <p style={{ fontSize: '12px', color: D.faint }}>
+                  {todayPlateOrders.filter(o => ['delivered', 'reviewed', 'completed'].includes(getStatus(o.id))).length} / {todayPlateOrders.length} handed out
+                </p>
+              )}
+            </div>
+
+            {todayPlateOrders.length === 0 ? (
+              <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: '20px', padding: '60px', textAlign: 'center' }}>
+                <p style={{ fontSize: '15px', color: D.muted }}>No plate orders today yet.</p>
+                <p style={{ fontSize: '13px', color: D.faint, marginTop: '8px' }}>Orders appear here the moment a customer pays.</p>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
+                {todayPlateOrders.map(order => {
+                  const status = getStatus(order.id)
+                  const isDone = ['delivered', 'reviewed', 'completed'].includes(status)
+                  const st = statusStyle(status)
+                  const btnKey = `${order.id}-pipeline`
+
+                  return (
+                    <div key={order.id} style={{
+                      background: isDone ? 'rgba(255,248,240,0.02)' : D.card,
+                      border: `1px solid ${isDone ? D.border : 'rgba(196,98,45,0.3)'}`,
+                      borderRadius: '20px',
+                      padding: '24px',
+                      opacity: isDone ? 0.5 : 1,
+                      transition: 'all 0.2s',
+                    }}>
+                      {/* Header */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
+                        <span className="badge" style={{ background: st.bg, color: st.color }}>{getStatusLabel(status)}</span>
+                        <span style={{ fontSize: '11px', fontWeight: 700, color: D.faint, letterSpacing: '0.06em' }}>{order.id}</span>
+                      </div>
+
+                      {/* Customer name — big */}
+                      <p style={{
+                        fontFamily: 'var(--font-playfair), Georgia, serif',
+                        fontSize: '28px', fontWeight: 700,
+                        color: isDone ? D.muted : D.text,
+                        letterSpacing: '-0.02em', lineHeight: 1.1,
+                        marginBottom: '18px',
+                        textDecoration: isDone ? 'line-through' : 'none',
+                      }}>
+                        {order.customerName}
+                      </p>
+
+                      <div style={{ height: '1px', background: D.border, marginBottom: '18px' }} />
+
+                      {/* Items */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+                        {order.items.map(item => {
+                          const isBase = item.itemId.includes('jollof-build-plate')
+                          const isAddon = item.itemId.includes('jollof-addon')
+
+                          if (isBase) {
+                            const sauce = item.itemId.includes('--')
+                              ? item.itemId.split('--')[1]
+                              : item.name.split('—')[1]?.trim()
+                            return (
+                              <div key={item.itemId}>
+                                <p style={{ fontSize: '16px', fontWeight: 700, color: D.text }}>
+                                  Jollof Plate{item.quantity > 1 ? ` × ${item.quantity}` : ''}
+                                </p>
+                                {sauce && (
+                                  <p style={{ fontSize: '13px', fontWeight: 800, color: '#C4622D', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '3px' }}>
+                                    {sauce}
+                                  </p>
+                                )}
+                              </div>
+                            )
+                          }
+
+                          if (isAddon) {
+                            return (
+                              <p key={item.itemId} style={{ fontSize: '14px', color: D.muted, fontWeight: 500 }}>
+                                + {item.name}
+                              </p>
+                            )
+                          }
+
+                          return (
+                            <p key={item.itemId} style={{ fontSize: '16px', fontWeight: 700, color: D.text }}>
+                              {item.name}{item.quantity > 1 ? ` × ${item.quantity}` : ''}
+                            </p>
+                          )
+                        })}
+                      </div>
+
+                      <div style={{ height: '1px', background: D.border, marginBottom: '18px' }} />
+
+                      {/* Footer */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                        <div>
+                          <p style={{ fontSize: '16px', fontWeight: 700, color: D.text }}>{formatCurrency(order.total)}</p>
+                          <p style={{ fontSize: '11px', color: D.faint, marginTop: '2px', textTransform: 'capitalize' }}>{order.fulfillmentType}</p>
+                        </div>
+                        {isDone ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span style={{ fontSize: '13px', fontWeight: 700, color: '#22C55E' }}>Done</span>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              const step = PLATE_PIPELINE[status]
+                              if (step) handlePipelineAction(order, step)
+                              else setStatus(order.id, 'delivered')
+                            }}
+                            disabled={loadingBtn === btnKey}
+                            style={{
+                              fontSize: '14px', fontWeight: 700, letterSpacing: '0.04em',
+                              padding: '14px 28px', borderRadius: '100px', border: 'none',
+                              background: '#4ADE80', color: '#0E0806',
+                              cursor: loadingBtn === btnKey ? 'not-allowed' : 'pointer',
+                              opacity: loadingBtn === btnKey ? 0.7 : 1,
+                              boxShadow: '0 4px 20px rgba(74,222,128,0.25)',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {loadingBtn === btnKey ? 'Updating...' : 'Hand Out'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ── ORDERS tab ─────────────────────────────────────────────────── */}
         {activeTab === 'orders' && (

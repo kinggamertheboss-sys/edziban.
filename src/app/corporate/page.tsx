@@ -31,7 +31,7 @@ const FEATURED_IDS = ['jollof-rice', 'fried-chicken', 'puff-puff', 'bb-cocktail'
 const FACTS = [
   { label: 'Lead time', value: '5 days minimum' },
   { label: 'Confirmation', value: 'Within 48 hours' },
-  { label: 'Delivery area', value: 'Greater Boston' },
+  { label: 'Delivery area', value: 'Randolph/Brockton' },
   { label: 'Per person', value: '$5 - $9 for most spreads' },
   { label: 'Minimum order', value: 'No minimum' },
   { label: 'Payment', value: 'Card via Square' },

@@ -119,7 +119,7 @@ export const PLATES_MENU: PlateItem[] = [
 
 export function getPlatesServiceFee(subtotal: number, deliveryFee: number = 0): number {
   const base = subtotal + deliveryFee
-  return Math.round((base * 0.029 + 0.30) * 100) / 100
+  return Math.round((base * 0.029 + 0.30 + 3.50) * 100) / 100
 }
 
 export function calculatePlateDeliveryFee(miles: number): number {

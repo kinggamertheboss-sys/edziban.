@@ -52,7 +52,7 @@ function buildBroadcastEmail(subject: string, body: string, imageUrl: string, ct
           <td style="background:#1A0F0A;padding:20px 40px;text-align:center;">
             <p style="margin:0;font-size:11px;color:rgba(255,248,240,0.35);line-height:1.7;">
               Edziban &mdash; Ghana&apos;s finest, delivered to you.<br>
-              Greater Boston Area &bull; <a href="https://edzibancatering.com" style="color:#C4622D;text-decoration:none;">edzibancatering.com</a><br><br>
+              Randolph/Brockton Area &bull; <a href="https://edzibancatering.com" style="color:#C4622D;text-decoration:none;">edzibancatering.com</a><br><br>
               <a href="https://edzibancatering.com" style="color:rgba(255,248,240,0.3);text-decoration:underline;font-size:10px;">Unsubscribe</a>
             </p>
           </td>

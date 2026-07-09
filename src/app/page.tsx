@@ -15,12 +15,12 @@ const EVENTS = [
 const STEPS = [
   { n: '01', title: 'Choose your menu', desc: 'Browse our menu and select your trays, platters, and drinks. Each item includes a guest count so you know exactly how much to order.' },
   { n: '02', title: 'Schedule your event', desc: 'Select a date at least 5 days in advance. All food is prepared fresh to order — nothing pre-made or reheated.' },
-  { n: '03', title: 'We handle the rest', desc: 'Receive an email confirmation within 24 hours. We offer both delivery and pickup across the Greater Boston area.' },
+  { n: '03', title: 'We handle the rest', desc: 'Receive an email confirmation within 24 hours. We offer both delivery and pickup across the Randolph/Brockton area.' },
 ]
 
 const MARQUEE_ITEMS = [
   'Jollof Rice', 'Waakye', 'Puff Puff', 'Fried Chicken', 'Shito',
-  'Ice Kenkey', 'Meat Pies', 'Made Fresh Daily', 'Boston Area',
+  'Ice Kenkey', 'Meat Pies', 'Made Fresh Daily', 'Randolph/Brockton',
   'Funerals', 'Weddings', 'Naming Ceremonies', 'Birthday Parties', 'Ghanaian Catering',
 ]
 
@@ -106,7 +106,7 @@ export default function HomePage() {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '40px' }}>
                   <div style={{ width: '32px', height: '1px', background: '#C4622D' }} />
-                  <span className="label-upper" style={{ color: '#C4622D' }}>Ghanaian Catering · Boston Area</span>
+                  <span className="label-upper" style={{ color: '#C4622D' }}>Ghanaian Catering · Randolph/Brockton</span>
                 </div>
 
                 <h1 style={{
@@ -130,7 +130,7 @@ export default function HomePage() {
                   marginBottom: '48px',
                 }}>
                   Real Ghanaian food from real home cooks, brought to your
-                  event in the Boston area. Funerals, weddings, naming
+                  event in the Randolph/Brockton area. Funerals, weddings, naming
                   ceremonies, birthday parties.
                 </p>
 
@@ -172,9 +172,8 @@ export default function HomePage() {
                   letterSpacing: '0.13em', textTransform: 'uppercase',
                   color: '#9E7A52',
                 }}>
-                  <span>5-day advance ordering</span>
-                  <span>Delivery and pickup</span>
-                  <span>Orders confirmed within 24 hours</span>
+                  <span>Plates: pickup or delivery today</span>
+                  <span>Catering: 5-day advance booking</span>
                 </div>
               </div>
 
@@ -294,7 +293,7 @@ export default function HomePage() {
                 <div style={{ background: '#2A1A10', border: '1.5px solid #3A2A20', borderRadius: '20px', padding: '32px', height: '100%', boxSizing: 'border-box', cursor: 'pointer', transition: 'transform 0.2s', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div style={{ fontSize: '28px', fontWeight: 800, color: '#FFF8F0', fontFamily: 'var(--font-playfair), Georgia, serif', lineHeight: 1.1 }}>Event Catering</div>
                   <p style={{ margin: 0, fontSize: '14px', color: 'rgba(255,248,240,0.55)', lineHeight: 1.6 }}>
-                    Feeding a crowd? We cater funerals, weddings, naming ceremonies, and birthday parties across the Boston area. Book at least 5 days in advance.
+                    Feeding a crowd? We cater funerals, weddings, naming ceremonies, and birthday parties across the Randolph/Brockton area. Book at least 5 days in advance.
                   </p>
                   <div style={{ marginTop: 'auto', paddingTop: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,248,240,0.4)' }}>Book Catering →</span>
@@ -395,7 +394,7 @@ export default function HomePage() {
               </div>
               <h2 style={{ color: '#FFF8F0' }}>Fresh food from<br />Ghanaian cooks.</h2>
               <p style={{ color: 'rgba(255,248,240,0.55)' }}>
-                Every item is cooked to order by Ghanaian home cooks in the Boston area. Nothing pre-made.
+                Every item is cooked to order by Ghanaian home cooks in the Randolph/Brockton area. Nothing pre-made.
               </p>
             </div>
 

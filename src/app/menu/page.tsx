@@ -2,8 +2,8 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect, Suspense } from 'react'
+import Link from 'next/link'
 import Footer from '@/components/Footer'
-import JollofPlateBuilder from '@/components/JollofPlateBuilder'
 import { MENU_ITEMS, MENU_CATEGORIES } from '@/lib/mockData'
 import { useCart } from '@/context/CartContext'
 import { formatCurrency, getItemGradient } from '@/lib/utils'
@@ -124,8 +124,33 @@ function MenuPageInner() {
         <div className="wrap" style={{ paddingTop: '64px' }}>
           <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '64px' }}>
 
-            {/* Jollof Plate Builder */}
-            <JollofPlateBuilder />
+            {/* Pointer to same-day individual plates */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              flexWrap: 'wrap', gap: '16px',
+              background: '#F0E4D0', borderRadius: '14px',
+              padding: '20px 24px',
+            }}>
+              <div>
+                <p style={{ fontSize: '14px', fontWeight: 700, color: '#1A0F0A', marginBottom: '4px' }}>
+                  Just want a plate for yourself?
+                </p>
+                <p style={{ fontSize: '13px', color: '#6B4C3B' }}>
+                  This menu is for event catering (5-day advance notice). For a single plate today, order now.
+                </p>
+              </div>
+              <Link href="/order-now" style={{
+                flexShrink: 0,
+                display: 'inline-flex', alignItems: 'center',
+                background: '#C4622D', color: '#FFF8F0',
+                fontWeight: 700, fontSize: '13px',
+                letterSpacing: '0.03em',
+                padding: '12px 24px', borderRadius: '100px',
+                textDecoration: 'none',
+              }}>
+                Order Plates Today
+              </Link>
+            </div>
 
             {MENU_CATEGORIES.map(cat => {
               const catItems = MENU_ITEMS.filter(i => i.category === cat.key)

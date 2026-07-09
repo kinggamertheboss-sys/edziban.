@@ -56,7 +56,7 @@ export default function TermsPage() {
 
           <Section title="Delivery">
             <ul style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <li>We deliver to the Greater Boston area including Randolph, Avon, Brockton, and Boston, MA. Delivery availability is confirmed at checkout based on your address.</li>
+              <li>We deliver to the Randolph/Brockton area including Randolph, Avon, Brockton, and Boston, MA. Delivery availability is confirmed at checkout based on your address.</li>
               <li>Delivery fees are calculated based on distance from our kitchen in {PICKUP_LOCATION} and are shown before you complete payment.</li>
               <li>Estimated delivery times are provided as a guide only. We are not liable for delays caused by traffic or other factors outside our control.</li>
               <li>Pickup orders must be collected from {PICKUP_LOCATION}. The exact address will be provided when your order is ready.</li>

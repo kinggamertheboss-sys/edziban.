@@ -192,6 +192,8 @@ export async function POST(req: NextRequest) {
         // Loyalty codes are tied to one customer email — reject if it doesn't match
         if (codeData.customer_email && codeData.customer_email !== clean.customerEmail) {
           // No discount — treat as if no code was provided
+        } else if (clean.discountCode === 'FIRST10' && serverTotal < 60.00) {
+          // FIRST10 requires a minimum $60 order (catering/half-tray level)
         } else if (codeData.single_use) {
           const { data: used } = await db
             .from('discount_code_uses')
@@ -383,6 +385,12 @@ export async function POST(req: NextRequest) {
         clean.customerPhone,
         `Edziban: Hi ${clean.customerName}, order received. ${itemsText}. Total: $${serverNetTotal.toFixed(2)}. ${clean.fulfillmentType === 'delivery' ? 'Delivery' : 'Pickup'} on ${clean.requestedDate}. We confirm within 24hrs.`,
         'customer',
+        orderNumber,
+      ),
+      sendSMS(
+        EDZIBAN_CONFIG.myPhone,
+        `NEW ORDER ${orderNumber} — ${clean.customerName}. ${itemsText}. Total: $${serverNetTotal.toFixed(2)}. ${clean.fulfillmentType === 'delivery' ? `Delivery to ${clean.address}` : 'Pickup'}. ${clean.requestedDate}, ${getTimeLabel(clean.requestedTime)}.`,
+        'admin',
         orderNumber,
       ),
       sendEmail(

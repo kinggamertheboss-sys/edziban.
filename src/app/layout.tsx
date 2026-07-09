@@ -27,7 +27,7 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   title: "Edziban – Ghana's finest, delivered to you.",
-  description: 'Authentic Ghanaian food and drinks sourced from real Ghanaian home cooks, delivered to your door in the Boston area.',
+  description: 'Authentic Ghanaian food and drinks sourced from real Ghanaian home cooks, delivered to your door in the Randolph/Brockton area.',
   icons: {
     icon: '/The_Single_E.png',
     shortcut: '/The_Single_E.png',
