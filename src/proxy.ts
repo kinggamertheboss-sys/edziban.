@@ -27,8 +27,12 @@ const PROTECTED_APIS: string[] = [
   '/api/admin/inbox',
   '/api/admin/loyalty-codes',
   '/api/admin/notification-logs',
+  '/api/admin/broadcast',
+  '/api/admin/sms-broadcast',
+  '/api/admin/subscribers',
   '/api/notifications/order-confirmed',
   '/api/notifications/order-ready',
+  '/api/notifications/order-delivered',
   '/api/notifications/review-request',
 ]
 
@@ -78,8 +82,12 @@ export const config = {
     '/api/admin/inbox/:path*',
     '/api/admin/loyalty-codes/:path*',
     '/api/admin/notification-logs/:path*',
+    '/api/admin/broadcast/:path*',
+    '/api/admin/sms-broadcast/:path*',
+    '/api/admin/subscribers/:path*',
     '/api/notifications/order-confirmed/:path*',
     '/api/notifications/order-ready/:path*',
+    '/api/notifications/order-delivered/:path*',
     '/api/notifications/review-request/:path*',
   ],
 }

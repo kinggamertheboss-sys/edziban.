@@ -1,26 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminClient } from '@/lib/supabase'
-import { sanitizeText, sanitizeEmail } from '@/lib/sanitize'
+import { sanitizeText, sanitizeEmail, sanitizeHttpUrl } from '@/lib/sanitize'
 import { checkLimit, deny, getClientIp } from '@/lib/rateLimit'
 import { sendEmail } from '@/lib/notifications'
+import { esc } from '@/lib/emailTemplates'
 
 function buildBroadcastEmail(subject: string, body: string, imageUrl: string, ctaText: string, ctaUrl: string): string {
+  const safeSubject = esc(subject)
   const imageBlock = imageUrl ? `
     <tr>
       <td style="padding:0;">
-        <img src="${imageUrl}" alt="${subject}" style="width:100%;max-width:600px;display:block;border-radius:0;" />
+        <img src="${esc(imageUrl)}" alt="${safeSubject}" style="width:100%;max-width:600px;display:block;border-radius:0;" />
       </td>
     </tr>` : ''
 
   const ctaBlock = ctaText && ctaUrl ? `
     <tr>
       <td style="padding:0 40px 36px;text-align:center;">
-        <a href="${ctaUrl}" style="display:inline-block;background:#C4622D;color:#FFF8F0;font-size:14px;font-weight:700;letter-spacing:0.05em;padding:16px 40px;border-radius:100px;text-decoration:none;box-shadow:0 8px 24px rgba(196,98,45,0.28);">${ctaText}</a>
+        <a href="${esc(ctaUrl)}" style="display:inline-block;background:#C4622D;color:#FFF8F0;font-size:14px;font-weight:700;letter-spacing:0.05em;padding:16px 40px;border-radius:100px;text-decoration:none;box-shadow:0 8px 24px rgba(196,98,45,0.28);">${esc(ctaText)}</a>
       </td>
     </tr>` : ''
 
-  // Convert plain newlines in body to <br> tags
-  const htmlBody = body.replace(/\n/g, '<br/>')
+  // Escape first, then convert plain newlines in body to <br> tags
+  const htmlBody = esc(body).replace(/\n/g, '<br/>')
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -41,7 +43,7 @@ function buildBroadcastEmail(subject: string, body: string, imageUrl: string, ct
 
         <tr>
           <td style="padding:36px 40px 28px;">
-            <h1 style="margin:0 0 16px;font-size:26px;font-weight:700;color:#1A0F0A;letter-spacing:-0.02em;line-height:1.2;">${subject}</h1>
+            <h1 style="margin:0 0 16px;font-size:26px;font-weight:700;color:#1A0F0A;letter-spacing:-0.02em;line-height:1.2;">${safeSubject}</h1>
             <p style="margin:0;font-size:15px;color:#6B4C3B;line-height:1.8;">${htmlBody}</p>
           </td>
         </tr>
@@ -81,9 +83,9 @@ export async function POST(req: NextRequest) {
 
   const subject  = sanitizeText(raw.subject ?? '', 200)
   const body     = sanitizeText(raw.body ?? '', 2000)
-  const imageUrl = sanitizeText(raw.imageUrl ?? '', 500)
+  const imageUrl = sanitizeHttpUrl(raw.imageUrl ?? '', 500)
   const ctaText  = sanitizeText(raw.ctaText ?? '', 100)
-  const ctaUrl   = sanitizeText(raw.ctaUrl ?? '', 500)
+  const ctaUrl   = sanitizeHttpUrl(raw.ctaUrl ?? '', 500)
 
   if (!subject || !body) {
     return NextResponse.json({ error: 'Subject and body are required' }, { status: 400 })

@@ -28,6 +28,19 @@ export function sanitizePhone(value: unknown): string {
   return '+' + digits
 }
 
+/** Trim, enforce max length, reject anything that isn't an http(s) URL (blocks javascript:/data: schemes). */
+export function sanitizeHttpUrl(value: unknown, maxLength = 500): string {
+  if (typeof value !== 'string') return ''
+  const v = value.trim().slice(0, maxLength)
+  if (!v) return ''
+  try {
+    const parsed = new URL(v)
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:' ? v : ''
+  } catch {
+    return ''
+  }
+}
+
 /** Validate ISO date (YYYY-MM-DD), must be at least 4 days in the future. */
 export function sanitizeDate(value: unknown): string {
   if (typeof value !== 'string') return ''
