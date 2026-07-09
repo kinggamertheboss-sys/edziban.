@@ -1,13 +1,19 @@
 // Batch Tracker API
-// Returns real-time batch status per product per date window.
-// In production: query Supabase for live order data.
-// ADD SUPABASE HERE — replace MOCK_ORDERS with a live DB query.
+// Returns real-time batch status per product per date window, computed from live Supabase orders.
 
 import { NextRequest, NextResponse } from 'next/server'
-import { MOCK_ORDERS, BATCH_MINIMUMS } from '@/lib/mockData'
+import { BATCH_MINIMUMS } from '@/lib/mockData'
+import { getAdminClient } from '@/lib/supabase'
 import { sendWhatsApp, sendEmail, EDZIBAN_CONFIG } from '@/lib/notifications'
 import { checkLimit, deny, getClientIp } from '@/lib/rateLimit'
 import { sanitizeEnum } from '@/lib/sanitize'
+
+type BatchOrderRow = {
+  id: string
+  status: string
+  requested_date: string
+  order_items: { item_id: string; name: string; quantity: number }[]
+}
 
 const VALID_BATCH_ACTIONS = ['check_alerts'] as const
 
@@ -22,24 +28,33 @@ export interface BatchStatus {
   percentFull: number
 }
 
-function computeBatches(): BatchStatus[] {
+async function fetchLiveOrders(): Promise<BatchOrderRow[]> {
+  const db = getAdminClient()
+  const { data, error } = await db
+    .from('orders')
+    .select('id, status, requested_date, order_items(item_id, name, quantity)')
+  if (error) throw error
+  return data as BatchOrderRow[]
+}
+
+function computeBatches(orders: BatchOrderRow[]): BatchStatus[] {
   const map = new Map<string, BatchStatus>()
 
-  for (const order of MOCK_ORDERS) {
+  for (const order of orders) {
     if (order.status === 'cancelled') continue
-    for (const item of order.items) {
-      if (!(item.itemId in BATCH_MINIMUMS)) continue
-      const key = `${item.itemId}::${order.requestedDate}`
+    for (const item of order.order_items) {
+      if (!(item.item_id in BATCH_MINIMUMS)) continue
+      const key = `${item.item_id}::${order.requested_date}`
       const existing = map.get(key)
       if (existing) {
         existing.ordered += item.quantity
         if (!existing.orders.includes(order.id)) existing.orders.push(order.id)
       } else {
-        const min = BATCH_MINIMUMS[item.itemId]
+        const min = BATCH_MINIMUMS[item.item_id]
         map.set(key, {
-          itemId: item.itemId,
+          itemId: item.item_id,
           name: item.name,
-          date: order.requestedDate,
+          date: order.requested_date,
           ordered: item.quantity,
           minimum: min,
           orders: [order.id],
@@ -61,8 +76,14 @@ export async function GET(req: NextRequest) {
   // 60 batch status fetches per IP per minute (OWASP A04)
   const rl = checkLimit(getClientIp(req) + ':batch-get', 60, 60 * 1000)
   if (!rl.allowed) return deny(rl)
-  const batches = computeBatches()
-  return NextResponse.json({ batches })
+  try {
+    const orders = await fetchLiveOrders()
+    const batches = computeBatches(orders)
+    return NextResponse.json({ batches })
+  } catch (e) {
+    console.error('[BATCH GET]', e)
+    return NextResponse.json({ error: 'Failed to fetch batch status' }, { status: 500 })
+  }
 }
 
 // POST — trigger batch alerts (called by admin dashboard or a cron)
@@ -92,7 +113,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
   }
 
-  const batches = computeBatches()
+  const orders = await fetchLiveOrders()
+  const batches = computeBatches(orders)
   const now = new Date()
   const alerts: string[] = []
 

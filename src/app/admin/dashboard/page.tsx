@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { MOCK_ORDERS, MOCK_SUPPLIERS, MENU_ITEMS, type MockOrder } from '@/lib/mockData'
+import { MENU_ITEMS, type MockOrder } from '@/lib/mockData'
 import { formatCurrency, getStatusLabel, getTimeLabel } from '@/lib/utils'
 import SupplierHub from '@/components/admin/SupplierHub'
 import Financials from '@/components/admin/Financials'
@@ -144,7 +144,7 @@ export default function AdminDashboard() {
     }).finally(() => setDbLoading(false))
   }, [router])
 
-  const displayOrders = (dbOrders && dbOrders.length > 0) ? dbOrders : MOCK_ORDERS
+  const displayOrders = dbOrders ?? []
   const getStatus = useCallback((id: string) => orderStatuses[id] ?? displayOrders.find(o => o.id === id)?.status ?? 'pending', [orderStatuses, displayOrders])
 
   function setStatus(id: string, status: string) {
@@ -254,7 +254,7 @@ export default function AdminDashboard() {
   )
 
   const activeOrders = displayOrders.filter(o => !['cancelled', 'delivered', 'reviewed'].includes(getStatus(o.id)))
-  const supplierTotals = MOCK_SUPPLIERS.map(sup => ({
+  const supplierTotals = dbSuppliers.map(sup => ({
     ...sup,
     total: nonCancelledOrders.reduce((sum, order) => sum + (order.supplierPayouts.find(p => p.supplierId === sup.id)?.amount ?? 0), 0),
   }))
@@ -307,7 +307,7 @@ export default function AdminDashboard() {
     paidPayouts.some(p => p.orderId === orderId && p.supplierId === supplierId)
   const getPaidRecord = (orderId: string, supplierId: string) =>
     paidPayouts.find(p => p.orderId === orderId && p.supplierId === supplierId)
-  const vendorPayouts = MOCK_SUPPLIERS.map(sup => {
+  const vendorPayouts = dbSuppliers.map(sup => {
     const rows = allPayoutRows.filter(r => r.supplierId === sup.id)
     const totalEarned = rows.reduce((s, r) => s + r.amount, 0)
     const totalPaid = rows.filter(r => isPaid(r.orderId, r.supplierId)).reduce((s, r) => s + r.amount, 0)

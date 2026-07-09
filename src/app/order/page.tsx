@@ -10,7 +10,7 @@ const STEPS = ['Menu', 'Your Details', 'Payment']
 
 export default function OrderPage() {
   const router = useRouter()
-  const { items, subtotal, totalItems, orderDetails, saveOrderDetails } = useCart()
+  const { items, subtotal, totalItems, orderDetails, saveOrderDetails, updateQuantity } = useCart()
 
   const [form, setForm] = useState({
     fullName: '',
@@ -376,9 +376,25 @@ export default function OrderPage() {
                   </h2>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {items.map(item => (
-                      <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}>
+                      <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13.5px', gap: '8px' }}>
                         <span style={{ color: '#1A0F0A' }}>{item.name} <span style={{ color: '#9E7A52' }}>× {item.quantity}</span></span>
-                        <span style={{ fontWeight: 600, color: '#1A0F0A' }}>{formatCurrency(item.price * item.quantity)}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+                          <span style={{ fontWeight: 600, color: '#1A0F0A' }}>{formatCurrency(item.price * item.quantity)}</span>
+                          <button
+                            type="button"
+                            onClick={() => updateQuantity(item.id, -item.quantity)}
+                            aria-label={`Remove ${item.name} from order`}
+                            style={{
+                              width: '22px', height: '22px', flexShrink: 0,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              borderRadius: '50%', border: 'none', cursor: 'pointer',
+                              background: 'rgba(196,98,45,0.1)', color: '#C4622D',
+                              fontSize: '13px', fontWeight: 700, lineHeight: 1, padding: 0,
+                            }}
+                          >
+                            ×
+                          </button>
+                        </div>
                       </div>
                     ))}
                     <div style={{ height: '1px', background: '#E2CEB8', margin: '4px 0' }} />
