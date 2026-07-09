@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import Script from 'next/script'
 import Footer from '@/components/Footer'
 import { useCart } from '@/context/CartContext'
@@ -35,6 +36,7 @@ export default function PaymentPage() {
   const [discountAmount, setDiscountAmount] = useState(0)
   const [discountError, setDiscountError] = useState('')
   const [discountLoading, setDiscountLoading] = useState(false)
+  const [smsConsent, setSmsConsent] = useState(false)
 
   useEffect(() => {
     if (!hydrated) return
@@ -107,6 +109,7 @@ export default function PaymentPage() {
   async function handlePlaceOrder(e: React.FormEvent) {
     e.preventDefault()
     if (!cardRef.current) { setCardError('Card form not ready. Please wait a moment.'); return }
+    if (!smsConsent) { setCardError('Please check the box to consent to SMS order updates before placing your order.'); return }
     setLoading(true)
     setCardError('')
 
@@ -457,11 +460,37 @@ export default function PaymentPage() {
                 </div>
               </div>
 
+              {/* SMS consent — separate, explicit opt-in step (not bundled with Terms/Privacy) */}
+              <label style={{
+                display: 'flex', alignItems: 'flex-start', gap: '12px',
+                marginTop: '20px',
+                padding: '16px 18px',
+                background: smsConsent ? 'rgba(196,98,45,0.06)' : '#F9F5F0',
+                border: `1.5px solid ${smsConsent ? 'rgba(196,98,45,0.4)' : '#E2CEB8'}`,
+                borderRadius: '12px',
+                cursor: 'pointer',
+              }}>
+                <input
+                  type="checkbox"
+                  required
+                  checked={smsConsent}
+                  onChange={e => setSmsConsent(e.target.checked)}
+                  aria-describedby="sms-consent-copy"
+                  style={{ width: '17px', height: '17px', marginTop: '1px', accentColor: '#C4622D', cursor: 'pointer', flexShrink: 0 }}
+                />
+                <span id="sms-consent-copy" style={{ fontSize: '13px', color: '#4A2E20', lineHeight: 1.6 }}>
+                  I agree to receive SMS/text messages from Edziban Catering about this order, including order confirmation and pickup/delivery ready alerts, sent to the phone number I provided. Message frequency varies. Message and data rates may apply. Reply STOP to opt out at any time. See our{' '}
+                  <Link href="/privacy" target="_blank" style={{ color: '#C4622D', fontWeight: 600 }}>Privacy Policy</Link>
+                  {' '}and{' '}
+                  <Link href="/terms" target="_blank" style={{ color: '#C4622D', fontWeight: 600 }}>Terms & Conditions</Link>.
+                </span>
+              </label>
+
               {/* Submit */}
-              <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <button
                   type="submit"
-                  disabled={loading || !sdkReady}
+                  disabled={loading || !sdkReady || !smsConsent}
                   style={{
                     width: '100%',
                     background: '#C4622D',
@@ -490,7 +519,7 @@ export default function PaymentPage() {
                   )}
                 </button>
                 <p style={{ fontSize: '11.5px', textAlign: 'center', color: '#9E7A52', lineHeight: 1.6 }}>
-                  By placing this order you agree to be contacted via SMS for confirmation.
+                  By placing this order you also agree to our Terms & Conditions and Privacy Policy.
                 </p>
               </div>
             </form>

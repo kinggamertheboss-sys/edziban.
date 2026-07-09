@@ -82,6 +82,7 @@ export default function OrderNowPage() {
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [specialInstructions, setSpecialInstructions] = useState('')
+  const [smsConsent, setSmsConsent] = useState(false)
 
   // Payment
   const [sdkReady, setSdkReady] = useState(false)
@@ -239,6 +240,7 @@ export default function OrderNowPage() {
     if (!cardRef.current) { setError('Payment form not ready. Refresh and try again.'); return }
     if (!name.trim() || !email.trim()) { setError('Name and email are required.'); return }
     if (fulfillment === 'delivery' && !deliveryInfo) { setError('Please enter a valid delivery address.'); return }
+    if (phone.trim() && !smsConsent) { setError('Please check the box to consent to SMS order updates, or remove your phone number.'); return }
 
     setLoading(true)
     setError('')
@@ -547,6 +549,32 @@ export default function OrderNowPage() {
                         </div>
                       ))}
 
+                      {phone.trim() && (
+                        <label style={{
+                          display: 'flex', alignItems: 'flex-start', gap: '10px',
+                          padding: '12px 14px',
+                          background: smsConsent ? 'rgba(196,98,45,0.06)' : '#F5EDE0',
+                          border: `1.5px solid ${smsConsent ? 'rgba(196,98,45,0.4)' : '#E2CEB8'}`,
+                          borderRadius: '10px',
+                          cursor: 'pointer',
+                        }}>
+                          <input
+                            type="checkbox"
+                            required
+                            checked={smsConsent}
+                            onChange={e => setSmsConsent(e.target.checked)}
+                            aria-describedby="on-sms-consent-copy"
+                            style={{ width: '16px', height: '16px', marginTop: '1px', accentColor: '#C4622D', cursor: 'pointer', flexShrink: 0 }}
+                          />
+                          <span id="on-sms-consent-copy" style={{ fontSize: '12.5px', color: '#4A2E20', lineHeight: 1.6 }}>
+                            I agree to receive SMS/text messages from Edziban Catering about this order, including order confirmation and pickup/delivery ready alerts. Message frequency varies. Message and data rates may apply. Reply STOP to opt out. See our{' '}
+                            <Link href="/privacy" target="_blank" style={{ color: '#C4622D', fontWeight: 600 }}>Privacy Policy</Link>
+                            {' '}and{' '}
+                            <Link href="/terms" target="_blank" style={{ color: '#C4622D', fontWeight: 600 }}>Terms & Conditions</Link>.
+                          </span>
+                        </label>
+                      )}
+
                       <div>
                         <label id="on-fulfillment-label" style={{ display: 'block', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B4C3B', marginBottom: '6px' }}>Fulfillment</label>
                         <div role="group" aria-labelledby="on-fulfillment-label" style={{ display: 'flex', gap: '8px' }}>
@@ -634,7 +662,7 @@ export default function OrderNowPage() {
 
                   <button
                     type="submit"
-                    disabled={loading || !sdkReady || (fulfillment === 'delivery' && !deliveryInfo)}
+                    disabled={loading || !sdkReady || (fulfillment === 'delivery' && !deliveryInfo) || (!!phone.trim() && !smsConsent)}
                     style={{
                       width: '100%',
                       padding: '16px',
