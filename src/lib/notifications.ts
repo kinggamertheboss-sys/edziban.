@@ -1,5 +1,5 @@
 // Edziban Notification Service
-// Handles: Zoho Mail (primary), AWS SNS SMS, AWS SES (fallback), Make.com webhooks
+// Handles: Zoho Mail (primary), Twilio SMS, AWS SES (email fallback), Make.com webhooks
 //
 // HOW TO ACTIVATE:
 //   1. Copy .env.local.example to .env.local
@@ -67,7 +67,9 @@ export interface NotifResult {
   error?: string
 }
 
-// ── SMS (AWS SNS) ──────────────────────────────────────────────────────────
+// ── SMS (Twilio) ───────────────────────────────────────────────────────────
+// Sends via Twilio's REST API directly (no SDK needed for a single endpoint).
+// Uses the toll-free verified number +18444935163.
 
 export async function sendSMS(to: string, message: string, recipientLabel = 'customer', orderId?: string): Promise<NotifResult> {
   const result: NotifResult = { type: 'sms', recipient: recipientLabel, to, preview: message.slice(0, 80), mock: false, success: false }
@@ -75,34 +77,36 @@ export async function sendSMS(to: string, message: string, recipientLabel = 'cus
   const masked = to.slice(0, 4) + '****' + to.slice(-2)
   console.log(`\n[SMS] ── To: ${masked} (${recipientLabel}) ──`)
 
-  // ADD_KEY_HERE: Set AWS_ACCESS_KEY_ID in .env.local
-  const accessKeyId = process.env.AWS_ACCESS_KEY_ID
-  // ADD_KEY_HERE: Set AWS_SECRET_ACCESS_KEY in .env.local
-  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
-  const region = process.env.AWS_REGION ?? 'us-east-1'
+  // ADD_KEY_HERE: Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER in .env.local
+  const accountSid = process.env.TWILIO_ACCOUNT_SID
+  const authToken = process.env.TWILIO_AUTH_TOKEN
+  const fromNumber = process.env.TWILIO_PHONE_NUMBER
 
-  if (!accessKeyId || !secretAccessKey) {
-    console.log(`[SMS] MOCK MODE — no AWS keys. Would send to ${masked}.`)
+  if (!accountSid || !authToken || !fromNumber) {
+    console.log(`[SMS] MOCK MODE — no Twilio credentials. Would send to ${masked}.`)
     return { ...result, mock: true, success: true }
   }
 
   try {
-    const { SNSClient, PublishCommand } = await import('@aws-sdk/client-sns')
-    const client = new SNSClient({ region, credentials: { accessKeyId, secretAccessKey } })
-    await client.send(new PublishCommand({
-      PhoneNumber: to,
-      Message: message,
-      MessageAttributes: {
-        'AWS.SNS.SMS.SMSType': { DataType: 'String', StringValue: 'Transactional' },
-        'AWS.SNS.SMS.SenderID': { DataType: 'String', StringValue: 'Edziban' },
+    const auth = Buffer.from(`${accountSid}:${authToken}`).toString('base64')
+    const resp = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-    }))
+      body: new URLSearchParams({ To: to, From: fromNumber, Body: message }),
+    })
+    if (!resp.ok) {
+      const errBody = await resp.text().catch(() => '')
+      throw new Error(`Twilio ${resp.status}: ${errBody}`)
+    }
     console.log(`[SMS] Sent successfully to ${masked}`)
-    if (orderId) logNotification({ orderId, type: 'sms', recipient: recipientLabel, toAddress: to, subject: message.slice(0, 80), success: true, provider: 'sns' }).catch(() => {})
+    if (orderId) logNotification({ orderId, type: 'sms', recipient: recipientLabel, toAddress: to, subject: message.slice(0, 80), success: true, provider: 'twilio' }).catch(() => {})
     return { ...result, success: true }
   } catch (e) {
     console.error(`[SMS] Error:`, e)
-    if (orderId) logNotification({ orderId, type: 'sms', recipient: recipientLabel, toAddress: to, subject: message.slice(0, 80), success: false, provider: 'sns' }).catch(() => {})
+    if (orderId) logNotification({ orderId, type: 'sms', recipient: recipientLabel, toAddress: to, subject: message.slice(0, 80), success: false, provider: 'twilio' }).catch(() => {})
     return { ...result, success: false, error: String(e) }
   }
 }
