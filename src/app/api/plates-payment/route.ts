@@ -13,7 +13,7 @@ const KITCHEN_ADDRESS = 'Randolph, MA 02368'
 
 const ALLOWED_TOP  = new Set(['sourceId', 'amount', 'order'])
 const ALLOWED_ORDER = new Set([
-  'customerName', 'customerPhone', 'customerEmail',
+  'customerName', 'customerPhone', 'customerEmail', 'smsConsent',
   'items', 'fulfillmentType', 'address',
   'subtotal', 'serviceFee', 'deliveryFee', 'total',
   'specialInstructions',
@@ -87,6 +87,7 @@ export async function POST(req: NextRequest) {
     customerName:        sanitizeText(o.customerName, 100),
     customerPhone:       sanitizePhone(o.customerPhone),
     customerEmail:       sanitizeEmail(o.customerEmail),
+    smsConsent:          o.smsConsent === true,
     fulfillmentType:     sanitizeEnum(o.fulfillmentType, VALID_FULFILLMENT_TYPES) ?? 'pickup',
     address:             sanitizeText(o.address, 300),
     specialInstructions: sanitizeText(o.specialInstructions, 500),
@@ -245,7 +246,7 @@ export async function POST(req: NextRequest) {
         'admin',
         orderNumber,
       ),
-      ...(clean.customerPhone ? [sendSMS(
+      ...(clean.customerPhone && clean.smsConsent ? [sendSMS(
         clean.customerPhone,
         `Edziban: Hi ${clean.customerName}, your order ${orderNumber} is confirmed! ${itemsText}. Total: $${serverTotal.toFixed(2)}. ${clean.fulfillmentType === 'delivery' ? `Delivering to you${estimatedMins}.` : `Pickup from ${EDZIBAN_CONFIG.pickupLocation}.`}`,
         'customer',

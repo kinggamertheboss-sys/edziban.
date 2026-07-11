@@ -130,6 +130,7 @@ export default function PaymentPage() {
             customerName: od.fullName,
             customerPhone: od.phone,
             customerEmail: od.email,
+            smsConsent,
             eventType: od.eventType ?? '',
             guestCount: od.guestCount,
             items: items.map(i => ({ itemId: i.id, name: i.name, quantity: i.quantity, unitPrice: i.price })),

@@ -292,6 +292,7 @@ export default function OrderNowPage() {
             customerName: name.trim(),
             customerPhone: phone.trim(),
             customerEmail: email.trim(),
+            smsConsent,
             fulfillmentType: fulfillment,
             address: fulfillment === 'delivery' ? address.trim() : '',
             items: cartItems.map(i => ({

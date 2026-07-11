@@ -18,7 +18,7 @@ import { orderReceivedEmail } from '@/lib/emailTemplates'
 // Any request body containing keys outside these sets is rejected with 400.
 const ALLOWED_TOP   = new Set(['sourceId', 'amount', 'currency', 'order'])
 const ALLOWED_ORDER = new Set([
-  'customerName', 'customerPhone', 'customerEmail', 'eventType', 'guestCount',
+  'customerName', 'customerPhone', 'customerEmail', 'smsConsent', 'eventType', 'guestCount',
   'items', 'fulfillmentType', 'address', 'distanceRange', 'requestedDate',
   'requestedTime', 'specialInstructions', 'subtotal', 'serviceFee', 'deliveryFee', 'total',
   'discountCode', 'discountAmount',
@@ -40,6 +40,7 @@ export interface PaymentPayload {
     customerName: string
     customerPhone: string
     customerEmail: string
+    smsConsent: boolean
     eventType: string
     guestCount: number
     items: { itemId: string; name: string; quantity: number; unitPrice: number }[]
@@ -123,6 +124,7 @@ export async function POST(req: NextRequest) {
       customerName:        sanitizeText(order.customerName, 100),
       customerPhone:       sanitizePhone(order.customerPhone),
       customerEmail:       sanitizeEmail(order.customerEmail),
+      smsConsent:          order.smsConsent === true,
       eventType:           sanitizeText(order.eventType, 100),
       guestCount:          sanitizeInt(order.guestCount, 1, 10_000),
       fulfillmentType:     sanitizeEnum(order.fulfillmentType, VALID_FULFILLMENT_TYPES) ?? 'pickup',
@@ -381,12 +383,12 @@ export async function POST(req: NextRequest) {
     const adminEmail = process.env.ADMIN_EMAIL ?? EDZIBAN_CONFIG.myEmail
 
     await Promise.all([
-      sendSMS(
+      ...(clean.customerPhone && clean.smsConsent ? [sendSMS(
         clean.customerPhone,
         `Edziban: Hi ${clean.customerName}, order received. ${itemsText}. Total: $${serverNetTotal.toFixed(2)}. ${clean.fulfillmentType === 'delivery' ? 'Delivery' : 'Pickup'} on ${clean.requestedDate}. We confirm within 24hrs.`,
         'customer',
         orderNumber,
-      ),
+      )] : []),
       sendSMS(
         EDZIBAN_CONFIG.myPhone,
         `NEW ORDER ${orderNumber} — ${clean.customerName}. ${itemsText}. Total: $${serverNetTotal.toFixed(2)}. ${clean.fulfillmentType === 'delivery' ? `Delivery to ${clean.address}` : 'Pickup'}. ${clean.requestedDate}, ${getTimeLabel(clean.requestedTime)}.`,
