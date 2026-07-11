@@ -70,6 +70,9 @@ export interface NotifResult {
 // ── SMS (Twilio) ───────────────────────────────────────────────────────────
 // Sends via Twilio's REST API directly (no SDK needed for a single endpoint).
 // Uses the toll-free verified number +18444935163.
+// Auth uses a Restricted API Key (scoped to Messages only), not the master
+// Account SID/Auth Token — the Key SID is the Basic Auth username and the
+// Key Secret is the password, but the Account SID still goes in the URL.
 
 export async function sendSMS(to: string, message: string, recipientLabel = 'customer', orderId?: string): Promise<NotifResult> {
   const result: NotifResult = { type: 'sms', recipient: recipientLabel, to, preview: message.slice(0, 80), mock: false, success: false }
@@ -77,18 +80,19 @@ export async function sendSMS(to: string, message: string, recipientLabel = 'cus
   const masked = to.slice(0, 4) + '****' + to.slice(-2)
   console.log(`\n[SMS] ── To: ${masked} (${recipientLabel}) ──`)
 
-  // ADD_KEY_HERE: Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER in .env.local
+  // ADD_KEY_HERE: Set TWILIO_ACCOUNT_SID, TWILIO_API_KEY_SID, TWILIO_API_KEY_SECRET, TWILIO_PHONE_NUMBER in .env.local
   const accountSid = process.env.TWILIO_ACCOUNT_SID
-  const authToken = process.env.TWILIO_AUTH_TOKEN
+  const apiKeySid = process.env.TWILIO_API_KEY_SID
+  const apiKeySecret = process.env.TWILIO_API_KEY_SECRET
   const fromNumber = process.env.TWILIO_PHONE_NUMBER
 
-  if (!accountSid || !authToken || !fromNumber) {
+  if (!accountSid || !apiKeySid || !apiKeySecret || !fromNumber) {
     console.log(`[SMS] MOCK MODE — no Twilio credentials. Would send to ${masked}.`)
     return { ...result, mock: true, success: true }
   }
 
   try {
-    const auth = Buffer.from(`${accountSid}:${authToken}`).toString('base64')
+    const auth = Buffer.from(`${apiKeySid}:${apiKeySecret}`).toString('base64')
     const resp = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`, {
       method: 'POST',
       headers: {
