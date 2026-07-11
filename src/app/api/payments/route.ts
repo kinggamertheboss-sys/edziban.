@@ -364,6 +364,7 @@ export async function POST(req: NextRequest) {
     // Running server-side means the notification endpoint no longer needs to be
     // publicly accessible, closing the notification spam vector.
     const itemsText = clean.items.map(i => `${i.name} × ${i.quantity}`).join(', ')
+    const itemsBlock = clean.items.map(i => `- ${i.name} x${i.quantity}`).join('\n')
     const emailData = {
       orderNumber,
       customerName:  clean.customerName,
@@ -385,13 +386,13 @@ export async function POST(req: NextRequest) {
     await Promise.all([
       ...(clean.customerPhone && clean.smsConsent ? [sendSMS(
         clean.customerPhone,
-        `Edziban: Hi ${clean.customerName}, order received. ${itemsText}. Total: $${serverNetTotal.toFixed(2)}. ${clean.fulfillmentType === 'delivery' ? 'Delivery' : 'Pickup'} on ${clean.requestedDate}. We confirm within 24hrs.`,
+        `🍽️ Edziban - Order Received\n\nHi ${clean.customerName}, here's your order ${orderNumber}:\n\n${itemsBlock}\n\nTotal: $${serverNetTotal.toFixed(2)}\n${clean.fulfillmentType === 'delivery' ? 'Delivery' : 'Pickup'} - ${clean.requestedDate}\n\nWe'll confirm within 24hrs.`,
         'customer',
         orderNumber,
       )] : []),
       sendSMS(
         EDZIBAN_CONFIG.myPhone,
-        `NEW ORDER ${orderNumber} — ${clean.customerName}. ${itemsText}. Total: $${serverNetTotal.toFixed(2)}. ${clean.fulfillmentType === 'delivery' ? `Delivery to ${clean.address}` : 'Pickup'}. ${clean.requestedDate}, ${getTimeLabel(clean.requestedTime)}.`,
+        `🔔 NEW ORDER ${orderNumber}\n${clean.customerName}\n\n${itemsBlock}\n\nTotal: $${serverNetTotal.toFixed(2)}\n${clean.fulfillmentType === 'delivery' ? `Delivery to ${clean.address}` : 'Pickup'} - ${clean.requestedDate}, ${getTimeLabel(clean.requestedTime)}`,
         'admin',
         orderNumber,
       ),

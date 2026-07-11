@@ -200,7 +200,7 @@ export async function POST(req: NextRequest) {
       }))
     ).then(({ error: e }) => { if (e) console.error('[DB] Plate items save error:', e.message) })
 
-    const itemsText = clean.items.map(i => `${i.name} × ${i.quantity}`).join(', ')
+    const itemsBlock = clean.items.map(i => `- ${i.name} x${i.quantity}`).join('\n')
     const emailData = {
       orderNumber,
       customerName: clean.customerName,
@@ -228,7 +228,7 @@ export async function POST(req: NextRequest) {
     await Promise.all([
       sendSMS(
         EDZIBAN_CONFIG.myPhone,
-        `NEW PLATE ORDER ${orderNumber} — ${clean.customerName}. ${itemsText}. Total: $${serverTotal.toFixed(2)}. ${clean.fulfillmentType === 'delivery' ? `Delivery to ${clean.address}` : 'Pickup'}.`,
+        `🔔 NEW PLATE ORDER ${orderNumber}\n${clean.customerName}\n\n${itemsBlock}\n\nTotal: $${serverTotal.toFixed(2)}\n${clean.fulfillmentType === 'delivery' ? `Delivery to ${clean.address}` : 'Pickup'}`,
         'admin',
         orderNumber,
       ),
@@ -248,7 +248,7 @@ export async function POST(req: NextRequest) {
       ),
       ...(clean.customerPhone && clean.smsConsent ? [sendSMS(
         clean.customerPhone,
-        `Edziban: Hi ${clean.customerName}, your order ${orderNumber} is confirmed! ${itemsText}. Total: $${serverTotal.toFixed(2)}. ${clean.fulfillmentType === 'delivery' ? `Delivering to you${estimatedMins}.` : `Pickup from ${EDZIBAN_CONFIG.pickupLocation}.`}`,
+        `✅ Edziban - Order Confirmed\n\nHi ${clean.customerName}, your order ${orderNumber} is confirmed!\n\n${itemsBlock}\n\nTotal: $${serverTotal.toFixed(2)}\n${clean.fulfillmentType === 'delivery' ? `Delivering to you${estimatedMins}.` : `Pickup from ${EDZIBAN_CONFIG.pickupLocation}.`}`,
         'customer',
         orderNumber,
       )] : []),
