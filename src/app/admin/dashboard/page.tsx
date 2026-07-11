@@ -211,6 +211,7 @@ export default function AdminDashboard() {
             orderNumber: order.id,
             customerName: order.customerName,
             customerEmail: order.customerEmail,
+            eventType: order.eventType,
           }
         }
 

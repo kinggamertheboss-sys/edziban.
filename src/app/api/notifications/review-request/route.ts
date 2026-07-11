@@ -7,6 +7,7 @@ export interface ReviewRequestPayload {
   orderNumber: string
   customerName: string
   customerEmail: string
+  eventType: string
 }
 
 export async function POST(req: NextRequest) {
@@ -23,6 +24,7 @@ export async function POST(req: NextRequest) {
     orderNumber:   { sanitize: (v) => sanitizeText(v, 30),   required: true },
     customerName:  { sanitize: (v) => sanitizeText(v, 100),  required: true },
     customerEmail: { sanitize: (v) => sanitizeEmail(v),      required: true },
+    eventType:     { sanitize: (v) => sanitizeText(v, 30),   required: false },
   })
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 400 })
@@ -32,7 +34,9 @@ export async function POST(req: NextRequest) {
     orderNumber:   result.data.orderNumber   as string,
     customerName:  result.data.customerName  as string,
     customerEmail: result.data.customerEmail as string,
+    eventType:     (result.data.eventType    as string) ?? '',
   }
+  const isPlate = data.eventType === 'plate'
   console.log(`\n========== REVIEW REQUEST: ${data.orderNumber} ==========`)
 
   const reviewLink = EDZIBAN_CONFIG.googleReviewLink
@@ -54,8 +58,8 @@ export async function POST(req: NextRequest) {
         <tr>
           <td style="padding:40px 40px 0;">
             <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#C4622D;">Thank You</p>
-            <h1 style="margin:0 0 16px;font-size:26px;font-weight:700;color:#1A0F0A;letter-spacing:-0.02em;">We hope you enjoyed it, ${data.customerName.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;')}.</h1>
-            <p style="margin:0;font-size:15px;color:#6B4C3B;line-height:1.7;">It was a pleasure serving you. If you have a moment, a quick Google review would mean a lot to us and helps other families in the community find Edziban.</p>
+            <h1 style="margin:0 0 16px;font-size:26px;font-weight:700;color:#1A0F0A;letter-spacing:-0.02em;">${isPlate ? 'Hope you enjoyed your plate' : 'We hope you enjoyed it'}, ${data.customerName.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;')}.</h1>
+            <p style="margin:0;font-size:15px;color:#6B4C3B;line-height:1.7;">${isPlate ? "If you have a minute, a quick Google review would mean a lot — it helps more people around Randolph/Brockton find Edziban for their next lunch or dinner." : 'It was a pleasure serving you. If you have a moment, a quick Google review would mean a lot to us and helps other families in the community find Edziban.'}</p>
           </td>
         </tr>
         <tr>
@@ -80,7 +84,7 @@ export async function POST(req: NextRequest) {
   const notifications = await Promise.all([
     sendEmail(
       data.customerEmail,
-      `How was your Edziban order, ${data.customerName}?`,
+      isPlate ? `How was your Edziban plate, ${data.customerName}?` : `How was your Edziban order, ${data.customerName}?`,
       html,
       'customer',
       data.orderNumber,
