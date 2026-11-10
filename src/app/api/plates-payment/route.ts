@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
   const baseId = (itemId: string) => itemId.split('--')[0]
 
   // Server-side price verification
-  const unknownItem = clean.items.find(i => !PLATES_MENU.find(m => m.id === baseId(i.itemId)))
+  const unknownItem = clean.items.find(i => !PLATES_MENU.find(m => m.id === baseId(i.itemId) && !m.hidden))
   if (unknownItem) return NextResponse.json({ error: 'Unrecognized item' }, { status: 400 })
 
   if (!ADDONS_ENABLED && clean.items.some(i => baseId(i.itemId).startsWith('jollof-addon-'))) {

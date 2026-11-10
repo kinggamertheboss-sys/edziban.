@@ -325,7 +325,7 @@ export default function OrderNowPage() {
     }
   }
 
-  const visibleItems = PLATES_MENU.filter(i => i.category === activeCategory)
+  const visibleItems = PLATES_MENU.filter(i => i.category === activeCategory && !i.hidden)
 
   return (
     <>
@@ -453,7 +453,7 @@ export default function OrderNowPage() {
                         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,15,10,0.5) 0%, transparent 50%)' }} />
                       )}
                       {/* Customizable badge */}
-                      {item.customizable && (
+                      {item.customizable && ADDONS_ENABLED && (
                         <div style={{ position: 'absolute', top: '10px', left: '10px', background: '#1A0F0A', color: '#FFF8F0', fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '3px 9px', borderRadius: '100px' }}>
                           Build Your Plate
                         </div>
@@ -841,7 +841,7 @@ export default function OrderNowPage() {
           ref={jollofModalRef}
           role="dialog"
           aria-modal="true"
-          aria-label="Build Your Jollof Plate"
+          aria-label={ADDONS_ENABLED ? 'Build Your Jollof Plate' : 'Jollof Rice'}
           style={{
             position: 'fixed', inset: 0, zIndex: 300,
             display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
@@ -890,7 +890,7 @@ export default function OrderNowPage() {
               {/* Title overlay */}
               <div style={{ position: 'absolute', bottom: '16px', left: '20px', right: '20px' }}>
                 <h2 style={{ margin: 0, fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '22px', fontWeight: 700, color: '#FFF8F0', lineHeight: 1.15 }}>
-                  Build Your Jollof Plate
+                  {ADDONS_ENABLED ? 'Build Your Jollof Plate' : 'Jollof Rice'}
                 </h2>
                 <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'rgba(255,248,240,0.75)' }}>
                   Jollof rice · 2 pieces of chicken · your choice of sauce

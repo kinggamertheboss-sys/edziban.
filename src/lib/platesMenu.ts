@@ -7,6 +7,7 @@ export interface PlateItem {
   available: boolean
   gradient: string
   customizable?: boolean
+  hidden?: boolean // not shown on the menu and rejected at checkout
   video?: string
 }
 
@@ -19,8 +20,10 @@ export const PLATE_CATEGORIES = ['Rice Dishes', 'Sides & Extras'] as const
 export const PLATES_MENU: PlateItem[] = [
   {
     id: 'jollof-build-plate',
-    name: 'Build Your Jollof Plate',
-    description: 'Jollof rice, 2 pieces of chicken, your choice of shito or stew. Add plantain, egg, salad, and more.',
+    name: ADDONS_ENABLED ? 'Build Your Jollof Plate' : 'Jollof Rice',
+    description: ADDONS_ENABLED
+      ? 'Jollof rice, 2 pieces of chicken, your choice of shito or stew. Add plantain, egg, salad, and more.'
+      : 'Jollof rice, 2 pieces of chicken, your choice of shito or stew.',
     price: 15.00,
     category: 'Rice Dishes',
     available: true,
@@ -81,6 +84,7 @@ export const PLATES_MENU: PlateItem[] = [
     price: 18.00,
     category: 'Rice Dishes',
     available: true,
+    hidden: true, // paused for launch so it doesn't duplicate the $15 Jollof Rice plate
     gradient: 'linear-gradient(150deg, #C4622D 0%, #E07840 55%, #F0A560 100%)',
   },
   {
