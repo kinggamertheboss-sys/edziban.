@@ -10,6 +10,10 @@ export interface PlateItem {
   video?: string
 }
 
+// Jollof add-ons are paused for launch. Flip to true to bring them back
+// (UI checkboxes on /order-now + server-side acceptance in /api/plates-payment).
+export const ADDONS_ENABLED = false
+
 export const PLATE_CATEGORIES = ['Rice Dishes', 'Sides & Extras'] as const
 
 export const PLATES_MENU: PlateItem[] = [

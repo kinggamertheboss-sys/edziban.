@@ -5,7 +5,7 @@ import Script from 'next/script'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
 import AutoplayVideo from '@/components/AutoplayVideo'
-import { PLATES_MENU, PLATE_CATEGORIES, getPlatesServiceFee } from '@/lib/platesMenu'
+import { PLATES_MENU, PLATE_CATEGORIES, ADDONS_ENABLED, getPlatesServiceFee } from '@/lib/platesMenu'
 import { formatCurrency } from '@/lib/utils'
 
 declare global {
@@ -45,7 +45,7 @@ interface DeliveryInfo {
 }
 
 const JOLLOF_BUILD_ID = 'jollof-build-plate'
-const JOLLOF_ADDONS = [
+const JOLLOF_ADDONS = !ADDONS_ENABLED ? [] : [
   { id: 'jollof-addon-plantain',  label: 'Fried plantain',      price: 2 },
   { id: 'jollof-addon-salad',     label: 'Ghana salad',         price: 2 },
   { id: 'jollof-addon-egg',       label: 'Boiled egg',          price: 1 },
@@ -946,6 +946,7 @@ export default function OrderNowPage() {
               {/* Divider */}
               <div style={{ height: '1px', background: '#E2CEB8', marginBottom: '24px' }} />
 
+              {ADDONS_ENABLED && (<>
               {/* Add-ons */}
               <div style={{ marginBottom: '24px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
@@ -1003,6 +1004,7 @@ export default function OrderNowPage() {
 
               {/* Divider */}
               <div style={{ height: '1px', background: '#E2CEB8', marginBottom: '24px' }} />
+              </>)}
 
               {/* Qty stepper */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>

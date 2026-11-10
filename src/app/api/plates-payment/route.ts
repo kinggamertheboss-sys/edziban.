@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { SquareClient, SquareEnvironment } from 'square'
 import { randomUUID } from 'crypto'
 import { getAdminClient } from '@/lib/supabase'
-import { PLATES_MENU, calculatePlateDeliveryFee, calculateEstimatedMinutes, getPlatesServiceFee } from '@/lib/platesMenu'
+import { PLATES_MENU, ADDONS_ENABLED, calculatePlateDeliveryFee, calculateEstimatedMinutes, getPlatesServiceFee } from '@/lib/platesMenu'
 import { generateOrderNumber } from '@/lib/utils'
 import { sanitizeText, sanitizeEmail, sanitizePhone, sanitizeAmount, sanitizeEnum, VALID_FULFILLMENT_TYPES } from '@/lib/sanitize'
 import { checkLimit, deny, getClientIp } from '@/lib/rateLimit'
@@ -116,6 +116,10 @@ export async function POST(req: NextRequest) {
   // Server-side price verification
   const unknownItem = clean.items.find(i => !PLATES_MENU.find(m => m.id === baseId(i.itemId)))
   if (unknownItem) return NextResponse.json({ error: 'Unrecognized item' }, { status: 400 })
+
+  if (!ADDONS_ENABLED && clean.items.some(i => baseId(i.itemId).startsWith('jollof-addon-'))) {
+    return NextResponse.json({ error: 'Add-ons are not available right now' }, { status: 400 })
+  }
 
   const serverSubtotal = Math.round(
     clean.items.reduce((sum, item) => {
